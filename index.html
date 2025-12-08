@@ -1,68 +1,297 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini App — Profiles</title>
+  <title>Mini Profiles — Isaline</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body{font-family:system-ui,Segoe UI,Helvetica,Arial;display:flex;align-items:center;justify-content:center;height:100vh;
-      margin:0;background:#f7f5f3;color:#111}
-    .card{width:95%;max-width:420px;background:white;border-radius:14px;padding:20px;box-shadow:0 6px 20px rgba(10,10,10,0.06)}
-    h1{margin:0 0 8px;font-size:18px}
-    p{margin:8px 0 16px;color:#555}
-    .row{display:flex;gap:8px}
-    button{flex:1;padding:10px;border-radius:10px;border:0;background:#222;color:#fff;font-weight:600}
-    button.ghost{background:transparent;color:#222;border:1px solid #eee}
+    :root {
+      --bg: #0f1014;
+      --card: #171821;
+      --accent: #f7d6ff;
+      --text: #f5f3ff;
+      --soft: #a7a6c1;
+      --border: #262739;
+      --btn: #f5f0ff;
+      --btn-text: #161622;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #1f2030 0, #05050a 50%, #020208 100%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                   "Segoe UI", sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 460px;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(247,214,255,0.35);
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    h1 {
+      margin: 8px 0 2px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      margin: 0 0 14px;
+      font-size: 12px;
+      color: var(--soft);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .tab {
+      flex: 1;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 13px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: rgba(247,214,255,0.12);
+      border-color: rgba(247,214,255,0.65);
+      color: var(--text);
+    }
+
+    .tab span.icon {
+      font-size: 14px;
+    }
+
+    .profile {
+      border-radius: 14px;
+      padding: 12px 12px;
+      background: radial-gradient(circle at top left,
+                                  rgba(247,214,255,0.16),
+                                  rgba(9,9,18,0.95));
+      border: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 14px;
+    }
+
+    .profile h2 {
+      margin: 0 0 2px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .profile small {
+      display: block;
+      font-size: 11px;
+      color: var(--soft);
+      margin-bottom: 8px;
+    }
+
+    .profile p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #d7d5ef;
+      white-space: pre-line;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    button.primary,
+    button.ghost {
+      flex: 1;
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button.primary {
+      background: var(--btn);
+      color: var(--btn-text);
+    }
+
+    button.ghost {
+      background: transparent;
+      color: var(--soft);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .helper {
+      margin-top: 10px;
+      font-size: 10px;
+      color: #7d7ba3;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Mini Profiles — Isaline</h1>
-    <p>Welcome — this is a small mini-app for viewing and sending a selection to the bot.</p>
+  <div class="shell">
+    <div class="card">
+      <div class="title-row">
+        <div>
+          <div class="pill">
+            <span>MINI APP</span> · <span>PROFILE</span>
+          </div>
+          <h1>Isaline’s profile room</h1>
+          <p class="subtitle">Tap a tab, then send your selection back to the bot.</p>
+        </div>
+      </div>
 
-    <div class="row">
-      <button id="chooseZhou">Zhou Xinyu</button>
-      <button id="chooseRP" class="ghost">RP</button>
+      <div class="tabs">
+        <button class="tab active" id="tab-zhou">
+          <span class="icon">✦</span>
+          <span>Zhou Xinyu</span>
+        </button>
+        <button class="tab" id="tab-rp">
+          <span class="icon">✧</span>
+          <span>RP Muse</span>
+        </button>
+      </div>
+
+      <div class="profile" id="profile">
+        <h2 id="profile-title">Zhou Xinyu</h2>
+        <small id="profile-tag">Muse · TripleS</small>
+        <p id="profile-text">
+Soft-spoken, stage-light kind of pretty.
+Carries winter glow and slow-day calm,
+like a quiet verse written in silver.
+        </p>
+      </div>
+
+      <div class="btn-row">
+        <button class="primary" id="sendBtn">
+          <span>Send selection</span>
+        </button>
+        <button class="ghost" id="closeBtn">
+          <span>Close</span>
+        </button>
+      </div>
+
+      <div class="helper">
+        Your choice will be sent back to the bot as a tiny note.
+      </div>
     </div>
-
-    <div style="height:12px"></div>
-
-    <div style="display:flex;gap:8px">
-      <button id="send" style="flex:1">Send selection to bot</button>
-      <button id="close" class="ghost">Close</button>
-    </div>
-
-    <script>
-      // ensure Telegram WebApp object exists
-      const tg = window.Telegram?.WebApp;
-      if (tg) tg.expand(); // expand view if client allows
-
-      let selected = "zhou";
-      document.getElementById("chooseZhou").onclick = () => {
-        selected = "zhou";
-        document.getElementById("chooseZhou").style.opacity = 1;
-        document.getElementById("chooseRP").style.opacity = 0.6;
-      };
-      document.getElementById("chooseRP").onclick = () => {
-        selected = "rp";
-        document.getElementById("chooseRP").style.opacity = 1;
-        document.getElementById("chooseZhou").style.opacity = 0.6;
-      };
-
-      document.getElementById("send").onclick = () => {
-        const payload = {type:"choose", value:selected, ts:Date.now()};
-        // sendData will forward payload to bot as update.message.web_app_data.data
-        if (tg && tg.sendData) {
-          tg.sendData(JSON.stringify(payload));
-        } else {
-          alert("Telegram WebApp API not available.");
-        }
-      };
-
-      document.getElementById("close").onclick = () => {
-        if (tg && tg.close) tg.close();
-      };
-    </script>
   </div>
+
+  <script>
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) {
+      tg.expand(); // biar view-nya full
+      tg.ready();
+    }
+
+    let selected = "zhou";
+
+    const profiles = {
+      zhou: {
+        title: "Zhou Xinyu",
+        tag: "Muse · TripleS",
+        text: "Soft-spoken, stage-light kind of pretty.\nCarries winter glow and slow-day calm,\nlike a quiet verse written in silver."
+      },
+      rp: {
+        title: "Lyra Nocturne",
+        tag: "RP muse · night-coded",
+        text: "Writes in lowercase and starlight.\nHalf diary, half song, always a little\nlate to leave the dream."
+      }
+    };
+
+    const tabZhou = document.getElementById("tab-zhou");
+    const tabRP   = document.getElementById("tab-rp");
+    const profileTitle = document.getElementById("profile-title");
+    const profileTag   = document.getElementById("profile-tag");
+    const profileText  = document.getElementById("profile-text");
+
+    function setActive(key) {
+      selected = key;
+      const data = profiles[key];
+      profileTitle.textContent = data.title;
+      profileTag.textContent   = data.tag;
+      profileText.textContent  = data.text;
+
+      if (key === "zhou") {
+        tabZhou.classList.add("active");
+        tabRP.classList.remove("active");
+      } else {
+        tabRP.classList.add("active");
+        tabZhou.classList.remove("active");
+      }
+    }
+
+    tabZhou.addEventListener("click", () => setActive("zhou"));
+    tabRP.addEventListener("click", () => setActive("rp"));
+
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const payload = {
+        type: "profile_choice",
+        value: selected,
+        ts: Date.now()
+      };
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify(payload));
+      } else {
+        alert("Telegram WebApp not available. Open from inside Telegram.");
+      }
+    });
+
+    document.getElementById("closeBtn").addEventListener("click", () => {
+      if (tg && tg.close) tg.close();
+    });
+  </script>
 </body>
 </html>
