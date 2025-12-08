@@ -1,297 +1,251 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Mini Profiles — Isaline</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --bg: #0f1014;
-      --card: #171821;
-      --accent: #f7d6ff;
-      --text: #f5f3ff;
-      --soft: #a7a6c1;
-      --border: #262739;
-      --btn: #f5f0ff;
-      --btn-text: #161622;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mini Profiles — Isaline (Glass Door)</title>
+<style>
+  :root{
+    --bg-0:#07060a;
+    --bg-1:#14121a;
+    --card:#171821;
+    --glass: rgba(255,255,255,0.06);
+    --glass-2: rgba(255,255,255,0.09);
+    --accent:#f7d6ff;
+    --text:#f5f3ff;
+    --soft:#b8b5d0;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;}
+  body{
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(1200px 800px at 10% 10%, #1c1530 0%, #07060a 45%, #03020a 100%);
+    color:var(--text);min-height:100vh;overflow:hidden;padding:20px;
+  }
 
-    * { box-sizing: border-box; }
+  /* container for app */
+  .shell{width:100%;max-width:480px;position:relative;z-index:10}
 
-    body {
-      margin: 0;
-      padding: 0;
-      background: radial-gradient(circle at top, #1f2030 0, #05050a 50%, #020208 100%);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                   "Segoe UI", sans-serif;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
+  /* CONTENT (behind the glass door) */
+  .card{
+    border-radius:18px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03); box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    transform:translateY(0); transition:opacity .45s ease .35s, transform .45s ease .35s;
+    opacity:0; pointer-events:auto;
+    backdrop-filter: blur(2px);
+  }
+  .content-visible .card{ opacity:1; transform:none; }
 
-    .shell {
-      width: 100%;
-      max-width: 460px;
-      padding: 16px;
-    }
+  .title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .pill{font-size:11px;padding:4px 10px;border-radius:999px;color:var(--accent);border:1px solid rgba(247,214,255,0.18)}
+  h1{margin:8px 0 2px;font-size:18px;font-weight:600}
+  .subtitle{margin:0 0 14px;font-size:12px;color:var(--soft)}
 
-    .card {
-      background: var(--card);
-      border-radius: 18px;
-      padding: 18px 18px 16px;
-      border: 1px solid var(--border);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
-    }
+  .tabs{display:flex;gap:6px;margin-bottom:10px}
+  .tab{flex:1;border-radius:999px;padding:8px 10px;font-size:13px;background:transparent;color:var(--soft);border:1px solid transparent;cursor:pointer}
+  .tab.active{background:linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.03));border-color:rgba(247,214,255,0.12);color:var(--text)}
 
-    .title-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
+  .profile{border-radius:14px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.95));border:1px solid rgba(255,255,255,0.02);margin-bottom:14px}
+  .profile h2{margin:0 0 2px;font-size:15px;font-weight:600}
+  .profile small{display:block;font-size:11px;color:var(--soft);margin-bottom:8px}
+  .profile p{margin:0;font-size:12px;line-height:1.5;color:#e6e3ff;white-space:pre-line}
 
-    .pill {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(247,214,255,0.35);
-      color: var(--accent);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
+  .btn-row{display:flex;gap:8px}
+  button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 12px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+  button.primary{background:#f5f0ff;color:#161622}
+  button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
 
-    h1 {
-      margin: 8px 0 2px;
-      font-size: 18px;
-      font-weight: 600;
-    }
+  .helper{margin-top:10px;font-size:10px;color:#8581a1;text-align:center}
 
-    .subtitle {
-      margin: 0 0 14px;
-      font-size: 12px;
-      color: var(--soft);
-    }
+  /* GLASS DOOR overlay */
+  .door-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:auto}
+  .door-wrap{width:100%;max-width:900px;height:100vh;display:flex;perspective:1400px}
+  .leaf{
+    flex:1;height:100vh;display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,0.03);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.02), 0 30px 80px rgba(0,0,0,0.65);
+    transform-origin:left center;transform-style:preserve-3d;
+    backdrop-filter: blur(6px) saturate(1.1);
+    -webkit-backdrop-filter: blur(6px) saturate(1.1);
+  }
+  .leaf.right{transform-origin:right center}
+  /* frosted glass gradient sheen */
+  .leaf::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(120deg, rgba(255,255,255,0.02), rgba(255,255,255,0.06) 18%, rgba(255,255,255,0.01) 60%, transparent 80%);
+    mix-blend-mode:screen;pointer-events:none;
+    transform:translateZ(30px);
+  }
+  .leaf::after{
+    content:"";position:absolute;left:18%;right:18%;top:40%;height:2px;border-radius:50px;
+    background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(247,214,255,0.06));
+    opacity:0.9;
+  }
+  /* subtle interior decoration */
+  .leaf .label{position:relative;color:var(--soft);font-size:14px;letter-spacing:0.04em}
 
-    .tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
+  /* open animations */
+  @keyframes open-left {
+    0%{ transform: rotateY(0deg) translateZ(0) }
+    100%{ transform: rotateY(-88deg) translateZ(-60px) translateX(-20%); opacity:0 }
+  }
+  @keyframes open-right {
+    0%{ transform: rotateY(0deg) translateZ(0) }
+    100%{ transform: rotateY(88deg) translateZ(-60px) translateX(20%); opacity:0 }
+  }
+  .door-opening .leaf.left{ animation: open-left 820ms cubic-bezier(.2,.9,.2,1) forwards }
+  .door-opening .leaf.right{ animation: open-right 820ms cubic-bezier(.2,.9,.2,1) forwards }
 
-    .tab {
-      flex: 1;
-      border-radius: 999px;
-      padding: 8px 10px;
-      font-size: 13px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
-    }
+  /* after door hides, remove overlay elegantly */
+  .hidden-overlay{ display:none !important; }
 
-    .tab.active {
-      background: rgba(247,214,255,0.12);
-      border-color: rgba(247,214,255,0.65);
-      color: var(--text);
-    }
+  /* replay button */
+  .replay {
+    position:fixed; right:18px; bottom:18px; z-index:10010;
+    background:rgba(255,255,255,0.04); color:var(--soft); border:1px solid rgba(255,255,255,0.03);
+    padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;
+  }
 
-    .tab span.icon {
-      font-size: 14px;
-    }
-
-    .profile {
-      border-radius: 14px;
-      padding: 12px 12px;
-      background: radial-gradient(circle at top left,
-                                  rgba(247,214,255,0.16),
-                                  rgba(9,9,18,0.95));
-      border: 1px solid rgba(255,255,255,0.06);
-      margin-bottom: 14px;
-    }
-
-    .profile h2 {
-      margin: 0 0 2px;
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .profile small {
-      display: block;
-      font-size: 11px;
-      color: var(--soft);
-      margin-bottom: 8px;
-    }
-
-    .profile p {
-      margin: 0;
-      font-size: 12px;
-      line-height: 1.5;
-      color: #d7d5ef;
-      white-space: pre-line;
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    button.primary,
-    button.ghost {
-      flex: 1;
-      border-radius: 999px;
-      padding: 10px 12px;
-      font-size: 13px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      outline: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    button.primary {
-      background: var(--btn);
-      color: var(--btn-text);
-    }
-
-    button.ghost {
-      background: transparent;
-      color: var(--soft);
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .helper {
-      margin-top: 10px;
-      font-size: 10px;
-      color: #7d7ba3;
-      text-align: center;
-    }
-  </style>
+  @media (max-width:480px){
+    .leaf::after{left:12%;right:12%}
+  }
+</style>
 </head>
 <body>
-  <div class="shell">
-    <div class="card">
+  <!-- door overlay -->
+  <div class="door-overlay" id="doorOverlay" aria-hidden="true">
+    <div class="door-wrap" id="doorWrap">
+      <div class="leaf left"><div class="label">— enter —</div></div>
+      <div class="leaf right"><div class="label">— atelier —</div></div>
+    </div>
+  </div>
+
+  <!-- main content -->
+  <div class="shell" id="shell">
+    <div class="card" id="card">
       <div class="title-row">
         <div>
-          <div class="pill">
-            <span>MINI APP</span> · <span>PROFILE</span>
-          </div>
+          <div class="pill">MINI APP · PROFILE</div>
           <h1>Isaline’s profile room</h1>
           <p class="subtitle">Tap a tab, then send your selection back to the bot.</p>
         </div>
       </div>
 
       <div class="tabs">
-        <button class="tab active" id="tab-zhou">
-          <span class="icon">✦</span>
-          <span>Zhou Xinyu</span>
-        </button>
-        <button class="tab" id="tab-rp">
-          <span class="icon">✧</span>
-          <span>RP Muse</span>
-        </button>
+        <button class="tab active" id="tab-zhou">✦ Zhou Xinyu</button>
+        <button class="tab" id="tab-rp">✧ RP Muse</button>
       </div>
 
       <div class="profile" id="profile">
         <h2 id="profile-title">Zhou Xinyu</h2>
         <small id="profile-tag">Muse · TripleS</small>
-        <p id="profile-text">
-Soft-spoken, stage-light kind of pretty.
+        <p id="profile-text">Soft-spoken, stage-light kind of pretty.
 Carries winter glow and slow-day calm,
-like a quiet verse written in silver.
-        </p>
+like a quiet verse written in silver.</p>
       </div>
 
       <div class="btn-row">
-        <button class="primary" id="sendBtn">
-          <span>Send selection</span>
-        </button>
-        <button class="ghost" id="closeBtn">
-          <span>Close</span>
-        </button>
+        <button class="primary" id="sendBtn">Send selection</button>
+        <button class="ghost" id="closeBtn">Close</button>
       </div>
 
-      <div class="helper">
-        Your choice will be sent back to the bot as a tiny note.
-      </div>
+      <div class="helper">Your choice will be sent back to the bot as a tiny note.</div>
     </div>
   </div>
 
-  <script>
-    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    if (tg) {
-      tg.expand(); // biar view-nya full
-      tg.ready();
+  <!-- optional audio: door_open.mp3 (place in same folder if you want sound) -->
+  <audio id="doorAudio" preload="auto">
+    <source src="door_open.mp3" type="audio/mpeg">
+  </audio>
+
+  <button class="replay" id="replayBtn" title="Replay door effect">Replay ✨</button>
+
+<script>
+  // Telegram WebApp
+  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  if (tg) try { tg.expand(); tg.ready(); } catch(e){}
+
+  const doorOverlay = document.getElementById('doorOverlay');
+  const doorWrap = document.getElementById('doorWrap');
+  const shell = document.getElementById('shell');
+  const card = document.getElementById('card');
+  const doorAudio = document.getElementById('doorAudio');
+  const replayBtn = document.getElementById('replayBtn');
+
+  // profile data
+  const profiles = {
+    zhou: {
+      title: "Zhou Xinyu",
+      tag: "Muse · TripleS",
+      text: "Soft-spoken, stage-light kind of pretty.\nCarries winter glow and slow-day calm,\nlike a quiet verse written in silver."
+    },
+    rp: {
+      title: "Lyra Nocturne",
+      tag: "RP muse · night-coded",
+      text: "Writes in lowercase and starlight.\nHalf diary, half song, always a little\nlate to leave the dream."
+    }
+  };
+  let selected = 'zhou';
+
+  // tabs
+  const tZ = document.getElementById('tab-zhou');
+  const tR = document.getElementById('tab-rp');
+  function setActive(k){
+    selected = k;
+    const d = profiles[k];
+    document.getElementById('profile-title').textContent = d.title;
+    document.getElementById('profile-tag').textContent = d.tag;
+    document.getElementById('profile-text').textContent = d.text;
+    if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
+  }
+  tZ.addEventListener('click', ()=> setActive('zhou'));
+  tR.addEventListener('click', ()=> setActive('rp'));
+
+  // send selection to bot
+  document.getElementById('sendBtn').addEventListener('click', ()=>{
+    const payload = {type:'profile_choice', value:selected, ts:Date.now()};
+    if(tg && tg.sendData) tg.sendData(JSON.stringify(payload)); else alert('Open inside Telegram to send data.');
+  });
+  document.getElementById('closeBtn').addEventListener('click', ()=> { if(tg && tg.close) tg.close(); });
+
+  // door sequence
+  function openDoor(playSound=true){
+    // show content soon after start
+    setTimeout(()=> shell.classList.add('content-visible'), 420);
+
+    // play audio if present and allowed
+    if(playSound && doorAudio && doorAudio.src){
+      doorAudio.currentTime = 0;
+      doorAudio.play().catch(()=>{ /* ignore autoplay restrictions */ });
     }
 
-    let selected = "zhou";
+    // add animation class
+    doorWrap.classList.add('door-opening');
 
-    const profiles = {
-      zhou: {
-        title: "Zhou Xinyu",
-        tag: "Muse · TripleS",
-        text: "Soft-spoken, stage-light kind of pretty.\nCarries winter glow and slow-day calm,\nlike a quiet verse written in silver."
-      },
-      rp: {
-        title: "Lyra Nocturne",
-        tag: "RP muse · night-coded",
-        text: "Writes in lowercase and starlight.\nHalf diary, half song, always a little\nlate to leave the dream."
-      }
-    };
+    // after animation: hide overlay (remove from flow)
+    setTimeout(()=> {
+      doorOverlay.classList.add('hidden-overlay');
+      shell.classList.add('content-visible');
+    }, 860);
+  }
 
-    const tabZhou = document.getElementById("tab-zhou");
-    const tabRP   = document.getElementById("tab-rp");
-    const profileTitle = document.getElementById("profile-title");
-    const profileTag   = document.getElementById("profile-tag");
-    const profileText  = document.getElementById("profile-text");
+  // auto run when page loaded (give Telegram a tick)
+  window.addEventListener('load', ()=> {
+    setTimeout(()=> openDoor(true), 260);
+  });
 
-    function setActive(key) {
-      selected = key;
-      const data = profiles[key];
-      profileTitle.textContent = data.title;
-      profileTag.textContent   = data.tag;
-      profileText.textContent  = data.text;
-
-      if (key === "zhou") {
-        tabZhou.classList.add("active");
-        tabRP.classList.remove("active");
-      } else {
-        tabRP.classList.add("active");
-        tabZhou.classList.remove("active");
-      }
-    }
-
-    tabZhou.addEventListener("click", () => setActive("zhou"));
-    tabRP.addEventListener("click", () => setActive("rp"));
-
-    document.getElementById("sendBtn").addEventListener("click", () => {
-      const payload = {
-        type: "profile_choice",
-        value: selected,
-        ts: Date.now()
-      };
-      if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify(payload));
-      } else {
-        alert("Telegram WebApp not available. Open from inside Telegram.");
-      }
-    });
-
-    document.getElementById("closeBtn").addEventListener("click", () => {
-      if (tg && tg.close) tg.close();
-    });
-  </script>
+  // replay support
+  replayBtn.addEventListener('click', ()=> {
+    // show overlay again
+    doorOverlay.classList.remove('hidden-overlay');
+    doorWrap.classList.remove('door-opening');
+    shell.classList.remove('content-visible');
+    // force reflow for animation restart
+    void doorWrap.offsetWidth;
+    setTimeout(()=> openDoor(true), 80);
+  });
+</script>
 </body>
 </html>
