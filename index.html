@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini App — Profiles</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Helvetica,Arial;display:flex;align-items:center;justify-content:center;height:100vh;
+      margin:0;background:#f7f5f3;color:#111}
+    .card{width:95%;max-width:420px;background:white;border-radius:14px;padding:20px;box-shadow:0 6px 20px rgba(10,10,10,0.06)}
+    h1{margin:0 0 8px;font-size:18px}
+    p{margin:8px 0 16px;color:#555}
+    .row{display:flex;gap:8px}
+    button{flex:1;padding:10px;border-radius:10px;border:0;background:#222;color:#fff;font-weight:600}
+    button.ghost{background:transparent;color:#222;border:1px solid #eee}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Mini Profiles — Isaline</h1>
+    <p>Welcome — this is a small mini-app for viewing and sending a selection to the bot.</p>
+
+    <div class="row">
+      <button id="chooseZhou">Zhou Xinyu</button>
+      <button id="chooseRP" class="ghost">RP</button>
+    </div>
+
+    <div style="height:12px"></div>
+
+    <div style="display:flex;gap:8px">
+      <button id="send" style="flex:1">Send selection to bot</button>
+      <button id="close" class="ghost">Close</button>
+    </div>
+
+    <script>
+      // ensure Telegram WebApp object exists
+      const tg = window.Telegram?.WebApp;
+      if (tg) tg.expand(); // expand view if client allows
+
+      let selected = "zhou";
+      document.getElementById("chooseZhou").onclick = () => {
+        selected = "zhou";
+        document.getElementById("chooseZhou").style.opacity = 1;
+        document.getElementById("chooseRP").style.opacity = 0.6;
+      };
+      document.getElementById("chooseRP").onclick = () => {
+        selected = "rp";
+        document.getElementById("chooseRP").style.opacity = 1;
+        document.getElementById("chooseZhou").style.opacity = 0.6;
+      };
+
+      document.getElementById("send").onclick = () => {
+        const payload = {type:"choose", value:selected, ts:Date.now()};
+        // sendData will forward payload to bot as update.message.web_app_data.data
+        if (tg && tg.sendData) {
+          tg.sendData(JSON.stringify(payload));
+        } else {
+          alert("Telegram WebApp API not available.");
+        }
+      };
+
+      document.getElementById("close").onclick = () => {
+        if (tg && tg.close) tg.close();
+      };
+    </script>
+  </div>
+</body>
+</html>
