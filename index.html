@@ -265,10 +265,15 @@ Carries winter glow and slow-day calm,
 like a quiet verse written in silver.</p>
       </div>
 
-      <div class="btn-row">
-        <button class="primary" id="sendBtn">Send selection</button>
-        <button class="ghost" id="closeBtn">Close</button>
-      </div>
+<div class="btn-row">
+  <button class="primary" id="favBtn" aria-pressed="false" title="Add to favorites">♡ Favorite</button>
+  <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
+</div>
+
+<!-- profile audio (preview) -->
+<audio id="profileAudio" preload="auto">
+  <source src="profile_song.mp3" type="audio/mpeg">
+</audio>
 
       <div class="helper">Your choice will be sent back to the bot as a tiny note.</div>
     </div>
