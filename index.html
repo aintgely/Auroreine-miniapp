@@ -407,12 +407,111 @@ like a quiet verse written in silver.</p>
   });
 
   // send selection to bot (also sparkle)
-  document.getElementById('sendBtn').addEventListener('click', ()=>{
-    burstSparkles(8);
-    const payload = {type:'profile_choice', value:selected, ts:Date.now()};
-    if(tg && tg.sendData) tg.sendData(JSON.stringify(payload)); else alert('Open inside Telegram to send data.');
+  /* ---------- Favorite & Play (replacing Send & Close) ---------- */
+const favBtn = document.getElementById('favBtn');
+const playBtn = document.getElementById('playBtn');
+const profileAudio = document.getElementById('profileAudio') || null;
+
+// map per-profile audio filenames (ubah nama file sesuai koleksimu)
+const PROFILE_AUDIO_MAP = {
+  zhou: 'zhou_song.mp3',
+  rp: 'rp_song.mp3'
+};
+
+function currentProfileAudioFile() {
+  return PROFILE_AUDIO_MAP[selected] || 'profile_song.mp3';
+}
+
+/* FAVORITE logic (localStorage) */
+const STORAGE_KEY = 'miniapp_favs_v1';
+function loadFavs() {
+  try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
+  catch(e){ return {}; }
+}
+function saveFavs(obj) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e){}
+}
+function setFavState(isFav) {
+  favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+  favBtn.textContent = isFav ? '♥ Favorited' : '♡ Favorite';
+  if (isFav) {
+    favBtn.classList.add('fav-active');
+    // sparkle feedback
+    try { burstSparkles(5); } catch(e){}
+    setTimeout(()=> favBtn.classList.remove('fav-active'), 600);
+  }
+}
+function updateFavUI() {
+  const favs = loadFavs();
+  setFavState(!!favs[selected]);
+}
+
+favBtn.addEventListener('click', () => {
+  const favs = loadFavs();
+  const currently = !!favs[selected];
+  if (currently) delete favs[selected];
+  else favs[selected] = { ts: Date.now() };
+  saveFavs(favs);
+  setFavState(!currently);
+});
+
+/* PLAY audio logic */
+playBtn.addEventListener('click', async () => {
+  if (!profileAudio) {
+    alert('Audio not available. Tambahkan profile_song.mp3 atau file per-profile di folder.');
+    return;
+  }
+
+  // set source dynamically if needed
+  const desired = currentProfileAudioFile();
+  const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
+  if (currentSource !== desired) {
+    profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
+    try { profileAudio.load(); } catch(e){}
+  }
+
+  // toggle play/pause
+  try {
+    if (profileAudio.paused) {
+      await profileAudio.play();
+      playBtn.textContent = '⏸ Pause';
+      playBtn.setAttribute('aria-pressed','true');
+    } else {
+      profileAudio.pause();
+      playBtn.textContent = '▶ Play';
+      playBtn.setAttribute('aria-pressed','false');
+    }
+  } catch (e) {
+    playBtn.textContent = '▶ Play';
+    alert('Tap to play (autoplay may be blocked).');
+  }
+});
+
+if (profileAudio) {
+  profileAudio.addEventListener('pause', ()=> {
+    playBtn.textContent = '▶ Play';
+    playBtn.setAttribute('aria-pressed','false');
   });
-  document.getElementById('closeBtn').addEventListener('click', ()=> { if(tg && tg.close) tg.close(); });
+  profileAudio.addEventListener('ended', ()=> {
+    playBtn.textContent = '▶ Play';
+    playBtn.setAttribute('aria-pressed','false');
+  });
+  profileAudio.addEventListener('play', ()=> {
+    playBtn.textContent = '⏸ Pause';
+    playBtn.setAttribute('aria-pressed','true');
+  });
+}
+
+/* Ensure favorite UI updates on profile switch */
+const oldSetActive = setActive;
+setActive = function(k){
+  oldSetActive(k);
+  // stop audio on profile change
+  try { if (profileAudio) { profileAudio.pause(); profileAudio.currentTime = 0; } } catch(e){}
+  updateFavUI();
+};
+// init fav on load
+updateFavUI();
 
   // door sequence timings adjusted to ~2s cinematic:
   // content fades in at 1.2s, door animation duration is 1.6s, overlay removed at 1.6s
