@@ -437,15 +437,6 @@ like a quiet verse written in silver.</p>
   const tR = document.getElementById('tab-rp');
   const tabsRoot = document.getElementById('tabs');
 
-  function setActive(k){
-    selected = k;
-    const d = profiles[k];
-    document.getElementById('profile-title').textContent = d.title;
-    document.getElementById('profile-tag').textContent = d.tag;
-    document.getElementById('profile-text').textContent = d.text;
-    if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
-  }
-
   // SPARKLE
   function makeSparkle(x, y, size = null) {
     const profileBox = document.getElementById("profile");
@@ -479,25 +470,14 @@ like a quiet verse written in silver.</p>
   }
 
   // tabs listeners -> only update profile content + sparkles
-  tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
-  tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
+  // NOTE: listeners declared below after setActive is defined
 
-  // keyboard arrows support
-  document.addEventListener('keydown', function(e){
-    const tabs = Array.from(document.querySelectorAll('.tab'));
-    const active = tabs.find(t => t.classList.contains('active'));
-    if(!active) return;
-    const idx = tabs.indexOf(active);
-    if(e.key === 'ArrowRight' && idx < tabs.length - 1) { tabs[idx+1].click(); tabs[idx+1].focus(); }
-    if(e.key === 'ArrowLeft' && idx > 0) { tabs[idx-1].click(); tabs[idx-1].focus(); }
-  });
-
-  /* ---------- Favorite & Play (replacing Send & Close) ---------- */
+  // FAVORITE & PLAY elements
   const favBtn = document.getElementById('favBtn');
   const playBtn = document.getElementById('playBtn');
   const profileAudio = document.getElementById('profileAudio') || null;
 
-  // map per-profile audio filenames (DISET SEMUA ke playsongnew.mp3 sesuai permintaan)
+  // map per-profile audio filenames (both point to playsongnew.mp3 by default)
   const PROFILE_AUDIO_MAP = {
     zhou: 'playsongnew.mp3',
     rp: 'playsongnew.mp3'
@@ -548,7 +528,7 @@ like a quiet verse written in silver.</p>
       return;
     }
 
-    // set source sesuai profile (lazily) — but PROFILE_AUDIO_MAP maps to playsongnew.mp3
+    // set source sesuai profile (lazily) — PROFILE_AUDIO_MAP maps to playsongnew.mp3
     const desired = currentProfileAudioFile();
     const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
     if (currentSource !== desired) {
@@ -600,13 +580,69 @@ like a quiet verse written in silver.</p>
     });
   }
 
-  // Ensure favorite UI does NOT reset on profile switch — we DON'T call updateFavUI on setActive
-  const oldSetActive = setActive;
-  setActive = function(k){
-    oldSetActive(k);
-    try { if (profileAudio) { profileAudio.pause(); profileAudio.currentTime = 0; } } catch(e){}
-    // intentionally DO NOT update favorite UI here (favorite only toggles on button click)
-  };
+  // ---------- UPDATED setActive (preserve audio play state when switching) ----------
+  function setActive(k){
+    // update selected & DOM
+    selected = k;
+    const d = profiles[k];
+    document.getElementById('profile-title').textContent = d.title;
+    document.getElementById('profile-tag').textContent = d.tag;
+    document.getElementById('profile-text').textContent = d.text;
+    if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
+
+    // --- handle audio source switching without interrupting play state ---
+    if (!profileAudio) return;
+
+    try {
+      const desired = currentProfileAudioFile(); // filename for selected
+      const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
+
+      // if source is already the same, do nothing (keeps current play/pause/time)
+      if (currentSource === desired) return;
+
+      // remember playing state and time
+      const wasPlaying = !profileAudio.paused && !profileAudio.ended;
+      const currentTime = Math.max(0, Math.min(profileAudio.currentTime || 0, 999999));
+
+      // create new source element (lazy swap)
+      profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
+      try { profileAudio.load(); } catch (e) { /* ignore load errors */ }
+
+      // try to restore time and resume if it was playing
+      // note: some browsers disallow setting currentTime until metadata is loaded,
+      // so we try best-effort and then attempt again on 'loadedmetadata'
+      function tryRestore() {
+        try {
+          // clamp time to duration (if available)
+          if (profileAudio.duration && !isNaN(profileAudio.duration)) {
+            const t = Math.min(currentTime, Math.max(0, profileAudio.duration - 0.01));
+            profileAudio.currentTime = t;
+          } else {
+            profileAudio.currentTime = currentTime;
+          }
+        } catch (err) { /* ignore */ }
+        if (wasPlaying) {
+          profileAudio.play().catch(()=>{ /* autoplay policy may block until user gesture; ignore */ });
+        }
+        // cleanup listener (one-time)
+        profileAudio.removeEventListener('loadedmetadata', tryRestore);
+      }
+
+      // if metadata already loaded, try immediately, else wait
+      if (profileAudio.readyState >= 1) {
+        tryRestore();
+      } else {
+        profileAudio.addEventListener('loadedmetadata', tryRestore);
+      }
+
+    } catch (err) {
+      console.warn('Error while switching profile audio (non-fatal):', err);
+    }
+  }
+
+  // attach tab listeners now
+  tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
+  tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
 
   // init states on load
   window.addEventListener('load', ()=> {
