@@ -394,7 +394,31 @@ like a quiet verse written in silver.</p>
     const payload = {type:'profile_choice', value:selected, ts:Date.now()};
     if(tg && tg.sendData) tg.sendData(JSON.stringify(payload)); else alert('Open inside Telegram to send data.');
   });
-  document.getElementById('closeBtn').addEventListener('click', ()=> { if(tg && tg.close) tg.close(); });
+  document.getElementById('closeBtn').addEventListener('click', () => {
+  // Payload kecil: menandakan user menutup mini-app (bisa diproses di bot)
+  const payload = { type: 'miniapp_close', value: selected || null, ts: Date.now() };
+
+  // Jika berjalan di Telegram WebApp
+  if (tg && tg.sendData) {
+    try {
+      // Kirim data ke bot dulu
+      tg.sendData(JSON.stringify(payload));
+    } catch (e) {
+      // ignore send error
+      console.warn('sendData error', e);
+    }
+    // Tutup webapp sedikit delay supaya sendData sempat dikirim
+    setTimeout(() => {
+      try { tg.close(); } catch (e) { /* ignore */ }
+    }, 300); // 200-400ms biasanya aman
+  } else if (tg && tg.close) {
+    // fallback: kalau sendData tak tersedia tapi close ada
+    try { tg.close(); } catch (e) {}
+  } else {
+    // Not in Telegram WebApp context — fallback UX
+    alert('Open this mini-app inside Telegram to close it and return to chat.');
+  }
+});
 
   // door sequence timings adjusted to ~2s cinematic:
   // content fades in at 1.2s, door animation duration is 1.6s, overlay removed at 1.6s
