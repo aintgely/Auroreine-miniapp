@@ -402,8 +402,8 @@ like a quiet verse written in silver.</p>
       <div class="btn-row">
         <!-- favorite now holds an <img> for the fox which we toggle between static/animated -->
         <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">
-          <img id="favIcon" alt="fox icon" src="foxfoxs15.png" aria-hidden="true">
-          <span class="label-text">🦊 Favorite</span>
+          <img id="favIcon" alt="fox icon" src="foxfoxie.gif" aria-hidden="true">
+          <span class="label-text">Favorite</span>
         </button>
         <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
       </div>
@@ -505,8 +505,8 @@ like a quiet verse written in silver.</p>
   }
 
   // Preload fox images (gif + optional static fallback)
-  const FOX_GIF = 'foxfoxs15.gif';
-  const FOX_PNG = 'foxfoxs15.png'; // optional static fallback; if absent code will gracefully use emoji text
+  const FOX_GIF = 'foxfoxie.gif';
+  const FOX_PNG = 'foxfoxie.gif'; // fallback to same gif so both states use foxfoxie
   const _preloads = [];
   function preload(src){ try{ const i=new Image(); i.src=src; _preloads.push(i); }catch(e){} }
   preload(FOX_GIF); preload(FOX_PNG);
@@ -525,28 +525,24 @@ like a quiet verse written in silver.</p>
     favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
     // update text
     const label = favBtn.querySelector('.label-text');
-    if (label) label.textContent = isFav ? '😉🦊 Favorited' : '🦊 Favorite';
+    if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
 
-    // swap icon (gif when favorited, png fallback or keep emoji when not)
+    // always use foxfoxie.gif for icon (both normal & favorited)
     try {
+      favIcon.src = FOX_GIF;
+
       if (isFav) {
-        // if gif is available, swap to gif and add entrance animation
-        favIcon.src = FOX_GIF;
         favIcon.classList.add('fav-gif-in');
-        // keep fav active styles
         favBtn.classList.add('fav-active');
         burstSparkles(5);
       } else {
-        // try revert to static PNG; if it's missing the browser will show broken image —
-        // so we graceful degrade: if png didn't load remove the <img> and keep emoji text
-        favIcon.src = FOX_PNG;
         favIcon.classList.remove('fav-gif-in');
         favBtn.classList.remove('fav-active');
       }
     } catch(e){
       // degrade: remove image and fallback to text
       if (favIcon && favIcon.parentNode) favIcon.parentNode.removeChild(favIcon);
-      if (label) label.textContent = isFav ? '😉🦊 Favorited' : '🦊 Favorite';
+      if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
     }
   }
 
@@ -578,8 +574,7 @@ like a quiet verse written in silver.</p>
     const favs = loadFavs();
     const isFav = !!favs[selected];
     // ensure favIcon has a sensible default src before calling setFavState
-    // try static PNG first then fallback to gif if png missing
-    favIcon.src = FOX_PNG;
+    favIcon.src = FOX_GIF;
     setFavState(isFav);
   }
 
