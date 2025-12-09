@@ -541,7 +541,6 @@ setActive = function(k){
   oldSetActive(k);
   // stop audio on profile change
   try { if (profileAudio) { profileAudio.pause(); profileAudio.currentTime = 0; } } catch(e){}
-  updateFavUI();
 };
 // init fav on load
 updateFavUI();
