@@ -641,3 +641,115 @@ like a quiet verse written in silver.</p>
       try { profileAudio.currentTime = 0; } catch(e){}
     });
   }
+
+  // ---------- UPDATED setActive (preserve audio play state when switching) ----------
+  function setActive(k){
+    // update selected & DOM
+    selected = k;
+    const d = profiles[k];
+    document.getElementById('profile-title').textContent = d.title;
+    document.getElementById('profile-tag').textContent = d.tag;
+    document.getElementById('profile-text').textContent = d.text;
+    if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
+
+    // --- handle audio source switching without interrupting play state ---
+    if (!profileAudio) return;
+
+    try {
+      const desired = currentProfileAudioFile(); // filename for selected
+      const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
+
+      // if source is already the same, do nothing (keeps current play/pause/time)
+      if (currentSource === desired) return;
+
+      // remember playing state and time
+      const wasPlaying = !profileAudio.paused && !profileAudio.ended;
+      const currentTime = Math.max(0, Math.min(profileAudio.currentTime || 0, 999999));
+
+      // create new source element (lazy swap)
+      profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
+      try { profileAudio.load(); } catch (e) { /* ignore load errors */ }
+
+      // try to restore time and resume if it was playing
+      // note: some browsers disallow setting currentTime until metadata is loaded,
+      // so we try best-effort and then attempt again on 'loadedmetadata'
+      function tryRestore() {
+        try {
+          // clamp time to duration (if available)
+          if (profileAudio.duration && !isNaN(profileAudio.duration)) {
+            const t = Math.min(currentTime, Math.max(0, profileAudio.duration - 0.01));
+            profileAudio.currentTime = t;
+          } else {
+            profileAudio.currentTime = currentTime;
+          }
+        } catch (err) { /* ignore */ }
+        if (wasPlaying) {
+          profileAudio.play().catch(()=>{ /* autoplay policy may block until user gesture; ignore */ });
+        }
+        // cleanup listener (one-time)
+        profileAudio.removeEventListener('loadedmetadata', tryRestore);
+      }
+
+      // if metadata already loaded, try immediately, else wait
+      if (profileAudio.readyState >= 1) {
+        tryRestore();
+      } else {
+        profileAudio.addEventListener('loadedmetadata', tryRestore);
+      }
+
+    } catch (err) {
+      console.warn('Error while switching profile audio (non-fatal):', err);
+    }
+  }
+
+  // attach tab listeners now
+  tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
+  tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
+
+  // init states on load
+  window.addEventListener('load', ()=> {
+    initFavUIForCurrent();
+  });
+
+  // door sequence timings adjusted to ~2s cinematic:
+  function openDoor(playSound=true){
+    setTimeout(()=> shell.classList.add('content-visible'), 1200);
+    if(playSound && doorAudio && doorAudio.src){
+      doorAudio.currentTime = 0;
+      doorAudio.play().catch(()=>{});
+    }
+    doorWrap.classList.add('door-opening');
+    setTimeout(()=> {
+      doorOverlay.classList.add('hidden-overlay');
+      shell.classList.add('content-visible');
+    }, 1600);
+  }
+  setTimeout(()=> openDoor(true), 260);
+
+  // replay support
+  replayBtn.addEventListener('click', ()=> {
+    doorOverlay.classList.remove('hidden-overlay');
+    doorWrap.classList.remove('door-opening');
+    shell.classList.remove('content-visible');
+    void doorWrap.offsetWidth;
+    setTimeout(()=> openDoor(true), 80);
+  });
+
+  // responsive tabs helper
+  (function(){
+    function updateTabsMode() {
+      if(!tabsRoot) return;
+      if(window.matchMedia('(max-width: 639px)').matches) {
+        tabsRoot.classList.add('tabs-scroll');
+      } else {
+        tabsRoot.classList.remove('tabs-scroll');
+      }
+    }
+    updateTabsMode();
+    window.addEventListener('resize', updateTabsMode);
+    window.addEventListener('orientationchange', updateTabsMode);
+  })();
+
+</script>
+</body>
+</html>
