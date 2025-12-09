@@ -5,6 +5,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Mini Profiles — Isaline (Glass Door)</title>
 <style>
+/* tighter spacing between fox icon and label */
+#favBtn {
+  /* sebelumnya 18px — kita kecilkan supaya icon & teks lebih rapat */
+  padding-left: 12px;
+  padding-right: 18px;
+  background: #f5f0ff;
+  color: #161622;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+#favBtn .label-text {
+  display:inline-block;
+  vertical-align:middle;
+  margin-left: 6px; /* sebelumnya 8px */
+}
   /* micro animations for fav & play states */
   #favBtn { transition: transform 200ms ease, box-shadow 200ms ease, color 260ms ease; }
   #playBtn { transition: transform 160ms ease; }
