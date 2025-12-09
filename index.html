@@ -164,6 +164,34 @@ h1{margin:8px 0 2px;font-size:18px;font-weight:600}
 button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 12px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
 button.primary{background:#f5f0ff;color:#161622}
 button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
+/* make both fav & play look identical initially (override ghost) */
+#favBtn, #playBtn {
+  /* use the primary button look initially */
+  background: #f5f0ff;
+  color: #161622;
+  border: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* keep hover/focus micro feedback */
+#favBtn:hover, #playBtn:hover { transform: translateY(-2px); transition: transform 120ms ease; }
+
+/* favorite active (already used) — also update background for clearer feedback */
+#favBtn.fav-active {
+  background: linear-gradient(180deg, #fceeff, #f7d6ff);
+  color: #161622;
+  box-shadow: 0 10px 26px rgba(180,120,255,0.14);
+}
+
+/* playing state for play button */
+#playBtn.playing {
+  background: linear-gradient(180deg, #fff2fb, #f4caff);
+  color: #161622;
+  box-shadow: 0 10px 26px rgba(160,110,240,0.12);
+}
+
+/* subtle pressed state */
+#favBtn:active, #playBtn:active { transform: scale(0.99); transition: transform 80ms ease; }
 
 .helper{margin-top:10px;font-size:10px;color:#8581a1;text-align:center}
 
@@ -491,14 +519,19 @@ if (profileAudio) {
   profileAudio.addEventListener('pause', ()=> {
     playBtn.textContent = '▶ Play';
     playBtn.setAttribute('aria-pressed','false');
+    playBtn.classList.remove('playing');
   });
+
   profileAudio.addEventListener('ended', ()=> {
     playBtn.textContent = '▶ Play';
     playBtn.setAttribute('aria-pressed','false');
+    playBtn.classList.remove('playing');
   });
+
   profileAudio.addEventListener('play', ()=> {
     playBtn.textContent = '⏸ Pause';
     playBtn.setAttribute('aria-pressed','true');
+    playBtn.classList.add('playing');
   });
 }
 
