@@ -11,136 +11,199 @@
        url('SwirlyCanalopePERSONALUSE-Regular.woff') format('woff');
   font-display: swap;
 }
-  :root{
-    --bg-0:#07060a;
-    --bg-1:#14121a;
-    --card:#171821;
-    --glass: rgba(255,255,255,0.06);
-    --glass-2: rgba(255,255,255,0.09);
-    --accent:#f7d6ff;
-    --text:#f5f3ff;
-    --soft:#b8b5d0;
+
+/* ---------- variables & base ---------- */
+:root{
+  --bg-0:#07060a;
+  --bg-1:#14121a;
+  --card:#171821;
+  --glass: rgba(255,255,255,0.06);
+  --glass-2: rgba(255,255,255,0.09);
+  --accent:#f7d6ff;
+  --text:#f5f3ff;
+  --soft:#b8b5d0;
+
+  --max-width:480px;
+  --page-padding: clamp(12px, 3.5vw, 20px);
+  --card-radius: 16px;
+  --tab-gap: 8px;
+  --tab-min-width: 110px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;}
+body{
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(1200px 800px at 10% 10%, #1c1530 0%, #07060a 45%, #03020a 100%);
+  color:var(--text);min-height:100vh;overflow:hidden;padding:20px;
+}
+
+/* container for app */
+.shell{width:100%;max-width:var(--max-width);position:relative;z-index:10}
+
+/* CONTENT (behind the glass door) */
+.card{
+  border-radius:18px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03); box-shadow:0 18px 40px rgba(0,0,0,0.6);
+  transform:translateY(0); transition:opacity .45s ease .35s, transform .45s ease .35s;
+  opacity:0; pointer-events:auto;
+  backdrop-filter: blur(2px);
+}
+.content-visible .card{ opacity:1; transform:none; }
+
+.title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pill{font-size:11px;padding:4px 10px;border-radius:999px;color:var(--accent);border:1px solid rgba(247,214,255,0.18)}
+h1{margin:8px 0 2px;font-size:18px;font-weight:600}
+.subtitle{margin:0 0 14px;font-size:12px;color:var(--soft)}
+
+/* ---------- TABS (responsive) ---------- */
+.tabs{
+  display:flex;
+  gap:var(--tab-gap);
+  margin-bottom:10px;
+  align-items:center;
+  /* default: allow shrink on wide screens */
+}
+.tab{
+  min-width:var(--tab-min-width);
+  flex:1;
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:13px;
+  background:transparent;
+  color:var(--soft);
+  border:1px solid transparent;
+  cursor:pointer;
+  text-align:center;
+  white-space:nowrap;
+}
+.tab.active{
+  background:linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.03));
+  border-color:rgba(247,214,255,0.12);
+  color:var(--text);
+}
+
+/* small-screen: horizontal scroll with snap */
+.tabs.tabs-scroll{
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding-bottom:6px;
+}
+.tabs.tabs-scroll .tab{
+  scroll-snap-align: start;
+  flex:0 0 auto;
+}
+
+/* large screen: distribute evenly using grid */
+@media (min-width:640px){
+  .tabs{
+    display:grid;
+    grid-auto-flow:column;
+    grid-auto-columns:1fr;
+    gap:10px;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;}
-  body{
-    display:flex;align-items:center;justify-content:center;
-    background:radial-gradient(1200px 800px at 10% 10%, #1c1530 0%, #07060a 45%, #03020a 100%);
-    color:var(--text);min-height:100vh;overflow:hidden;padding:20px;
+  .tabs .tab{
+    min-width:0;
+    flex:1 1 auto;
   }
+  .card{ padding:22px; }
+}
 
-  /* container for app */
-  .shell{width:100%;max-width:480px;position:relative;z-index:10}
-
-  /* CONTENT (behind the glass door) */
-  .card{
-    border-radius:18px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.03); box-shadow:0 18px 40px rgba(0,0,0,0.6);
-    transform:translateY(0); transition:opacity .45s ease .35s, transform .45s ease .35s;
-    opacity:0; pointer-events:auto;
-    backdrop-filter: blur(2px);
-  }
-  .content-visible .card{ opacity:1; transform:none; }
-
-  .title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .pill{font-size:11px;padding:4px 10px;border-radius:999px;color:var(--accent);border:1px solid rgba(247,214,255,0.18)}
-  h1{margin:8px 0 2px;font-size:18px;font-weight:600}
-  .subtitle{margin:0 0 14px;font-size:12px;color:var(--soft)}
-
-  .tabs{display:flex;gap:6px;margin-bottom:10px}
-  .tab{flex:1;border-radius:999px;padding:8px 10px;font-size:13px;background:transparent;color:var(--soft);border:1px solid transparent;cursor:pointer}
-  .tab.active{background:linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.03));border-color:rgba(247,214,255,0.12);color:var(--text)}
-
-  .profile{border-radius:14px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.95));border:1px solid rgba(255,255,255,0.02);margin-bottom:14px}
-  .profile h2{margin:0 0 2px;font-size:15px;font-weight:600}
-  .profile small{display:block;font-size:11px;color:var(--soft);margin-bottom:8px}
+/* card/profile styles */
+.profile{border-radius:14px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.95));border:1px solid rgba(255,255,255,0.02);margin-bottom:14px}
+.profile h2{margin:0 0 2px;font-size:15px;font-weight:600}
+.profile small{display:block;font-size:11px;color:var(--soft);margin-bottom:8px}
 .profile p {
   font-family: 'SwirlyCanalope', serif;
   font-size: 18px;
   color: #eedeff;
   line-height: 1.6;
+  margin:0;
 }
-  .btn-row{display:flex;gap:8px}
-  button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 12px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-  button.primary{background:#f5f0ff;color:#161622}
-  button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
 
-  .helper{margin-top:10px;font-size:10px;color:#8581a1;text-align:center}
+/* buttons */
+.btn-row{display:flex;gap:8px}
+button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 12px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+button.primary{background:#f5f0ff;color:#161622}
+button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
 
-  /* GLASS DOOR overlay */
-  .door-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:auto}
-  .door-wrap{width:100%;max-width:900px;height:100vh;display:flex;perspective:1400px}
+.helper{margin-top:10px;font-size:10px;color:#8581a1;text-align:center}
+
+/* GLASS DOOR overlay */
+.door-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:auto}
+.door-wrap{width:100%;max-width:900px;height:100vh;display:flex;perspective:1400px}
 .leaf{
-    flex:1;height:100vh;display:flex;align-items:center;justify-content:center;
-    position:relative;overflow:hidden;
-    border:1px solid rgba(255,255,255,0.06);
+  flex:1;height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,0.06);
 
-    /* kaca ungu lembut */
-    background:
-      linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12)),
-      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  /* kaca ungu lembut */
+  background:
+    linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12)),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
 
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.08),
-      0 30px 80px rgba(60,0,120,0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 30px 80px rgba(60,0,120,0.45);
 
-    transform-origin:left center;transform-style:preserve-3d;
-
-    /* sedikit lebih blur untuk efek kaca */
-    backdrop-filter: blur(7px) saturate(1.15);
-  }
-  .leaf.right{transform-origin:right center}
-  /* frosted glass gradient sheen */
+  transform-origin:left center;transform-style:preserve-3d;
+  backdrop-filter: blur(7px) saturate(1.15);
+}
+.leaf.right{transform-origin:right center}
 .leaf::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(120deg,
-      rgba(200,160,255,0.05),
-      rgba(240,200,255,0.12) 20%,
-      rgba(150,120,220,0.06) 55%,
-      transparent 85%
-    );
-    mix-blend-mode:screen;
-    pointer-events:none;
-    transform:translateZ(40px);
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,
+    rgba(200,160,255,0.05),
+    rgba(240,200,255,0.12) 20%,
+    rgba(150,120,220,0.06) 55%,
+    transparent 85%
+  );
+  mix-blend-mode:screen;
+  pointer-events:none;
+  transform:translateZ(40px);
 }
-  .leaf::after{
-    content:"";position:absolute;left:18%;right:18%;top:40%;height:2px;border-radius:50px;
-    background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(247,214,255,0.06));
-    opacity:0.9;
-  }
-  /* subtle interior decoration */
-  .leaf .label{position:relative;color:var(--soft);font-size:14px;letter-spacing:0.04em}
-
-  /* open animations */
-  @keyframes open-left {
-    0%{ transform: rotateY(0deg) translateZ(0) }
-    100%{ transform: rotateY(-88deg) translateZ(-60px) translateX(-20%); opacity:0 }
-  }
-  @keyframes open-right {
-    0%{ transform: rotateY(0deg) translateZ(0) }
-    100%{ transform: rotateY(88deg) translateZ(-60px) translateX(20%); opacity:0 }
-  }
-.door-opening .leaf.left{
-  animation: open-left 1.6s cubic-bezier(.2,.9,.2,1) forwards;
+.leaf::after{
+  content:"";position:absolute;left:18%;right:18%;top:40%;height:2px;border-radius:50px;
+  background:linear-gradient(90deg, rgba(160,120,255,0.18), rgba(245,215,255,0.22));
+  opacity:1;
 }
-.door-opening .leaf.right{
-  animation: open-right 1.6s cubic-bezier(.2,.9,.2,1) forwards;
+.leaf .label{position:relative;color:var(--soft);font-size:14px;letter-spacing:0.04em}
+
+/* open animations */
+@keyframes open-left {
+  0%{ transform: rotateY(0deg) translateZ(0) }
+  100%{ transform: rotateY(-88deg) translateZ(-60px) translateX(-20%); opacity:0 }
 }
-  /* after door hides, remove overlay elegantly */
-  .hidden-overlay{ display:none !important; }
+@keyframes open-right {
+  0%{ transform: rotateY(0deg) translateZ(0) }
+  100%{ transform: rotateY(88deg) translateZ(-60px) translateX(20%); opacity:0 }
+}
 
-  /* replay button */
-  .replay {
-    position:fixed; right:18px; bottom:18px; z-index:10010;
-    background:rgba(255,255,255,0.04); color:var(--soft); border:1px solid rgba(255,255,255,0.03);
-    padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;
-  }
+/* set duration to 1.6s for cinematic ~2s experience */
+.door-opening .leaf.left{ animation: open-left 1.6s cubic-bezier(.2,.9,.2,1) forwards; }
+.door-opening .leaf.right{ animation: open-right 1.6s cubic-bezier(.2,.9,.2,1) forwards; }
 
-  @media (max-width:480px){
-    .leaf::after{left:12%;right:12%}
-  }
+/* remove overlay after finished */
+.hidden-overlay{ display:none !important; }
+
+/* replay button */
+.replay {
+  position:fixed; right:18px; bottom:18px; z-index:10010;
+  background:rgba(255,255,255,0.04); color:var(--soft); border:1px solid rgba(255,255,255,0.03);
+  padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;
+}
+
+@media (max-width:480px){
+  .leaf::after{left:12%;right:12%}
+  :root{ --tab-min-width:92px; }
+}
+
+/* accessibility focus */
+.tab:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
+button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
+
 </style>
 </head>
 <body>
@@ -163,7 +226,8 @@
         </div>
       </div>
 
-      <div class="tabs">
+      <!-- tabs: note class 'tabs' used by JS to toggle scroll mode -->
+      <div class="tabs" id="tabs">
         <button class="tab active" id="tab-zhou">✦ Zhou Xinyu</button>
         <button class="tab" id="tab-rp">✧ RP Muse</button>
       </div>
@@ -222,6 +286,8 @@ like a quiet verse written in silver.</p>
   // tabs
   const tZ = document.getElementById('tab-zhou');
   const tR = document.getElementById('tab-rp');
+  const tabsRoot = document.getElementById('tabs');
+
   function setActive(k){
     selected = k;
     const d = profiles[k];
@@ -233,6 +299,16 @@ like a quiet verse written in silver.</p>
   tZ.addEventListener('click', ()=> setActive('zhou'));
   tR.addEventListener('click', ()=> setActive('rp'));
 
+  // make tabs accessible via keyboard arrows
+  document.addEventListener('keydown', function(e){
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const active = tabs.find(t => t.classList.contains('active'));
+    if(!active) return;
+    const idx = tabs.indexOf(active);
+    if(e.key === 'ArrowRight' && idx < tabs.length - 1) { tabs[idx+1].click(); tabs[idx+1].focus(); }
+    if(e.key === 'ArrowLeft' && idx > 0) { tabs[idx-1].click(); tabs[idx-1].focus(); }
+  });
+
   // send selection to bot
   document.getElementById('sendBtn').addEventListener('click', ()=>{
     const payload = {type:'profile_choice', value:selected, ts:Date.now()};
@@ -240,25 +316,23 @@ like a quiet verse written in silver.</p>
   });
   document.getElementById('closeBtn').addEventListener('click', ()=> { if(tg && tg.close) tg.close(); });
 
-  // door sequence
+  // door sequence timings adjusted to ~2s cinematic:
+  // content fades in at 1.2s, door animation duration is 1.6s, overlay removed at 1.6s
   function openDoor(playSound=true){
-    // show content soon after start
-    setTimeout(()=> shell.classList.add('content-visible'), 420);
+    // start content fade slightly before door fully finished
+    setTimeout(()=> shell.classList.add('content-visible'), 1200);
 
-    // play audio if present and allowed
     if(playSound && doorAudio && doorAudio.src){
       doorAudio.currentTime = 0;
       doorAudio.play().catch(()=>{ /* ignore autoplay restrictions */ });
     }
 
-    // add animation class
     doorWrap.classList.add('door-opening');
 
-    // after animation: hide overlay (remove from flow)
     setTimeout(()=> {
       doorOverlay.classList.add('hidden-overlay');
       shell.classList.add('content-visible');
-    }, 860);
+    }, 1600);
   }
 
   // auto run when page loaded (give Telegram a tick)
@@ -268,14 +342,28 @@ like a quiet verse written in silver.</p>
 
   // replay support
   replayBtn.addEventListener('click', ()=> {
-    // show overlay again
     doorOverlay.classList.remove('hidden-overlay');
     doorWrap.classList.remove('door-opening');
     shell.classList.remove('content-visible');
-    // force reflow for animation restart
     void doorWrap.offsetWidth;
     setTimeout(()=> openDoor(true), 80);
   });
+
+  // RESPONSIVE tabs helper (auto toggles scroll mode for small screens)
+  (function(){
+    function updateTabsMode() {
+      if(!tabsRoot) return;
+      if(window.matchMedia('(max-width: 639px)').matches) {
+        tabsRoot.classList.add('tabs-scroll');
+      } else {
+        tabsRoot.classList.remove('tabs-scroll');
+      }
+    }
+    updateTabsMode();
+    window.addEventListener('resize', updateTabsMode);
+    window.addEventListener('orientationchange', updateTabsMode);
+  })();
+
 </script>
 </body>
 </html>
