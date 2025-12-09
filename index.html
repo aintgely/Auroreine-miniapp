@@ -315,9 +315,22 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
 }
 
 /* ---------- SIMPLE HEADER Auroreine ---------- */
+/* centered header "Auroreine" */
 .title-row.compact.simple-one {
-  padding-bottom: 8px;
+  padding: 8px 0 14px;
+  display: flex;
+  justify-content: center;     /* ⬅️ bikin tulisan di tengah */
   align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+.compact-title.simple-name {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text);
 }
 .compact-title.simple-name {
   margin: 0;
@@ -350,13 +363,9 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
     <div class="card" id="card">
 
   <!-- --------- SIMPLE ONE-LINE HEADER: "Auroreine" --------- -->
+<!-- Simple centered header -->
 <div class="title-row compact simple-one" role="banner">
-  <div class="title-left">
-    <h1 class="compact-title simple-name">Auroreine</h1>
-  </div>
-  <div class="title-right">
-    <button id="closeMiniApp" class="icon-btn" aria-label="Close mini app" title="Close">✕</button>
-  </div>
+  <h1 class="compact-title simple-name">Auroreine</h1>
 </div>
 
 
