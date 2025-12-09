@@ -164,7 +164,20 @@ h1{margin:8px 0 2px;font-size:18px;font-weight:600}
 button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 12px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
 button.primary{background:#f5f0ff;color:#161622}
 button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
-/* make both fav & play look identical initially (override ghost) */
+/* fox default */
+#favBtn {
+  color: var(--soft);
+  transition: transform 200ms ease, box-shadow 200ms ease, color 260ms ease;
+}
+
+/* fox active (favorited) */
+#favBtn.fav-active {
+  color: #ffb0ff;  /* ungu pastel cantik */
+  transform: scale(1.06);
+  text-shadow: 0 0 6px rgba(255,180,255,0.45);
+  box-shadow: 0 6px 18px rgba(180,120,255,0.18);
+}
+  /* make both fav & play look identical initially (override ghost) */
 #favBtn, #playBtn {
   /* use the primary button look initially */
   background: #f5f0ff;
@@ -307,7 +320,7 @@ like a quiet verse written in silver.</p>
       </div>
 
 <div class="btn-row">
-  <button class="primary" id="favBtn" aria-pressed="false" title="Add to favorites">♡ Favorite</button>
+  <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">🦊 Favorite</button>
   <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
 </div>
 
@@ -461,12 +474,15 @@ function saveFavs(obj) {
 }
 function setFavState(isFav) {
   favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
-  favBtn.textContent = isFav ? '♥ Favorited' : '♡ Favorite';
+
+  // ganti teks tombol
+  favBtn.textContent = isFav ? '🦊 Favorited' : '🦊 Favorite';
+
   if (isFav) {
     favBtn.classList.add('fav-active');
-    // sparkle feedback
     try { burstSparkles(5); } catch(e){}
-    setTimeout(()=> favBtn.classList.remove('fav-active'), 600);
+  } else {
+    favBtn.classList.remove('fav-active');
   }
 }
 function updateFavUI() {
