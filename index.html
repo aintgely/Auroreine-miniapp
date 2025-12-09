@@ -314,6 +314,26 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
   100% { transform: rotate(0deg) scale(1.06); }
 }
 
+/* ---------- SIMPLE HEADER Auroreine ---------- */
+.title-row.compact.simple-one {
+  padding-bottom: 8px;
+  align-items: center;
+}
+.compact-title.simple-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+/* close button mini style */
+.icon-btn {
+  padding: 6px 8px;
+  font-size: 13px;
+  opacity: 0.95;
+}
+  
 </style>
 </head>
 <body>
@@ -329,16 +349,16 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
   <div class="shell" id="shell">
     <div class="card" id="card">
 
-      <!-- ---------- COMPACT HEADER (only one) ---------- -->
-      <div class="title-row compact" role="banner">
-        <div class="title-left">
-          <div class="pill">MINI APP · PROFILE</div>
-          <h1 class="compact-title">Isaline’s profile room</h1>
-        </div>
-        <div class="title-right">
-          <button id="closeMiniApp" class="icon-btn" aria-label="Close mini app" title="Close">✕</button>
-        </div>
-      </div>
+  <!-- --------- SIMPLE ONE-LINE HEADER: "Auroreine" --------- -->
+<div class="title-row compact simple-one" role="banner">
+  <div class="title-left">
+    <h1 class="compact-title simple-name">Auroreine</h1>
+  </div>
+  <div class="title-right">
+    <button id="closeMiniApp" class="icon-btn" aria-label="Close mini app" title="Close">✕</button>
+  </div>
+</div>
+
 
       <!-- tabs -->
       <div class="tabs" id="tabs">
