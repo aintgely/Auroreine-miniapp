@@ -110,7 +110,12 @@ h1{margin:8px 0 2px;font-size:18px;font-weight:600}
 }
 
 /* card/profile styles */
-.profile{border-radius:14px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.95));border:1px solid rgba(255,255,255,0.02);margin-bottom:14px}
+.profile{
+  border-radius:14px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.95));
+  border:1px solid rgba(255,255,255,0.02);margin-bottom:14px;
+  position:relative;      /* for sparkle absolute children */
+  overflow:hidden;        /* keep sparkles inside */
+}
 .profile h2{margin:0 0 2px;font-size:15px;font-weight:600}
 .profile small{display:block;font-size:11px;color:var(--soft);margin-bottom:8px}
 .profile p {
@@ -119,6 +124,26 @@ h1{margin:8px 0 2px;font-size:18px;font-weight:600}
   color: #eedeff;
   line-height: 1.6;
   margin:0;
+}
+
+/* ---------- SPARKLE (interactive) ---------- */
+.sparkle-pop {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #e7d4ff 60%, transparent 100%);
+  opacity: 0;
+  animation: sparkleFade 1.2s ease-out forwards;
+  filter: blur(0.4px);
+  transform-origin: center;
+}
+@keyframes sparkleFade {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  15% { transform: translateY(-4px) scale(1); opacity: 0.95; }
+  50% { transform: translateY(-12px) scale(1.15); opacity: 0.8; }
+  100% { transform: translateY(-22px) scale(0.7); opacity: 0; }
 }
 
 /* buttons */
@@ -284,6 +309,7 @@ like a quiet verse written in silver.</p>
   let selected = 'zhou';
 
   // tabs
+  // tabs
   const tZ = document.getElementById('tab-zhou');
   const tR = document.getElementById('tab-rp');
   const tabsRoot = document.getElementById('tabs');
@@ -296,8 +322,60 @@ like a quiet verse written in silver.</p>
     document.getElementById('profile-text').textContent = d.text;
     if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
   }
-  tZ.addEventListener('click', ()=> setActive('zhou'));
-  tR.addEventListener('click', ()=> setActive('rp'));
+
+  // SPARKLE: create single sparkle at (x,y) relative to profile box
+  function makeSparkle(x, y, size = null) {
+    const profileBox = document.getElementById("profile");
+    if (!profileBox) return;
+    const sp = document.createElement("div");
+    sp.className = "sparkle-pop";
+    // randomize size a bit
+    const s = size || (6 + Math.floor(Math.random()*8)); // 6-13px
+    sp.style.width = s + "px";
+    sp.style.height = s + "px";
+
+    // position inside profile (x,y are offsets within profile)
+    sp.style.left = Math.round(x) + "px";
+    sp.style.top = Math.round(y) + "px";
+
+    // slight rotation or transform variation
+    sp.style.transform = `translateY(0) scale(${0.6 + Math.random()*0.9})`;
+
+    profileBox.appendChild(sp);
+
+    // remove after animation ends
+    setTimeout(() => {
+      if (sp && sp.parentNode) sp.parentNode.removeChild(sp);
+    }, 1400);
+  }
+
+  // burst 4-7 sparkles randomly inside profile
+  function burstSparkles(count = 5) {
+    const box = document.getElementById("profile");
+    if (!box) return;
+    const rect = box.getBoundingClientRect();
+    // create sparkles with small delays for natural look
+    for (let i = 0; i < count; i++) {
+      const delay = Math.random() * 180; // stagger
+      setTimeout(() => {
+        const paddingX = Math.max(8, rect.width * 0.06);
+        const paddingY = Math.max(8, rect.height * 0.06);
+        const x = Math.random() * (rect.width - paddingX*2) + paddingX;
+        const y = Math.random() * (rect.height - paddingY*2) + paddingY;
+        makeSparkle(x, y);
+      }, delay);
+    }
+  }
+
+  // attach sparkle to tab clicks & send button
+  tZ.addEventListener('click', ()=> {
+    setActive('zhou');
+    burstSparkles(6);
+  });
+  tR.addEventListener('click', ()=> {
+    setActive('rp');
+    burstSparkles(6);
+  });
 
   // make tabs accessible via keyboard arrows
   document.addEventListener('keydown', function(e){
@@ -309,8 +387,9 @@ like a quiet verse written in silver.</p>
     if(e.key === 'ArrowLeft' && idx > 0) { tabs[idx-1].click(); tabs[idx-1].focus(); }
   });
 
-  // send selection to bot
+  // send selection to bot (also sparkle)
   document.getElementById('sendBtn').addEventListener('click', ()=>{
+    burstSparkles(8);
     const payload = {type:'profile_choice', value:selected, ts:Date.now()};
     if(tg && tg.sendData) tg.sendData(JSON.stringify(payload)); else alert('Open inside Telegram to send data.');
   });
