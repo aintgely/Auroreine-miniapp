@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Mini Profiles — Isaline (Glass Door)</title>
 <style>
+  
+  /* heart favorite micro animation */
+#favBtn.fav-active {
+  transform: scale(1.06);
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1);
+  box-shadow: 0 6px 18px rgba(180,120,255,0.10);
+}
+#favBtn { transition: transform 200ms ease, box-shadow 200ms ease; }
+
+/* play button subtle focus */
+#playBtn { transition: transform 160ms ease; }
+#playBtn:active { transform: scale(.98); }
+  
 @font-face {
   font-family: 'SwirlyCanalope';
   src: url('SwirlyCanalopePERSONALUSE-Regular.woff2') format('woff2'),
