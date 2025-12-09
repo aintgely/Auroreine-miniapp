@@ -55,10 +55,37 @@ body{
 }
 .content-visible .card{ opacity:1; transform:none; }
 
-.title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.pill{font-size:11px;padding:4px 10px;border-radius:999px;color:var(--accent);border:1px solid rgba(247,214,255,0.18)}
-h1{margin:8px 0 2px;font-size:18px;font-weight:600}
-.subtitle{margin:0 0 14px;font-size:12px;color:var(--soft)}
+/* ======= COMPACT HEADER (replaces old header) ======= */
+.title-row.compact{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px; /* compact */
+  padding-right:2px;
+}
+.title-left { display:flex; align-items:center; gap:12px; }
+.compact-title{
+  margin:0;
+  font-size:16px;
+  font-weight:700;
+  letter-spacing: -0.01em;
+}
+/* subtitle removed to free space */
+.subtitle { display:none !important; }
+
+/* small icon close button */
+.icon-btn{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.06);
+  color:var(--soft);
+  padding:6px 8px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:14px;
+  line-height:1;
+}
+.icon-btn:hover{ transform: translateY(-2px); transition: transform 120ms ease; box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
 
 /* ---------- TABS (responsive) ---------- */
 .tabs{
@@ -156,18 +183,15 @@ button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 16px;font-s
 button.primary{background:#f5f0ff;color:#161622}
 button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
 
-/* fox default */
+/* fox default (make fav and play look identical initially) */
 #favBtn {
   color: var(--soft);
-  /* initial visual: same as primary button to look identical to Play */
   background: #f5f0ff;
   color: #161622;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
   padding-left: 18px;
   padding-right: 18px;
 }
-
-/* play initial (match fav) */
 #playBtn {
   background: #f5f0ff;
   color: #161622;
@@ -175,8 +199,6 @@ button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,
   padding-left: 18px;
   padding-right: 18px;
 }
-
-/* hover micro feedback */
 #favBtn:hover, #playBtn:hover { transform: translateY(-2px); transition: transform 120ms ease; }
 
 /* fav active: color, background, glow & wiggle */
@@ -306,11 +328,15 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
   <!-- main content -->
   <div class="shell" id="shell">
     <div class="card" id="card">
-      <div class="title-row">
-        <div>
+
+      <!-- ---------- COMPACT HEADER (only one) ---------- -->
+      <div class="title-row compact" role="banner">
+        <div class="title-left">
           <div class="pill">MINI APP · PROFILE</div>
-          <h1>Isaline’s profile room</h1>
-          <p class="subtitle">Tap a tab, then send your selection back to the bot.</p>
+          <h1 class="compact-title">Isaline’s profile room</h1>
+        </div>
+        <div class="title-right">
+          <button id="closeMiniApp" class="icon-btn" aria-label="Close mini app" title="Close">✕</button>
         </div>
       </div>
 
@@ -531,18 +557,38 @@ like a quiet verse written in silver.</p>
     });
   }
 
-  // Ensure favorite UI does NOT reset on profile switch — only init once for current selected
+  // Ensure favorite UI does NOT reset on profile switch — we DON'T call updateFavUI on setActive
   const oldSetActive = setActive;
   setActive = function(k){
     oldSetActive(k);
     try { if (profileAudio) { profileAudio.pause(); profileAudio.currentTime = 0; } } catch(e){}
-    // DON'T call updateFavUI or setFavState here — we want fav to only change on click
+    // intentionally DO NOT update favorite UI here (favorite only toggles on button click)
   };
 
   // init states on load
   window.addEventListener('load', ()=> {
     initFavUIForCurrent();
   });
+
+  // ---------- Close mini-app button (compact header) ----------
+  const closeMini = document.getElementById('closeMiniApp');
+  if (closeMini) {
+    closeMini.addEventListener('click', () => {
+      const payload = { type: 'miniapp_closed', ts: Date.now() };
+      if (tg && tg.sendData) {
+        try { tg.sendData(JSON.stringify(payload)); } catch(e){}
+        setTimeout(()=> { try { tg.close(); } catch(e){} }, 250);
+      } else {
+        // fallback: hide overlay and reveal content (local)
+        try {
+          document.getElementById('doorOverlay')?.classList.add('hidden-overlay');
+          document.getElementById('shell')?.classList.add('content-visible');
+        } catch(e){}
+        // small UX hint
+        // alert('Mini-app closed (local fallback).');
+      }
+    });
+  }
 
   // door sequence timings adjusted to ~2s cinematic:
   function openDoor(playSound=true){
