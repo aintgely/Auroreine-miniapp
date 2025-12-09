@@ -5,19 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Mini Profiles — Isaline (Glass Door)</title>
 <style>
-  
-  /* heart favorite micro animation */
-#favBtn.fav-active {
-  transform: scale(1.06);
-  transition: transform 220ms cubic-bezier(.2,.9,.2,1);
-  box-shadow: 0 6px 18px rgba(180,120,255,0.10);
-}
-#favBtn { transition: transform 200ms ease, box-shadow 200ms ease; }
+  /* micro animations for fav & play states */
+  #favBtn { transition: transform 200ms ease, box-shadow 200ms ease, color 260ms ease; }
+  #playBtn { transition: transform 160ms ease; }
+  #playBtn:active { transform: scale(.98); }
 
-/* play button subtle focus */
-#playBtn { transition: transform 160ms ease; }
-#playBtn:active { transform: scale(.98); }
-  
 @font-face {
   font-family: 'SwirlyCanalope';
   src: url('SwirlyCanalopePERSONALUSE-Regular.woff2') format('woff2'),
@@ -74,7 +66,6 @@ h1{margin:8px 0 2px;font-size:18px;font-weight:600}
   gap:var(--tab-gap);
   margin-bottom:10px;
   align-items:center;
-  /* default: allow shrink on wide screens */
 }
 .tab{
   min-width:var(--tab-min-width);
@@ -126,8 +117,8 @@ h1{margin:8px 0 2px;font-size:18px;font-weight:600}
 .profile{
   border-radius:14px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.95));
   border:1px solid rgba(255,255,255,0.02);margin-bottom:14px;
-  position:relative;      /* for sparkle absolute children */
-  overflow:hidden;        /* keep sparkles inside */
+  position:relative;
+  overflow:hidden;
 }
 .profile h2{margin:0 0 2px;font-size:15px;font-weight:600}
 .profile small{display:block;font-size:11px;color:var(--soft);margin-bottom:8px}
@@ -161,46 +152,49 @@ h1{margin:8px 0 2px;font-size:18px;font-weight:600}
 
 /* buttons */
 .btn-row{display:flex;gap:8px}
-button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 12px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 button.primary{background:#f5f0ff;color:#161622}
 button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
+
 /* fox default */
 #favBtn {
   color: var(--soft);
-  transition: transform 200ms ease, box-shadow 200ms ease, color 260ms ease;
-}
-
-/* fox active (favorited) */
-#favBtn.fav-active {
-  color: #ffb0ff;
-  text-shadow: 0 0 6px rgba(255,180,255,0.45);
-  box-shadow: 0 6px 18px rgba(180,120,255,0.18);
-  animation: foxWiggle 0.45s ease-out;
-}
-  /* make both fav & play look identical initially (override ghost) */
-#favBtn, #playBtn {
-  /* use the primary button look initially */
+  /* initial visual: same as primary button to look identical to Play */
   background: #f5f0ff;
   color: #161622;
-  border: none;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  padding-left: 18px;
+  padding-right: 18px;
 }
 
-/* keep hover/focus micro feedback */
+/* play initial (match fav) */
+#playBtn {
+  background: #f5f0ff;
+  color: #161622;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+/* hover micro feedback */
 #favBtn:hover, #playBtn:hover { transform: translateY(-2px); transition: transform 120ms ease; }
 
-/* favorite active (already used) — also update background for clearer feedback */
+/* fav active: color, background, glow & wiggle */
 #favBtn.fav-active {
-  background: linear-gradient(180deg, #fceeff, #f7d6ff);
   color: #161622;
+  background: linear-gradient(180deg, #fceeff, #f7d6ff);
+  text-shadow: 0 0 6px rgba(255,180,255,0.45), 0 0 12px rgba(255,150,255,0.12);
   box-shadow: 0 10px 26px rgba(180,120,255,0.14);
+  animation: foxWiggle 0.45s ease-out;
+  transform-origin: center center;
 }
 
-/* playing state for play button */
+/* play playing state (pulsing) */
 #playBtn.playing {
   background: linear-gradient(180deg, #fff2fb, #f4caff);
   color: #161622;
   box-shadow: 0 10px 26px rgba(160,110,240,0.12);
+  animation: pulsePlay 1.4s ease-in-out infinite;
 }
 
 /* subtle pressed state */
@@ -216,7 +210,6 @@ button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,
   position:relative;overflow:hidden;
   border:1px solid rgba(255,255,255,0.06);
 
-  /* kaca ungu lembut */
   background:
     linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12)),
     linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
@@ -258,6 +251,13 @@ button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,
 @keyframes open-right {
   0%{ transform: rotateY(0deg) translateZ(0) }
   100%{ transform: rotateY(88deg) translateZ(-60px) translateX(20%); opacity:0 }
+}
+
+/* play pulse */
+@keyframes pulsePlay {
+  0% { transform: scale(1); box-shadow: 0 0 0 rgba(255,200,255,0.0); }
+  50% { transform: scale(1.03); box-shadow: 0 0 12px rgba(255,200,255,0.12); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,200,255,0.0); }
 }
 
 /* set duration to 1.6s for cinematic ~2s experience */
@@ -314,7 +314,7 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
         </div>
       </div>
 
-      <!-- tabs: note class 'tabs' used by JS to toggle scroll mode -->
+      <!-- tabs -->
       <div class="tabs" id="tabs">
         <button class="tab active" id="tab-zhou">✦ Muse</button>
         <button class="tab" id="tab-rp">✧ Another Universe</button>
@@ -328,15 +328,15 @@ Carries winter glow and slow-day calm,
 like a quiet verse written in silver.</p>
       </div>
 
-<div class="btn-row">
-  <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">🦊 Favorite</button>
-  <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
-</div>
+      <div class="btn-row">
+        <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">🦊 Favorite</button>
+        <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
+      </div>
 
-<!-- profile audio (preview) -->
-<audio id="profileAudio" preload="auto">
-  <source src="profile_song.mp3" type="audio/mpeg">
-</audio>
+      <!-- profile audio (preview) -->
+      <audio id="profileAudio" preload="auto">
+        <source src="profile_song.mp3" type="audio/mpeg">
+      </audio>
 
       <div class="helper">Your choice will be sent back to the bot as a tiny note.</div>
     </div>
@@ -376,9 +376,7 @@ like a quiet verse written in silver.</p>
   };
   let selected = 'zhou';
 
-  // tabs
-
-  // tabs
+  // dom refs
   const tZ = document.getElementById('tab-zhou');
   const tR = document.getElementById('tab-rp');
   const tabsRoot = document.getElementById('tabs');
@@ -392,40 +390,28 @@ like a quiet verse written in silver.</p>
     if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
   }
 
-  // SPARKLE: create single sparkle at (x,y) relative to profile box
+  // SPARKLE
   function makeSparkle(x, y, size = null) {
     const profileBox = document.getElementById("profile");
     if (!profileBox) return;
     const sp = document.createElement("div");
     sp.className = "sparkle-pop";
-    // randomize size a bit
-    const s = size || (6 + Math.floor(Math.random()*8)); // 6-13px
+    const s = size || (6 + Math.floor(Math.random()*8));
     sp.style.width = s + "px";
     sp.style.height = s + "px";
-
-    // position inside profile (x,y are offsets within profile)
     sp.style.left = Math.round(x) + "px";
     sp.style.top = Math.round(y) + "px";
-
-    // slight rotation or transform variation
     sp.style.transform = `translateY(0) scale(${0.6 + Math.random()*0.9})`;
-
     profileBox.appendChild(sp);
-
-    // remove after animation ends
-    setTimeout(() => {
-      if (sp && sp.parentNode) sp.parentNode.removeChild(sp);
-    }, 1400);
+    setTimeout(() => { if (sp && sp.parentNode) sp.parentNode.removeChild(sp); }, 1400);
   }
 
-  // burst 4-7 sparkles randomly inside profile
   function burstSparkles(count = 5) {
     const box = document.getElementById("profile");
     if (!box) return;
     const rect = box.getBoundingClientRect();
-    // create sparkles with small delays for natural look
     for (let i = 0; i < count; i++) {
-      const delay = Math.random() * 180; // stagger
+      const delay = Math.random() * 180;
       setTimeout(() => {
         const paddingX = Math.max(8, rect.width * 0.06);
         const paddingY = Math.max(8, rect.height * 0.06);
@@ -436,17 +422,11 @@ like a quiet verse written in silver.</p>
     }
   }
 
-  // attach sparkle to tab clicks & send button
-  tZ.addEventListener('click', ()=> {
-    setActive('zhou');
-    burstSparkles(6);
-  });
-  tR.addEventListener('click', ()=> {
-    setActive('rp');
-    burstSparkles(6);
-  });
+  // tabs listeners -> only update profile content + sparkles
+  tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
+  tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
 
-  // make tabs accessible via keyboard arrows
+  // keyboard arrows support
   document.addEventListener('keydown', function(e){
     const tabs = Array.from(document.querySelectorAll('.tab'));
     const active = tabs.find(t => t.classList.contains('active'));
@@ -456,143 +436,128 @@ like a quiet verse written in silver.</p>
     if(e.key === 'ArrowLeft' && idx > 0) { tabs[idx-1].click(); tabs[idx-1].focus(); }
   });
 
-  // send selection to bot (also sparkle)
   /* ---------- Favorite & Play (replacing Send & Close) ---------- */
-const favBtn = document.getElementById('favBtn');
-const playBtn = document.getElementById('playBtn');
-const profileAudio = document.getElementById('profileAudio') || null;
+  const favBtn = document.getElementById('favBtn');
+  const playBtn = document.getElementById('playBtn');
+  const profileAudio = document.getElementById('profileAudio') || null;
 
-// map per-profile audio filenames (ubah nama file sesuai koleksimu)
-const PROFILE_AUDIO_MAP = {
-  zhou: 'zhou_song.mp3',
-  rp: 'rp_song.mp3'
-};
-
-function currentProfileAudioFile() {
-  return PROFILE_AUDIO_MAP[selected] || 'profile_song.mp3';
-}
-
-/* FAVORITE logic (localStorage) */
-const STORAGE_KEY = 'miniapp_favs_v1';
-function loadFavs() {
-  try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
-  catch(e){ return {}; }
-}
-function saveFavs(obj) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e){}
-}
-function setFavState(isFav) {
-  favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
-
-  // ganti teks tombol
-  favBtn.textContent = isFav ? '🦊 Favorited' : '🦊 Favorite';
-
-  if (isFav) {
-    favBtn.classList.add('fav-active');
-    try { burstSparkles(5); } catch(e){}
-  } else {
-    favBtn.classList.remove('fav-active');
-  }
-}
-function updateFavUI() {
-  const favs = loadFavs();
-  setFavState(!!favs[selected]);
-}
-
-favBtn.addEventListener('click', () => {
-  const favs = loadFavs();
-  const currently = !!favs[selected];
-  if (currently) delete favs[selected];
-  else favs[selected] = { ts: Date.now() };
-  saveFavs(favs);
-  setFavState(!currently);
-});
-
-/* PLAY audio logic */
-playBtn.addEventListener('click', async () => {
-  if (!profileAudio) {
-    alert('Audio not available. Tambahkan profile_song.mp3 atau file per-profile di folder.');
-    return;
+  // map per-profile audio filenames (ubah sesuai file)
+  const PROFILE_AUDIO_MAP = {
+    zhou: 'zhou_song.mp3',
+    rp: 'rp_song.mp3'
+  };
+  function currentProfileAudioFile() {
+    return PROFILE_AUDIO_MAP[selected] || 'profile_song.mp3';
   }
 
-  // set source dynamically if needed
-  const desired = currentProfileAudioFile();
-  const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
-  if (currentSource !== desired) {
-    profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
-    try { profileAudio.load(); } catch(e){}
+  // FAVORITE logic (localStorage)
+  const STORAGE_KEY = 'miniapp_favs_v1';
+  function loadFavs() {
+    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
   }
-
-  // toggle play/pause
-  try {
-    if (profileAudio.paused) {
-      await profileAudio.play();
-      playBtn.textContent = '⏸ Pause';
-      playBtn.setAttribute('aria-pressed','true');
+  function saveFavs(obj) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e){}
+  }
+  function setFavState(isFav) {
+    favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+    favBtn.textContent = isFav ? '🦊 Favorited' : '🦊 Favorite';
+    if (isFav) {
+      favBtn.classList.add('fav-active');
+      try { burstSparkles(5); } catch(e){}
     } else {
-      profileAudio.pause();
+      favBtn.classList.remove('fav-active');
+    }
+  }
+
+  favBtn.addEventListener('click', () => {
+    const favs = loadFavs();
+    const currently = !!favs[selected];
+    if (currently) delete favs[selected];
+    else favs[selected] = { ts: Date.now() };
+    saveFavs(favs);
+    setFavState(!currently);
+  });
+
+  // update fav UI for current selected - only called on load/init, NOT on tab change
+  function initFavUIForCurrent() {
+    const favs = loadFavs();
+    setFavState(!!favs[selected]);
+  }
+
+  /* PLAY audio logic */
+  playBtn.addEventListener('click', async () => {
+    if (!profileAudio) {
+      alert('Audio not available. Tambahkan profile_song.mp3 atau file per-profile di folder.');
+      return;
+    }
+    const desired = currentProfileAudioFile();
+    const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
+    if (currentSource !== desired) {
+      profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
+      try { profileAudio.load(); } catch(e){}
+    }
+    try {
+      if (profileAudio.paused) {
+        await profileAudio.play();
+        playBtn.textContent = '⏸ Pause';
+        playBtn.setAttribute('aria-pressed','true');
+      } else {
+        profileAudio.pause();
+        playBtn.textContent = '▶ Play';
+        playBtn.setAttribute('aria-pressed','false');
+      }
+    } catch (e) {
+      playBtn.textContent = '▶ Play';
+      alert('Tap to play (autoplay may be blocked).');
+    }
+  });
+
+  if (profileAudio) {
+    profileAudio.addEventListener('pause', ()=> {
       playBtn.textContent = '▶ Play';
       playBtn.setAttribute('aria-pressed','false');
-    }
-  } catch (e) {
-    playBtn.textContent = '▶ Play';
-    alert('Tap to play (autoplay may be blocked).');
+      playBtn.classList.remove('playing');
+    });
+    profileAudio.addEventListener('ended', ()=> {
+      playBtn.textContent = '▶ Play';
+      playBtn.setAttribute('aria-pressed','false');
+      playBtn.classList.remove('playing');
+    });
+    profileAudio.addEventListener('play', ()=> {
+      playBtn.textContent = '⏸ Pause';
+      playBtn.setAttribute('aria-pressed','true');
+      playBtn.classList.add('playing');
+    });
   }
-});
 
-if (profileAudio) {
-  profileAudio.addEventListener('pause', ()=> {
-    playBtn.textContent = '▶ Play';
-    playBtn.setAttribute('aria-pressed','false');
-    playBtn.classList.remove('playing');
+  // Ensure favorite UI does NOT reset on profile switch — only init once for current selected
+  const oldSetActive = setActive;
+  setActive = function(k){
+    oldSetActive(k);
+    try { if (profileAudio) { profileAudio.pause(); profileAudio.currentTime = 0; } } catch(e){}
+    // DON'T call updateFavUI or setFavState here — we want fav to only change on click
+  };
+
+  // init states on load
+  window.addEventListener('load', ()=> {
+    initFavUIForCurrent();
   });
-
-  profileAudio.addEventListener('ended', ()=> {
-    playBtn.textContent = '▶ Play';
-    playBtn.setAttribute('aria-pressed','false');
-    playBtn.classList.remove('playing');
-  });
-
-  profileAudio.addEventListener('play', ()=> {
-    playBtn.textContent = '⏸ Pause';
-    playBtn.setAttribute('aria-pressed','true');
-    playBtn.classList.add('playing');
-  });
-}
-
-/* Ensure favorite UI updates on profile switch */
-const oldSetActive = setActive;
-setActive = function(k){
-  oldSetActive(k);
-  // stop audio on profile change
-  try { if (profileAudio) { profileAudio.pause(); profileAudio.currentTime = 0; } } catch(e){}
-};
-// init fav on load
-updateFavUI();
 
   // door sequence timings adjusted to ~2s cinematic:
-  // content fades in at 1.2s, door animation duration is 1.6s, overlay removed at 1.6s
   function openDoor(playSound=true){
-    // start content fade slightly before door fully finished
     setTimeout(()=> shell.classList.add('content-visible'), 1200);
-
     if(playSound && doorAudio && doorAudio.src){
       doorAudio.currentTime = 0;
-      doorAudio.play().catch(()=>{ /* ignore autoplay restrictions */ });
+      doorAudio.play().catch(()=>{});
     }
-
     doorWrap.classList.add('door-opening');
-
     setTimeout(()=> {
       doorOverlay.classList.add('hidden-overlay');
       shell.classList.add('content-visible');
     }, 1600);
   }
-
-  // auto run when page loaded (give Telegram a tick)
-  window.addEventListener('load', ()=> {
-    setTimeout(()=> openDoor(true), 260);
-  });
+  setTimeout(()=> openDoor(true), 260);
 
   // replay support
   replayBtn.addEventListener('click', ()=> {
@@ -603,7 +568,7 @@ updateFavUI();
     setTimeout(()=> openDoor(true), 80);
   });
 
-  // RESPONSIVE tabs helper (auto toggles scroll mode for small screens)
+  // responsive tabs helper
   (function(){
     function updateTabsMode() {
       if(!tabsRoot) return;
