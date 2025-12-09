@@ -389,8 +389,9 @@ like a quiet verse written in silver.</p>
       </div>
 
       <!-- profile audio (preview) -->
+      <!-- DEFAULT source set to playsongnew.mp3 as requested -->
       <audio id="profileAudio" preload="auto">
-        <source src="profile_song.mp3" type="audio/mpeg">
+        <source src="playsongnew.mp3" type="audio/mpeg">
       </audio>
 
       <div class="helper">Your choice will be sent back to the bot as a tiny note.</div>
@@ -496,13 +497,13 @@ like a quiet verse written in silver.</p>
   const playBtn = document.getElementById('playBtn');
   const profileAudio = document.getElementById('profileAudio') || null;
 
-  // map per-profile audio filenames (ubah sesuai file)
+  // map per-profile audio filenames (DISET SEMUA ke playsongnew.mp3 sesuai permintaan)
   const PROFILE_AUDIO_MAP = {
-    zhou: 'zhou_song.mp3',
-    rp: 'rp_song.mp3'
+    zhou: 'playsongnew.mp3',
+    rp: 'playsongnew.mp3'
   };
   function currentProfileAudioFile() {
-    return PROFILE_AUDIO_MAP[selected] || 'profile_song.mp3';
+    return PROFILE_AUDIO_MAP[selected] || 'playsongnew.mp3';
   }
 
   // FAVORITE logic (localStorage)
@@ -540,49 +541,62 @@ like a quiet verse written in silver.</p>
     setFavState(!!favs[selected]);
   }
 
-  /* PLAY audio logic */
+  /* PLAY audio logic — toggles play / pause and uses playsongnew.mp3 */
   playBtn.addEventListener('click', async () => {
     if (!profileAudio) {
-      alert('Audio not available. Tambahkan profile_song.mp3 atau file per-profile di folder.');
+      alert('Audio not available. Tambahkan playsongnew.mp3 di folder yang sama dengan file ini.');
       return;
     }
+
+    // set source sesuai profile (lazily) — but PROFILE_AUDIO_MAP maps to playsongnew.mp3
     const desired = currentProfileAudioFile();
     const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
     if (currentSource !== desired) {
       profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
       try { profileAudio.load(); } catch(e){}
     }
+
+    // toggle play/pause (user gesture required for play())
     try {
       if (profileAudio.paused) {
         await profileAudio.play();
+        playBtn.classList.add('playing');
         playBtn.textContent = '⏸ Pause';
         playBtn.setAttribute('aria-pressed','true');
       } else {
         profileAudio.pause();
+        playBtn.classList.remove('playing');
         playBtn.textContent = '▶ Play';
         playBtn.setAttribute('aria-pressed','false');
       }
-    } catch (e) {
+    } catch (err) {
+      playBtn.classList.remove('playing');
       playBtn.textContent = '▶ Play';
-      alert('Tap to play (autoplay may be blocked).');
+      playBtn.setAttribute('aria-pressed','false');
+      console.warn('Audio play error', err);
+      alert('Gagal memutar audio — coba tekan lagi atau periksa file audio (playsongnew.mp3).');
     }
   });
 
+  // Keep UI in sync when audio state changes
   if (profileAudio) {
-    profileAudio.addEventListener('pause', ()=> {
-      playBtn.textContent = '▶ Play';
-      playBtn.setAttribute('aria-pressed','false');
-      playBtn.classList.remove('playing');
-    });
-    profileAudio.addEventListener('ended', ()=> {
-      playBtn.textContent = '▶ Play';
-      playBtn.setAttribute('aria-pressed','false');
-      playBtn.classList.remove('playing');
-    });
-    profileAudio.addEventListener('play', ()=> {
+    profileAudio.addEventListener('play', () => {
+      playBtn.classList.add('playing');
       playBtn.textContent = '⏸ Pause';
       playBtn.setAttribute('aria-pressed','true');
-      playBtn.classList.add('playing');
+    });
+
+    profileAudio.addEventListener('pause', () => {
+      playBtn.classList.remove('playing');
+      playBtn.textContent = '▶ Play';
+      playBtn.setAttribute('aria-pressed','false');
+    });
+
+    profileAudio.addEventListener('ended', () => {
+      playBtn.classList.remove('playing');
+      playBtn.textContent = '▶ Play';
+      playBtn.setAttribute('aria-pressed','false');
+      try { profileAudio.currentTime = 0; } catch(e){}
     });
   }
 
@@ -598,26 +612,6 @@ like a quiet verse written in silver.</p>
   window.addEventListener('load', ()=> {
     initFavUIForCurrent();
   });
-
-  // ---------- Close mini-app button (compact header) ----------
-  const closeMini = document.getElementById('closeMiniApp');
-  if (closeMini) {
-    closeMini.addEventListener('click', () => {
-      const payload = { type: 'miniapp_closed', ts: Date.now() };
-      if (tg && tg.sendData) {
-        try { tg.sendData(JSON.stringify(payload)); } catch(e){}
-        setTimeout(()=> { try { tg.close(); } catch(e){} }, 250);
-      } else {
-        // fallback: hide overlay and reveal content (local)
-        try {
-          document.getElementById('doorOverlay')?.classList.add('hidden-overlay');
-          document.getElementById('shell')?.classList.add('content-visible');
-        } catch(e){}
-        // small UX hint
-        // alert('Mini-app closed (local fallback).');
-      }
-    });
-  }
 
   // door sequence timings adjusted to ~2s cinematic:
   function openDoor(playSound=true){
