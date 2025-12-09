@@ -172,10 +172,10 @@ button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,
 
 /* fox active (favorited) */
 #favBtn.fav-active {
-  color: #ffb0ff;  /* ungu pastel cantik */
-  transform: scale(1.06);
+  color: #ffb0ff;
   text-shadow: 0 0 6px rgba(255,180,255,0.45);
   box-shadow: 0 6px 18px rgba(180,120,255,0.18);
+  animation: foxWiggle 0.45s ease-out;
 }
   /* make both fav & play look identical initially (override ghost) */
 #favBtn, #playBtn {
@@ -282,6 +282,15 @@ button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,
 /* accessibility focus */
 .tab:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
 button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
+
+/* ---------- FOX WIGGLE ANIMATION ---------- */
+@keyframes foxWiggle {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(-6deg) scale(1.08); }
+  50%  { transform: rotate(4deg) scale(1.06); }
+  75%  { transform: rotate(-3deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1.06); }
+}
 
 </style>
 </head>
