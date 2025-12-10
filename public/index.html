@@ -877,7 +877,57 @@ newsOpenChannel.href = NEWS_S_URL;
 
 /* ESC to close */
 document.addEventListener('keydown', (e)=> { if (e.key === 'Escape' && newsBackdrop.classList.contains('open')) closeNewsModal(); });
+});
 
+
+
+/* ==========================================
+   === NEW NEWS FETCH: BOT BASED VERSION ===
+   ========================================== */
+
+async function loadNewsFromBot() {
+  newsContent.innerHTML = '<div class="news-empty">Loading latest posts…</div>';
+  try {
+    const apiUrl = window.location.origin + '/api/bot-tme';
+    const r = await fetch(apiUrl);
+    if (!r.ok) throw new Error('API error ' + r.status);
+
+    const payload = await r.json();
+    if (payload && payload.ok && Array.isArray(payload.posts) && payload.posts.length > 0) {
+
+      const posts = payload.posts.map(p => ({
+        excerpt: p.text,
+        thumb: (p.thumbs && p.thumbs[0]) || null,
+        link: p.link,
+        timeStr: p.date
+      }));
+
+      const haveThumbs = posts.some(p => p.thumb);
+      if (haveThumbs) renderFallbackThumbnails(posts);
+      else renderNewsList(posts);
+
+      return;
+    }
+
+    newsContent.innerHTML = 
+      '<div class="news-empty">No recent posts found by bot. Post an image & wait a moment.</div>';
+
+  } catch (err) {
+    console.warn('Error fetching bot posts', err);
+    newsContent.innerHTML = '<div class="news-empty">Failed to load posts — coba lagi nanti.</div>';
+  }
+}
+
+
+// === GANTI EVENT LISTENER lama (klik tombol News) ===
+tNews.addEventListener('click', ()=> {
+  newsBackdrop.classList.add('open');
+  newsBackdrop.setAttribute('aria-hidden','false');
+  loadNewsFromBot();          // <-- PENTING
+  burstSparkles(6);
+  tNews.classList.add('active');
+});
+      
 </script>
 </body>
 </html>
