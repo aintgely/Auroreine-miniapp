@@ -211,7 +211,6 @@ button.ghost {
 
 /* ===========================
    FAVORITE ACTIVE + FOX WIGGLE
-   (added so fav-active visuals exist)
 =========================== */
 @keyframes foxWiggle {
   0%   { transform: rotate(0deg) scale(1); }
@@ -234,8 +233,6 @@ button.ghost {
 /* ===========================
    PLAY BUTTON style (match favorite)
 =========================== */
-
-/* default Play = same look as primary (favorite default) */
 #playBtn {
   background:#f5f0ff;
   color:#161622;
@@ -246,7 +243,6 @@ button.ghost {
   border: none;
 }
 
-/* when playing: use same style as fav-active */
 #playBtn.playing {
   background: linear-gradient(180deg, #fceeff, #f7d6ff);
   color:#161622;
@@ -256,7 +252,6 @@ button.ghost {
   transform-origin: center center;
 }
 
-/* subtle pressed state */
 #playBtn:active, #favBtn:active { transform: scale(0.99); transition: transform 80ms ease; }
 
 /* ===========================
@@ -272,7 +267,8 @@ button.ghost {
 }
 
 .hidden-overlay { display:none !important; }
-  /* ===========================
+
+/* ===========================
    tambahan CSS (modal, sparkles, replay)
 =========================== */
 .replay {
@@ -314,6 +310,19 @@ button.ghost {
   box-shadow:0 30px 80px rgba(0,0,0,0.6); color:var(--text);
 }
 .news-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+
+/* <-- CHANGED: smaller header font so it's not too large --> */
+.news-header .news-title-main {
+  font-weight:700;
+  font-size:13px; /* reduced from 16 */
+  color:var(--text);
+  margin:0;
+}
+
+/* small subtitle (if needed) */
+.news-header .news-sub { font-size:12px; color:var(--soft); }
+
+/* news list */
 .news-list { display:flex; flex-direction:column; gap:10px; }
 .news-item {
   display:flex; gap:10px; align-items:flex-start; padding:10px; border-radius:12px;
@@ -329,8 +338,6 @@ button.ghost {
 
 .news-empty { text-align:center; color:var(--soft); padding:26px 10px; }
 
-/* accessible focus */
-.news-close { background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--soft); padding:8px 10px; border-radius:8px; cursor:pointer; }
 /* make Open in Telegram small like Close */
 .news-open-tele,
 .news-open-tele.small-link {
@@ -348,13 +355,18 @@ button.ghost {
   line-height: 1;
 }
 
-/* hover effect same as tab hover */
-.news-open-tele.small-link:hover,
-.news-open-tele:hover {
-  transform: translateY(-2px);
-  transition: transform 120ms ease;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+/* thumbnail grid fallback */
+.news-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap:10px;
+  margin-top:6px;
 }
+.news-grid .grid-item {
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:10px; padding:8px; text-align:center; border:1px solid rgba(255,255,255,0.02);
+}
+.news-grid .grid-thumb { width:100%; height:82px; object-fit:cover; border-radius:8px; background:#111; display:block; margin-bottom:8px; }
 
 /* small-screen tweaks */
 @media (max-width:520px) {
@@ -434,10 +446,10 @@ like a quiet verse written in silver.</p>
     <div class="news-modal" role="dialog" aria-modal="true" aria-labelledby="newsTitle">
 <div class="news-header">
   <div style="display:flex;align-items:center;gap:12px;">
-    <!-- removed icon per request -->
     <div>
-      <div id="newsTitle" style="font-weight:800;font-size:16px;">Recently update of Meredith Melrose.</div>
-      <!-- subtitle removed (kehilangan "Newest at top..."); kalau mau subtitle kecil, bisa ditambahkan kembali -->
+      <!-- smaller title (tidak terlalu besar) -->
+      <div id="newsTitle" class="news-title-main">Recently update of Meredith Melrose.</div>
+      <div class="news-sub" style="display:none;">Newest at top — click to open a post</div>
     </div>
   </div>
 
@@ -577,7 +589,6 @@ function initFavUIForCurrent() {
 
 /* ===========================
    AUDIO play/pause handling
-   (Play button will get .playing class)
 =========================== */
 const PROFILE_AUDIO_MAP = { zhou: 'playsongnew.mp3', rp: 'playsongnew.mp3' };
 function currentProfileAudioFile() { return PROFILE_AUDIO_MAP[selected] || 'playsongnew.mp3'; }
@@ -688,11 +699,12 @@ replayBtn.addEventListener('click', ()=> {
 window.addEventListener('load', ()=> { initFavUIForCurrent(); });
 
 /* ===========================
-   NEWS modal logic (fetch + fallback iframe)
+   NEWS modal logic (fetch + fallback thumbnail grid)
 =========================== */
 const NEWS_CHANNEL = 'S15XINYU';
 const NEWS_S_URL = `https://t.me/s/${NEWS_CHANNEL}`;
 
+/* utility */
 function truncateText(s, n = 140) {
   if (!s) return '';
   s = s.replace(/\s+/g,' ').trim();
@@ -700,13 +712,14 @@ function truncateText(s, n = 140) {
   return s.slice(0, n-1).trim() + '…';
 }
 
+/* render list (normal) */
 function renderNewsList(posts) {
   if (!posts || posts.length === 0) { newsContent.innerHTML = '<div class="news-empty">No recent posts were found.</div>'; return; }
   const list = document.createElement('div'); list.className = 'news-list';
   posts.forEach(post => {
     const item = document.createElement('div'); item.className = 'news-item';
     const thumb = document.createElement('img'); thumb.className = 'news-thumb'; thumb.alt = 'thumb'; thumb.loading='lazy';
-    if (post.thumb) thumb.src = post.thumb; else thumb.style.background = '#111';
+    if (post.thumb) thumb.src = post.thumb; else { thumb.style.background = '#111'; thumb.src = ''; }
     const meta = document.createElement('div'); meta.className = 'news-meta';
     const title = document.createElement('div'); title.className = 'news-title'; title.textContent = post.timeStr || `S15XINYU`;
     const excerpt = document.createElement('p'); excerpt.className='news-excerpt'; excerpt.textContent = truncateText(post.excerpt || post.text || '', 140);
@@ -720,6 +733,40 @@ function renderNewsList(posts) {
   newsContent.innerHTML = ''; newsContent.appendChild(list);
 }
 
+/* NEW: render a thumbnail grid as fallback (white area becomes grid of thumbnails) */
+function renderFallbackThumbnails(posts) {
+  newsContent.innerHTML = '';
+  const grid = document.createElement('div'); grid.className = 'news-grid';
+  if (!posts || posts.length === 0) {
+    // If no posts info, show message + iframe fallback button
+    const empty = document.createElement('div'); empty.className = 'news-empty';
+    empty.textContent = 'Unable to fetch previews from the channel. Try "Open in Telegram".';
+    newsContent.appendChild(empty);
+    const openBtn = document.createElement('a'); openBtn.className='news-open-tele'; openBtn.textContent='Open channel in Telegram';
+    openBtn.href = NEWS_S_URL; openBtn.target = '_blank'; openBtn.rel='noopener noreferrer';
+    newsContent.appendChild(openBtn);
+    // as last resort, also show iframe (keeps original behaviour)
+    const iframe = document.createElement('iframe'); iframe.className='news-fallback-iframe';
+    iframe.src = NEWS_S_URL; iframe.loading = 'lazy'; iframe.referrerPolicy = 'no-referrer';
+    newsContent.appendChild(iframe);
+    return;
+  }
+  posts.forEach(p => {
+    const item = document.createElement('div'); item.className = 'grid-item';
+    const a = document.createElement('a'); a.href = p.link || NEWS_S_URL; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    const img = document.createElement('img'); img.className='grid-thumb'; img.alt = p.timeStr || 'post';
+    if (p.thumb) img.src = p.thumb; else img.src = ''; // empty src => shows background
+    const t = document.createElement('div'); t.className='news-title'; t.style.fontSize='12px'; t.style.margin='0'; t.style.color='var(--soft)';
+    t.textContent = truncateText(p.excerpt || p.timeStr || '', 80);
+    a.appendChild(img);
+    item.appendChild(a);
+    item.appendChild(t);
+    grid.appendChild(item);
+  });
+  newsContent.appendChild(grid);
+}
+
+/* fallback iframe (original) */
 function renderFallbackIframe() {
   newsContent.innerHTML = '';
   const iframe = document.createElement('iframe'); iframe.className = 'news-fallback-iframe';
@@ -727,6 +774,7 @@ function renderFallbackIframe() {
   newsContent.appendChild(iframe);
 }
 
+/* try to load and parse the t.me summary (primary attempt) */
 async function loadNewsParsed(maxPosts = 6) {
   newsContent.innerHTML = '<div class="news-empty">Loading latest posts…</div>';
   try {
@@ -764,8 +812,50 @@ async function loadNewsParsed(maxPosts = 6) {
     if (posts.length === 0) throw new Error('No posts parsed');
     renderNewsList(posts);
   } catch (err) {
-    console.warn('Could not fetch/parse channel page (likely CORS). Falling back to iframe.', err);
-    renderFallbackIframe();
+    console.warn('Could not fetch/parse channel page (likely CORS). Trying proxy...', err);
+    // Try a simple proxy that returns the remote page as HTML/text (best-effort)
+    try {
+      // r.jina.ai is an example "textify" proxy — if you host your own proxy, replace here.
+      const proxyUrl = `https://r.jina.ai/http://t.me/s/${NEWS_CHANNEL}`;
+      const r = await fetch(proxyUrl, { method:'GET' });
+      if (!r.ok) throw new Error('Proxy failed: ' + r.status);
+      const txt = await r.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(txt, 'text/html');
+      const msgs = Array.from(doc.querySelectorAll('.tgme_widget_message, .tgme_widget_message_wrap, .tme_widget_message'));
+      const posts = [];
+      for (let i = 0; i < msgs.length && posts.length < 8; i++) {
+        const m = msgs[i];
+        const textNode = m.querySelector('.tgme_widget_message_text') || m.querySelector('.message_text') || m.querySelector('p') || m;
+        let excerpt = ''; if (textNode) excerpt = (textNode.textContent || textNode.innerText || '').trim();
+        let thumb = null;
+        const photo = m.querySelector('.tgme_widget_message_photo') || m.querySelector('img');
+        if (photo) {
+          const img = photo.querySelector ? photo.querySelector('img') : null;
+          if (img && (img.getAttribute('src') || img.getAttribute('data-src'))) thumb = img.getAttribute('src') || img.getAttribute('data-src');
+          else if (photo.style && photo.style.backgroundImage) {
+            const bg = photo.style.backgroundImage; const match = bg.match(/url\(["']?(.*?)["']?\)/);
+            if (match) thumb = match[1];
+          } else if (photo.getAttribute && (photo.getAttribute('src') || photo.getAttribute('data-src'))) thumb = photo.getAttribute('src') || photo.getAttribute('data-src');
+        }
+        let link = null; const a = m.querySelector('a.tgme_widget_message_date') || m.querySelector('a[href*="/' + NEWS_CHANNEL + '/"]') || m.querySelector('a');
+        if (a && a.href) link = a.href;
+        let timeStr = ''; const timeNode = m.querySelector('.tgme_widget_message_date') || m.querySelector('time');
+        if (timeNode) timeStr = timeNode.textContent || timeNode.getAttribute('datetime') || '';
+        posts.push({ excerpt, thumb, link, timeStr });
+      }
+      if (posts.length > 0) {
+        // show as thumbnail grid (white area becomes grid)
+        renderFallbackThumbnails(posts);
+        return;
+      } else {
+        throw new Error('Proxy returned but no posts parsed');
+      }
+    } catch (err2) {
+      console.warn('Proxy attempt failed — falling back to iframe', err2);
+      // final fallback: iframe
+      renderFallbackIframe();
+    }
   }
 }
 
