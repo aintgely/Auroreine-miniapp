@@ -71,6 +71,17 @@ body{
   font-weight:700;
   letter-spacing: -0.01em;
 }
+  <!-- NEWS / UPDATE quick link -->
+<div class="news-wrap" id="newsWrap" aria-hidden="false">
+  <div style="position:relative;">
+    <button class="news-btn" id="newsBtn" aria-label="Latest updates" title="Open latest update">
+      <!-- icon: ganti emoji atau svg kalau mau -->
+      <span aria-hidden="true">📰</span>
+      <span class="news-dot" id="newsDot" style="display:block"></span>
+    </button>
+  </div>
+  <div class="news-snippet" id="newsSnippet" title="Open latest update">Rachelle got paparazi…</div>
+</div>
 /* subtitle removed to free space */
 .subtitle { display:none !important; }
 
@@ -783,7 +794,42 @@ preload(FOX_GIF); preload(FOX_PNG);
     window.addEventListener('resize', updateTabsMode);
     window.addEventListener('orientationchange', updateTabsMode);
   })();
+/* ---------- NEWS click + snippet control ---------- */
+/* CONFIG: ganti link dan snippet sesuai kebutuhan */
+const LATEST_POST_URL = 'https://t.me/S15XINYU'; // ganti ke post spesifik jika mau: https://t.me/S15XINYU/123
+const LATEST_SNIPPET = 'Rachelle got paparazi…'; // satu baris singkat
+const SHOW_UNREAD_DOT = true; // true => dot merah muncul
 
+const newsBtn = document.getElementById('newsBtn');
+const newsSnippet = document.getElementById('newsSnippet');
+const newsDot = document.getElementById('newsDot');
+const newsWrap = document.getElementById('newsWrap');
+
+// init UI
+if (newsSnippet) newsSnippet.textContent = LATEST_SNIPPET || '';
+if (newsDot) newsDot.style.display = SHOW_UNREAD_DOT ? 'block' : 'none';
+
+// open link helper (prefers Telegram WebApp openLink if available)
+function openTelegramLink(url){
+  if (!url) return;
+  // If inside Telegram WebApp, prefer openLink
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+    try { window.Telegram.WebApp.openLink(url); return; } catch(e){ /* fallback */ }
+  }
+  // fallback: open new tab
+  window.open(url, '_blank', 'noopener');
+}
+
+// clicks: icon OR snippet open link and clear dot
+if (newsBtn) newsBtn.addEventListener('click', ()=> {
+  if (newsDot) newsDot.style.display = 'none';
+  openTelegramLink(LATEST_POST_URL);
+});
+if (newsSnippet) newsSnippet.addEventListener('click', ()=> {
+  if (newsDot) newsDot.style.display = 'none';
+  openTelegramLink(LATEST_POST_URL);
+});
+  
 </script>
 </body>
 </html>
