@@ -224,7 +224,45 @@ button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,
 
 .helper{margin-top:10px;font-size:10px;color:#8581a1;text-align:center}
 
-/* GLASS DOOR overlay */
+/* ---------- NEWS / UPDATE badge (pojok kanan atas) ---------- */
+.news-wrap { position: absolute; top: 14px; right: 14px; display:flex; align-items:center; gap:8px; pointer-events:auto; z-index:6; }
+/* circular icon */
+.news-btn {
+  width:40px; height:40px; border-radius:999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border:1px solid rgba(255,255,255,0.06);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.news-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(0,0,0,0.32); }
+
+/* small red unread dot */
+.news-dot {
+  position:absolute; top:6px; right:6px; width:9px; height:9px; border-radius:50%;
+  background:#ff6b8a; box-shadow:0 2px 6px rgba(255,80,120,0.12);
+  border: 2px solid rgba(255,255,255,0.06);
+}
+
+/* snippet text (one-line, ellipsis) */
+.news-snippet {
+  max-width: 56%;
+  font-size:12px;
+  color: var(--soft);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  align-self:center;
+  user-select:none;
+  cursor:pointer;
+}
+
+/* ensure news-wrap sits inside .card */
+.card { position: relative; }
+@media (max-width:420px){
+  .news-snippet { display:none; } /* hide snippet on very small screens */
+}
+  /* GLASS DOOR overlay */
 .door-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:auto}
 .door-wrap{width:100%;max-width:900px;height:100vh;display:flex;perspective:1400px}
 .leaf{
