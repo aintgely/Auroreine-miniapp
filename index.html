@@ -75,19 +75,24 @@ body {
   margin:0;
 }
 
-/* ===========================
-         TABS
-=========================== */
+/* ----------------------------
+   TABS (responsive & news pin)
+   Replace your old .tabs/.tab/#tab-news rules with this block
+   ---------------------------- */
 .tabs {
   display:flex;
+  align-items:center;
   gap:8px;
   margin-bottom:10px;
+  /* allow the tab area to shrink on very small screens while keeping news button pinned */
+  min-width: 0;
 }
 
-/* default tab styling */
+/* default tab styling (main tabs stretch) */
 .tab {
-  min-width:var(--tab-min-width);
-  flex:1;
+  /* let main tabs share available space */
+  flex: 1 1 auto;
+  min-width: var(--tab-min-width);
   padding:8px 10px;
   border-radius:999px;
   font-size:13px;
@@ -99,6 +104,7 @@ body {
   border:1px solid transparent;
 
   cursor:pointer;
+  box-sizing:border-box;
 }
 
 /* active tab */
@@ -115,28 +121,63 @@ body {
   box-shadow:0 6px 16px rgba(0,0,0,0.12);
 }
 
-/* ===========================
-      NEWS TAB (🗞️)
-=========================== */
+/* NEWS button pinned to right of the tab bar
+   - non-flex so it doesn't steal space from label tabs
+   - margin-left:auto pushes it to the far right
+*/
 #tab-news {
-  min-width:46px;
-  max-width:46px;
-  padding:8px 0;
-
+  flex: 0 0 auto;       /* do not grow or shrink */
+  margin-left: auto;    /* push itself to the far right */
+  min-width: 40px;
+  height: 40px;
+  padding:0;
   display:flex;
   align-items:center;
   justify-content:center;
-
+  border-radius:999px;
   font-size:16px;
   line-height:1;
+  background:transparent;
+  border:1px solid transparent;
+  color:var(--soft);
+  cursor:pointer;
 }
 
-/* same active glow as tabs */
+/* active style for the news icon */
 #tab-news.active {
   background:linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.03));
   border-color:rgba(247,214,255,0.12);
   color:var(--text);
 }
+
+/* On very small screens: allow horizontal scrolling for the main tabs (except the pinned news icon)
+   so labels never overflow or wrap weirdly. The pinned news stays visible on the right.
+*/
+@media (max-width:639px) {
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap:10px;
+    padding-bottom:6px;
+  }
+  /* tappable area: main tabs keep min width but are scrollable */
+  .tab {
+    flex: 0 0 auto;
+    min-width: 92px;
+  }
+  /* news stays visible and small */
+  #tab-news { min-width:40px; height:40px; margin-left: 8px; position: relative; right: 0; }
+}
+
+/* Ensure card doesn't clip the pinned news icon visually on ultra-small widths */
+.card { overflow: visible; }
+
+/* NEWS modal responsive sizing tweak: keep modal within screen on small devices */
+.news-modal {
+  width: min(720px, 95vw);  /* use 95vw on small screens */
+  max-height: calc(100vh - 120px);
+}
+.news-fallback-iframe { height: min(60vh, calc(100vh - 240px)); }
 
 /* ===========================
          PROFILE CARD
