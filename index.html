@@ -5,17 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Mini Profiles — Isaline (Glass Door)</title>
 <style>
-  /* micro animations for fav & play states */
- /* tighter spacing between fox icon and label */
-/* tighter spacing between fox icon and label */
-#favBtn {
-  padding-left: 8px;     /* ← lebih rapat */
-  padding-right: 16px;
-  background: #f5f0ff;
-  color: #161622;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-}
-
+  
 /* label text spacing */
 #favBtn .label-text {
   margin-left: 2px;      /* ← lebih dekat ke gif */
@@ -197,22 +187,21 @@ button.primary{background:#f5f0ff;color:#161622}
 button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
 
 /* fox default (make fav and play look identical initially) */
+/* tighter spacing between fox icon and label */
 #favBtn {
-  color: var(--soft);
+  padding-left: 8px;     /* ← lebih rapat */
+  padding-right: 16px;
   background: #f5f0ff;
   color: #161622;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  padding-left: 18px;
-  padding-right: 18px;
 }
-#playBtn {
-  background: #f5f0ff;
-  color: #161622;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  padding-left: 18px;
-  padding-right: 18px;
+
+/* label text spacing */
+#favBtn .label-text {
+  margin-left: 2px;      /* ← lebih dekat ke gif */
+  display: inline-block;
+  vertical-align: middle;
 }
-#favBtn:hover, #playBtn:hover { transform: translateY(-2px); transition: transform 120ms ease; }
 
 /* fav active: color, background, glow & wiggle */
 #favBtn.fav-active {
