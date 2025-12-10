@@ -210,6 +210,56 @@ button.ghost {
 }
 
 /* ===========================
+   FAVORITE ACTIVE + FOX WIGGLE
+   (added so fav-active visuals exist)
+=========================== */
+@keyframes foxWiggle {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(-6deg) scale(1.08); }
+  50%  { transform: rotate(4deg) scale(1.06); }
+  75%  { transform: rotate(-3deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1.06); }
+}
+
+/* fav active (glow, gradient, wiggle) */
+#favBtn.fav-active {
+  color: #161622;
+  background: linear-gradient(180deg, #fceeff, #f7d6ff);
+  text-shadow: 0 0 6px rgba(255,180,255,0.45), 0 0 12px rgba(255,150,255,0.12);
+  box-shadow: 0 10px 26px rgba(180,120,255,0.14);
+  animation: foxWiggle 0.45s ease-out;
+  transform-origin: center center;
+}
+
+/* ===========================
+   PLAY BUTTON style (match favorite)
+=========================== */
+
+/* default Play = same look as primary (favorite default) */
+#playBtn {
+  background:#f5f0ff;
+  color:#161622;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  padding-left:18px;
+  padding-right:18px;
+  border-radius:999px;
+  border: none;
+}
+
+/* when playing: use same style as fav-active */
+#playBtn.playing {
+  background: linear-gradient(180deg, #fceeff, #f7d6ff);
+  color:#161622;
+  text-shadow: 0 0 6px rgba(255,180,255,0.45), 0 0 12px rgba(255,150,255,0.12);
+  box-shadow: 0 10px 26px rgba(180,120,255,0.14);
+  animation: foxWiggle 0.45s ease-out;
+  transform-origin: center center;
+}
+
+/* subtle pressed state */
+#playBtn:active, #favBtn:active { transform: scale(0.99); transition: transform 80ms ease; }
+
+/* ===========================
         DOOR OVERLAY
 =========================== */
 .door-overlay {
@@ -503,6 +553,7 @@ function initFavUIForCurrent() {
 
 /* ===========================
    AUDIO play/pause handling
+   (Play button will get .playing class)
 =========================== */
 const PROFILE_AUDIO_MAP = { zhou: 'playsongnew.mp3', rp: 'playsongnew.mp3' };
 function currentProfileAudioFile() { return PROFILE_AUDIO_MAP[selected] || 'playsongnew.mp3'; }
@@ -513,8 +564,17 @@ playBtn.addEventListener('click', async () => {
   const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
   if (currentSource !== desired) { profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`; try { profileAudio.load(); } catch(e){} }
   try {
-    if (profileAudio.paused) { await profileAudio.play(); playBtn.classList.add('playing'); playBtn.textContent = '⏸ Pause'; playBtn.setAttribute('aria-pressed','true'); }
-    else { profileAudio.pause(); playBtn.classList.remove('playing'); playBtn.textContent = '▶ Play'; playBtn.setAttribute('aria-pressed','false'); }
+    if (profileAudio.paused) {
+      await profileAudio.play();
+      playBtn.classList.add('playing');
+      playBtn.textContent = '⏸ Pause';
+      playBtn.setAttribute('aria-pressed','true');
+    } else {
+      profileAudio.pause();
+      playBtn.classList.remove('playing');
+      playBtn.textContent = '▶ Play';
+      playBtn.setAttribute('aria-pressed','false');
+    }
   } catch (err) {
     playBtn.classList.remove('playing'); playBtn.textContent = '▶ Play'; playBtn.setAttribute('aria-pressed','false');
     console.warn('Audio play error', err); alert('Gagal memutar audio — coba tekan lagi atau periksa file audio (playsongnew.mp3).');
