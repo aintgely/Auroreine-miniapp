@@ -52,6 +52,7 @@ body{
   transform:translateY(0); transition:opacity .45s ease .35s, transform .45s ease .35s;
   opacity:0; pointer-events:auto;
   backdrop-filter: blur(2px);
+  position:relative;
 }
 .content-visible .card{ opacity:1; transform:none; }
 
@@ -74,25 +75,22 @@ body{
 /* subtitle removed to free space */
 .subtitle { display:none !important; }
 
-/* small icon close button */
-.icon-btn{
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.06);
-  color:var(--soft);
-  padding:6px 8px;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:14px;
-  line-height:1;
+/* ---------- TABS + NEWS ROW (new) ---------- */
+/* wrap tabs + news button in a single row so news button stays aligned */
+.tabs-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom: 10px;
 }
-.icon-btn:hover{ transform: translateY(-2px); transition: transform 120ms ease; box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
 
-/* ---------- TABS (responsive) ---------- */
+/* tabs */
 .tabs{
   display:flex;
   gap:var(--tab-gap);
-  margin-bottom:10px;
   align-items:center;
+  flex:1;                /* let tabs take remaining space */
 }
 .tab{
   min-width:var(--tab-min-width);
@@ -113,34 +111,63 @@ body{
   color:var(--text);
 }
 
-/* small-screen: horizontal scroll with snap */
-.tabs.tabs-scroll{
-  overflow-x:auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  padding-bottom:6px;
-}
-.tabs.tabs-scroll .tab{
-  scroll-snap-align: start;
+/* NEWS button (rounded icon in the top-right of the card, aligned with tabs) */
+.news-btn{
   flex:0 0 auto;
+  width:38px;
+  height:38px;
+  border-radius:999px;
+  display:inline-grid;
+  place-items:center;
+  background: linear-gradient(180deg, rgba(245,240,255,0.06), rgba(240,215,255,0.03));
+  border:1px solid rgba(255,255,255,0.04);
+  cursor:pointer;
+  position:relative;
+  transition: transform 140ms ease, box-shadow 160ms ease;
+}
+.news-btn:hover{ transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+
+/* small news icon (use an emoji, svg, or image) */
+.news-btn .icon { font-size:16px; line-height:1; color:var(--soft) }
+
+/* little badge for "new" — adjustable via JS (show/hide) */
+.news-btn .badge {
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ff6b8a;
+  box-shadow: 0 2px 8px rgba(255,80,120,0.18);
+  display:none; /* set to block via JS to show */
 }
 
-/* large screen: distribute evenly using grid */
-@media (min-width:640px){
-  .tabs{
-    display:grid;
-    grid-auto-flow:column;
-    grid-auto-columns:1fr;
-    gap:10px;
-  }
-  .tabs .tab{
-    min-width:0;
-    flex:1 1 auto;
-  }
-  .card{ padding:22px; }
+/* small tooltip text (visually hidden, for a11y) */
+.news-btn[title]:after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size:11px;
+  padding:6px 8px;
+  border-radius:8px;
+  white-space:nowrap;
+  display:none;
+}
+.news-btn:focus[title]:after, .news-btn:hover[title]:after { display:block; }
+
+/* small-screen tweaks */
+@media (max-width:480px){
+  .leaf::after{left:12%;right:12%}
+  :root{ --tab-min-width:92px; }
+  .news-btn{ width:36px; height:36px; }
 }
 
-/* card/profile styles */
+/* ---------- other styles (unchanged) ---------- */
 .profile{
   border-radius:14px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.95));
   border:1px solid rgba(255,255,255,0.02);margin-bottom:14px;
@@ -157,211 +184,24 @@ body{
   margin:0;
 }
 
-/* ---------- SPARKLE (interactive) ---------- */
-.sparkle-pop {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  pointer-events: none;
-  border-radius: 50%;
-  background: radial-gradient(circle, #ffffff 0%, #e7d4ff 60%, transparent 100%);
-  opacity: 0;
-  animation: sparkleFade 1.2s ease-out forwards;
-  filter: blur(0.4px);
-  transform-origin: center;
-}
-@keyframes sparkleFade {
-  0% { transform: translateY(0) scale(0.5); opacity: 0; }
-  15% { transform: translateY(-4px) scale(1); opacity: 0.95; }
-  50% { transform: translateY(-12px) scale(1.15); opacity: 0.8; }
-  100% { transform: translateY(-22px) scale(0.7); opacity: 0; }
-}
-
 /* buttons */
 .btn-row{display:flex;gap:8px}
 button.primary, button.ghost{flex:1;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 button.primary{background:#f5f0ff;color:#161622}
 button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
 
-/* fox default (make fav and play look identical initially) */
-#favBtn {
-  color: var(--soft);
-  background: #f5f0ff;
-  color: #161622;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  padding-left: 18px;
-  padding-right: 18px;
-}
-#playBtn {
-  background: #f5f0ff;
-  color: #161622;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  padding-left: 18px;
-  padding-right: 18px;
-}
-#favBtn:hover, #playBtn:hover { transform: translateY(-2px); transition: transform 120ms ease; }
+/* fav/play defaults */
+/* <-- adjusted spacing as requested -->
+   fav button padding-left: 8px; label margin-left: 2px (close to the gif)
+*/
+#favBtn { padding-left: 8px; padding-right: 16px; background:#f5f0ff; color:#161622; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+#favBtn .label-text { margin-left:2px; display:inline-block; vertical-align:middle; }
+#playBtn { background:#f5f0ff; color:#161622; box-shadow:0 6px 18px rgba(0,0,0,0.06); padding-left: 18px; padding-right: 18px; }
 
-/* fav active: color, background, glow & wiggle */
-#favBtn.fav-active {
-  color: #161622;
-  background: linear-gradient(180deg, #fceeff, #f7d6ff);
-  text-shadow: 0 0 6px rgba(255,180,255,0.45), 0 0 12px rgba(255,150,255,0.12);
-  box-shadow: 0 10px 26px rgba(180,120,255,0.14);
-  animation: foxWiggle 0.45s ease-out;
-  transform-origin: center center;
-}
+#favIcon{ width:18px; height:18px; object-fit:contain; border-radius:6px; display:inline-block; vertical-align:middle; }
 
-/* play playing state (pulsing) */
-#playBtn.playing {
-  background: linear-gradient(180deg, #fff2fb, #f4caff);
-  color: #161622;
-  box-shadow: 0 10px 26px rgba(160,110,240,0.12);
-  animation: pulsePlay 1.4s ease-in-out infinite;
-}
-
-/* subtle pressed state */
-#favBtn:active, #playBtn:active { transform: scale(0.99); transition: transform 80ms ease; }
-
-.helper{margin-top:10px;font-size:10px;color:#8581a1;text-align:center}
-
-/* GLASS DOOR overlay */
-.door-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:auto}
-.door-wrap{width:100%;max-width:900px;height:100vh;display:flex;perspective:1400px}
-.leaf{
-  flex:1;height:100vh;display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;
-  border:1px solid rgba(255,255,255,0.06);
-
-  background:
-    linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12)),
-    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 30px 80px rgba(60,0,120,0.45);
-
-  transform-origin:left center;transform-style:preserve-3d;
-  backdrop-filter: blur(7px) saturate(1.15);
-}
-.leaf.right{transform-origin:right center}
-.leaf::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(120deg,
-    rgba(200,160,255,0.05),
-    rgba(240,200,255,0.12) 20%,
-    rgba(150,120,220,0.06) 55%,
-    transparent 85%
-  );
-  mix-blend-mode:screen;
-  pointer-events:none;
-  transform:translateZ(40px);
-}
-.leaf::after{
-  content:"";position:absolute;left:18%;right:18%;top:40%;height:2px;border-radius:50px;
-  background:linear-gradient(90deg, rgba(160,120,255,0.18), rgba(245,215,255,0.22));
-  opacity:1;
-}
-.leaf .label{position:relative;color:var(--soft);font-size:14px;letter-spacing:0.04em}
-
-/* open animations */
-@keyframes open-left {
-  0%{ transform: rotateY(0deg) translateZ(0) }
-  100%{ transform: rotateY(-88deg) translateZ(-60px) translateX(-20%); opacity:0 }
-}
-@keyframes open-right {
-  0%{ transform: rotateY(0deg) translateZ(0) }
-  100%{ transform: rotateY(88deg) translateZ(-60px) translateX(20%); opacity:0 }
-}
-
-/* play pulse */
-@keyframes pulsePlay {
-  0% { transform: scale(1); box-shadow: 0 0 0 rgba(255,200,255,0.0); }
-  50% { transform: scale(1.03); box-shadow: 0 0 12px rgba(255,200,255,0.12); }
-  100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,200,255,0.0); }
-}
-
-/* set duration to 1.6s for cinematic ~2s experience */
-.door-opening .leaf.left{ animation: open-left 1.6s cubic-bezier(.2,.9,.2,1) forwards; }
-.door-opening .leaf.right{ animation: open-right 1.6s cubic-bezier(.2,.9,.2,1) forwards; }
-
-/* remove overlay after finished */
-.hidden-overlay{ display:none !important; }
-
-/* replay button */
-.replay {
-  position:fixed; right:18px; bottom:18px; z-index:10010;
-  background:rgba(255,255,255,0.04); color:var(--soft); border:1px solid rgba(255,255,255,0.03);
-  padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;
-}
-
-@media (max-width:480px){
-  .leaf::after{left:12%;right:12%}
-  :root{ --tab-min-width:92px; }
-}
-
-/* accessibility focus */
-.tab:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
-button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
-
-/* ---------- FOX WIGGLE ANIMATION ---------- */
-@keyframes foxWiggle {
-  0%   { transform: rotate(0deg) scale(1); }
-  25%  { transform: rotate(-6deg) scale(1.08); }
-  50%  { transform: rotate(4deg) scale(1.06); }
-  75%  { transform: rotate(-3deg) scale(1.05); }
-  100% { transform: rotate(0deg) scale(1.06); }
-}
-
-/* ---------- SIMPLE HEADER Auroreine ---------- */
-/* centered header "Auroreine" */
-.title-row.compact.simple-one {
-  padding: 8px 0 14px;
-  display: flex;
-  justify-content: center;     /* ⬅️ bikin tulisan di tengah */
-  align-items: center;
-  width: 100%;
-  text-align: center;
-}
-
-.compact-title.simple-name {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: var(--text);
-}
-.compact-title.simple-name {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--text);
-}
-
-/* close button mini style */
-.icon-btn {
-  padding: 6px 8px;
-  font-size: 13px;
-  opacity: 0.95;
-}
-  
-/* ---------- GIF / ICON styles ---------- */
-/* fav icon image inside button */
-#favIcon{
-  width:18px;height:18px;object-fit:contain;border-radius:6px;display:inline-block;vertical-align:middle;
-}
-#favBtn .label-text{display:inline-block;vertical-align:middle;margin-left:8px}
-
-/* small fade-in for gif when it appears */
-.fav-gif-in{
-  animation: favGifIn 260ms ease both;
-}
-@keyframes favGifIn{
-  from{ opacity:0; transform: scale(0.92) }
-  to{ opacity:1; transform: scale(1) }
-}
+/* focus outlines */
+.tab:focus, .news-btn:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
 
 </style>
 </head>
@@ -378,17 +218,23 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
   <div class="shell" id="shell">
     <div class="card" id="card">
 
-  <!-- --------- SIMPLE ONE-LINE HEADER: "Auroreine" --------- -->
-<!-- Simple centered header -->
-<div class="title-row compact simple-one" role="banner">
-  <h1 class="compact-title simple-name">Auroreine</h1>
-</div>
+      <!-- header -->
+      <div class="title-row compact simple-one" role="banner">
+        <h1 class="compact-title simple-name">Auroreine</h1>
+      </div>
 
+      <!-- tabs + news -->
+      <div class="tabs-row">
+        <div class="tabs" id="tabs">
+          <button class="tab active" id="tab-zhou">✦ Muse</button>
+          <button class="tab" id="tab-rp">✧ Another Universe</button>
+        </div>
 
-      <!-- tabs -->
-      <div class="tabs" id="tabs">
-        <button class="tab active" id="tab-zhou">✦ Muse</button>
-        <button class="tab" id="tab-rp">✧ Another Universe</button>
+        <!-- rounded news icon at the right, badge toggled by JS -->
+        <button class="news-btn" id="newsBtn" title="Update terbaru">
+          <span class="icon">📰</span>
+          <span class="badge" id="newsBadge" aria-hidden="true"></span>
+        </button>
       </div>
 
       <div class="profile" id="profile">
@@ -400,7 +246,6 @@ like a quiet verse written in silver.</p>
       </div>
 
       <div class="btn-row">
-        <!-- favorite now holds an <img> for the fox which we toggle between static/animated -->
         <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">
           <img id="favIcon" alt="fox icon" src="foxfixfix.gif" aria-hidden="true">
           <span class="label-text">Favorite</span>
@@ -408,8 +253,6 @@ like a quiet verse written in silver.</p>
         <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
       </div>
 
-      <!-- profile audio (preview) -->
-      <!-- DEFAULT source set to playsongnew.mp3 as requested -->
       <audio id="profileAudio" preload="auto">
         <source src="playsongnew.mp3" type="audio/mpeg">
       </audio>
@@ -418,7 +261,6 @@ like a quiet verse written in silver.</p>
     </div>
   </div>
 
-  <!-- optional audio: door_open.mp3 (place in same folder if you want sound) -->
   <audio id="doorAudio" preload="auto">
     <source src="door_open.mp3" type="audio/mpeg">
   </audio>
@@ -426,10 +268,49 @@ like a quiet verse written in silver.</p>
   <button class="replay" id="replayBtn" title="Replay door effect">Replay ✨</button>
 
 <script>
-  // Telegram WebApp
+  // TELEGRAM WebApp (if available)
   const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   if (tg) try { tg.expand(); tg.ready(); } catch(e){}
 
+  // DOM refs
+  const tZ = document.getElementById('tab-zhou');
+  const tR = document.getElementById('tab-rp');
+  const tabsRoot = document.getElementById('tabs');
+  const newsBtn = document.getElementById('newsBtn');
+  const newsBadge = document.getElementById('newsBadge');
+
+  // === NEWS URL set to your channel ===
+  const NEWS_URL = 'https://t.me/S15XINYU';
+  // show badge by default (toggle below if you want it hidden)
+  const HAS_NEW_UPDATE = true;
+  function refreshNewsBadge() {
+    if (!newsBadge) return;
+    newsBadge.style.display = HAS_NEW_UPDATE ? 'block' : 'none';
+  }
+  refreshNewsBadge();
+
+  // News click: open inside Telegram WebApp when possible, fallback to window.open
+  newsBtn.addEventListener('click', ()=> {
+    if (!NEWS_URL || NEWS_URL.trim() === '') {
+      alert('Belum ada URL berita/updates di-set. Edit NEWS_URL di kode.');
+      return;
+    }
+    try {
+      if (tg && typeof tg.openLink === 'function') {
+        tg.openLink(NEWS_URL);
+      } else if (tg && tg.openTelegram) {
+        tg.openTelegram(NEWS_URL);
+      } else {
+        window.open(NEWS_URL, '_blank', 'noopener');
+      }
+      // optionally hide the badge after opening:
+      // newsBadge.style.display = 'none';
+    } catch (e) {
+      window.open(NEWS_URL, '_blank', 'noopener');
+    }
+  });
+
+  /* ---------- rest of JS (fav, audio, tabs, sparkles) ---------- */
   const doorOverlay = document.getElementById('doorOverlay');
   const doorWrap = document.getElementById('doorWrap');
   const shell = document.getElementById('shell');
@@ -437,7 +318,6 @@ like a quiet verse written in silver.</p>
   const doorAudio = document.getElementById('doorAudio');
   const replayBtn = document.getElementById('replayBtn');
 
-  // profile data
   const profiles = {
     zhou: {
       title: "Zhou Xinyu",
@@ -452,12 +332,16 @@ like a quiet verse written in silver.</p>
   };
   let selected = 'zhou';
 
-  // dom refs
-  const tZ = document.getElementById('tab-zhou');
-  const tR = document.getElementById('tab-rp');
-  const tabsRoot = document.getElementById('tabs');
+  function setActive(k){
+    selected = k;
+    const d = profiles[k];
+    document.getElementById('profile-title').textContent = d.title;
+    document.getElementById('profile-tag').textContent = d.tag;
+    document.getElementById('profile-text').textContent = d.text;
+    if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
+  }
 
-  // SPARKLE
+  // sparkles
   function makeSparkle(x, y, size = null) {
     const profileBox = document.getElementById("profile");
     if (!profileBox) return;
@@ -472,7 +356,6 @@ like a quiet verse written in silver.</p>
     profileBox.appendChild(sp);
     setTimeout(() => { if (sp && sp.parentNode) sp.parentNode.removeChild(sp); }, 1400);
   }
-
   function burstSparkles(count = 5) {
     const box = document.getElementById("profile");
     if (!box) return;
@@ -489,257 +372,82 @@ like a quiet verse written in silver.</p>
     }
   }
 
-  // FAVORITE & PLAY elements
+  tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
+  tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
+
+  // fav + audio
   const favBtn = document.getElementById('favBtn');
   const playBtn = document.getElementById('playBtn');
   const profileAudio = document.getElementById('profileAudio') || null;
   const favIcon = document.getElementById('favIcon');
 
-  // map per-profile audio filenames (both point to playsongnew.mp3 by default)
-  const PROFILE_AUDIO_MAP = {
-    zhou: 'playsongnew.mp3',
-    rp: 'playsongnew.mp3'
-  };
-  function currentProfileAudioFile() {
-    return PROFILE_AUDIO_MAP[selected] || 'playsongnew.mp3';
-  }
+  const PROFILE_AUDIO_MAP = { zhou: 'playsongnew.mp3', rp: 'playsongnew.mp3' };
+  function currentProfileAudioFile() { return PROFILE_AUDIO_MAP[selected] || 'playsongnew.mp3'; }
 
-  // Preload fox images (gif + optional static fallback)
-// ganti blok preload fox images jadi:
-const FOX_GIF = 'foxfixfix.gif';
-const FOX_PNG = 'foxfixfix.gif'; // fallback tetap sama file atau bisa ganti ke png kalau ada
-const _preloads = [];
-function preload(src){ try{ const i=new Image(); i.src=src; _preloads.push(i); }catch(e){} }
-preload(FOX_GIF); preload(FOX_PNG);
-
-  // FAVORITE logic (localStorage)
   const STORAGE_KEY = 'miniapp_favs_v1';
-  function loadFavs() {
-    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
-    catch(e){ return {}; }
-  }
-  function saveFavs(obj) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e){}
-  }
+  function loadFavs(){ try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){return{}} }
+  function saveFavs(obj){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }catch(e){} }
 
-  function setFavState(isFav) {
+  const FOX_GIF = 'foxfixfix.gif';
+  favIcon.addEventListener('error', ()=>{ favIcon.style.display='none'; const label = favBtn.querySelector('.label-text'); if(label) label.style.marginLeft='0'; });
+  favIcon.addEventListener('load', ()=>{ favIcon.style.display='inline-block'; });
+
+  function setFavState(isFav){
     favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
-    // update text
     const label = favBtn.querySelector('.label-text');
-    if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
-
-    // always use foxfoxie.gif for icon (both normal & favorited)
-    try {
-      favIcon.src = FOX_GIF;
-
-      if (isFav) {
-        favIcon.classList.add('fav-gif-in');
-        favBtn.classList.add('fav-active');
-        burstSparkles(5);
-      } else {
-        favIcon.classList.remove('fav-gif-in');
-        favBtn.classList.remove('fav-active');
-      }
-    } catch(e){
-      // degrade: remove image and fallback to text
-      if (favIcon && favIcon.parentNode) favIcon.parentNode.removeChild(favIcon);
-      if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
-    }
+    if(label) label.textContent = isFav ? 'Favorited' : 'Favorite';
+    try { favIcon.src = FOX_GIF; } catch(e){}
+    if(isFav){ favIcon.classList.add('fav-gif-in'); favBtn.classList.add('fav-active'); try{ burstSparkles(5); }catch(e){} }
+    else { favIcon.classList.remove('fav-gif-in'); favBtn.classList.remove('fav-active'); }
   }
-
-  // handle missing PNG fallback: if image errors, hide it and fall back to emoji label
-  favIcon.addEventListener('error', (ev)=>{
-    // hide image, fall back to text only
-    favIcon.style.display = 'none';
-    const label = favBtn.querySelector('.label-text');
-    if (label) label.style.marginLeft = '0';
-  });
-  favIcon.addEventListener('load', ()=>{ favIcon.style.display = 'inline-block'; });
 
   favBtn.addEventListener('click', () => {
     const favs = loadFavs();
     const currently = !!favs[selected];
-    if (currently) delete favs[selected];
-    else favs[selected] = { ts: Date.now() };
+    if(currently) delete favs[selected]; else favs[selected] = { ts: Date.now() };
     saveFavs(favs);
     setFavState(!currently);
-
-    // send a tiny note back to Telegram bot (if available)
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
-      try { window.Telegram.WebApp.sendData(JSON.stringify({ type: 'fav', profile: selected, fav: !currently })); } catch(e){}
-    }
+    if (tg && tg.sendData) try { tg.sendData(JSON.stringify({ type:'fav', profile:selected, fav:!currently })); } catch(e){}
   });
 
-  // update fav UI for current selected - only called on load/init, NOT on tab change
-  function initFavUIForCurrent() {
-    const favs = loadFavs();
-    const isFav = !!favs[selected];
-    // ensure favIcon has a sensible default src before calling setFavState
-    favIcon.src = FOX_GIF;
-    setFavState(isFav);
-  }
+  function initFavUIForCurrent(){ const favs = loadFavs(); const isFav = !!favs[selected]; favIcon.src = FOX_GIF; setFavState(isFav); }
 
-  /* PLAY audio logic — toggles play / pause and uses playsongnew.mp3 */
-  playBtn.addEventListener('click', async () => {
-    if (!profileAudio) {
-      alert('Audio not available. Tambahkan playsongnew.mp3 di folder yang sama dengan file ini.');
-      return;
-    }
-
-    // set source sesuai profile (lazily) — PROFILE_AUDIO_MAP maps to playsongnew.mp3
+  // play/pause logic
+  playBtn.addEventListener('click', async ()=> {
+    if (!profileAudio) { alert('Audio not available. Tambahkan playsongnew.mp3 di folder yang sama.'); return; }
     const desired = currentProfileAudioFile();
     const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
-    if (currentSource !== desired) {
-      profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
-      try { profileAudio.load(); } catch(e){}
-    }
-
-    // toggle play/pause (user gesture required for play())
-    try {
-      if (profileAudio.paused) {
-        await profileAudio.play();
-        playBtn.classList.add('playing');
-        playBtn.textContent = '⏸ Pause';
-        playBtn.setAttribute('aria-pressed','true');
-      } else {
-        profileAudio.pause();
-        playBtn.classList.remove('playing');
-        playBtn.textContent = '▶ Play';
-        playBtn.setAttribute('aria-pressed','false');
-      }
-    } catch (err) {
-      playBtn.classList.remove('playing');
-      playBtn.textContent = '▶ Play';
-      playBtn.setAttribute('aria-pressed','false');
-      console.warn('Audio play error', err);
-      alert('Gagal memutar audio — coba tekan lagi atau periksa file audio (playsongnew.mp3).');
-    }
+    if (currentSource !== desired) { profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`; try{ profileAudio.load(); }catch(e){} }
+    try{
+      if (profileAudio.paused) { await profileAudio.play(); playBtn.classList.add('playing'); playBtn.textContent='⏸ Pause'; playBtn.setAttribute('aria-pressed','true'); }
+      else { profileAudio.pause(); playBtn.classList.remove('playing'); playBtn.textContent='▶ Play'; playBtn.setAttribute('aria-pressed','false'); }
+    } catch(err){ playBtn.classList.remove('playing'); playBtn.textContent='▶ Play'; playBtn.setAttribute('aria-pressed','false'); alert('Gagal memutar audio — periksa file playsongnew.mp3'); }
   });
 
-  // Keep UI in sync when audio state changes
-  if (profileAudio) {
-    profileAudio.addEventListener('play', () => {
-      playBtn.classList.add('playing');
-      playBtn.textContent = '⏸ Pause';
-      playBtn.setAttribute('aria-pressed','true');
-    });
-
-    profileAudio.addEventListener('pause', () => {
-      playBtn.classList.remove('playing');
-      playBtn.textContent = '▶ Play';
-      playBtn.setAttribute('aria-pressed','false');
-    });
-
-    profileAudio.addEventListener('ended', () => {
-      playBtn.classList.remove('playing');
-      playBtn.textContent = '▶ Play';
-      playBtn.setAttribute('aria-pressed','false');
-      try { profileAudio.currentTime = 0; } catch(e){}
-    });
+  if(profileAudio){
+    profileAudio.addEventListener('play', ()=>{ playBtn.classList.add('playing'); playBtn.textContent='⏸ Pause'; playBtn.setAttribute('aria-pressed','true'); });
+    profileAudio.addEventListener('pause', ()=>{ playBtn.classList.remove('playing'); playBtn.textContent='▶ Play'; playBtn.setAttribute('aria-pressed','false'); });
+    profileAudio.addEventListener('ended', ()=>{ playBtn.classList.remove('playing'); playBtn.textContent='▶ Play'; playBtn.setAttribute('aria-pressed','false'); try{ profileAudio.currentTime=0;}catch(e){} });
   }
 
-  // ---------- UPDATED setActive (preserve audio play state when switching) ----------
-  function setActive(k){
-    // update selected & DOM
-    selected = k;
-    const d = profiles[k];
-    document.getElementById('profile-title').textContent = d.title;
-    document.getElementById('profile-tag').textContent = d.tag;
-    document.getElementById('profile-text').textContent = d.text;
-    if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
+  // init
+  window.addEventListener('load', ()=> { initFavUIForCurrent(); });
 
-    // --- handle audio source switching without interrupting play state ---
-    if (!profileAudio) return;
-
-    try {
-      const desired = currentProfileAudioFile(); // filename for selected
-      const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
-
-      // if source is already the same, do nothing (keeps current play/pause/time)
-      if (currentSource === desired) return;
-
-      // remember playing state and time
-      const wasPlaying = !profileAudio.paused && !profileAudio.ended;
-      const currentTime = Math.max(0, Math.min(profileAudio.currentTime || 0, 999999));
-
-      // create new source element (lazy swap)
-      profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
-      try { profileAudio.load(); } catch (e) { /* ignore load errors */ }
-
-      // try to restore time and resume if it was playing
-      // note: some browsers disallow setting currentTime until metadata is loaded,
-      // so we try best-effort and then attempt again on 'loadedmetadata'
-      function tryRestore() {
-        try {
-          // clamp time to duration (if available)
-          if (profileAudio.duration && !isNaN(profileAudio.duration)) {
-            const t = Math.min(currentTime, Math.max(0, profileAudio.duration - 0.01));
-            profileAudio.currentTime = t;
-          } else {
-            profileAudio.currentTime = currentTime;
-          }
-        } catch (err) { /* ignore */ }
-        if (wasPlaying) {
-          profileAudio.play().catch(()=>{ /* autoplay policy may block until user gesture; ignore */ });
-        }
-        // cleanup listener (one-time)
-        profileAudio.removeEventListener('loadedmetadata', tryRestore);
-      }
-
-      // if metadata already loaded, try immediately, else wait
-      if (profileAudio.readyState >= 1) {
-        tryRestore();
-      } else {
-        profileAudio.addEventListener('loadedmetadata', tryRestore);
-      }
-
-    } catch (err) {
-      console.warn('Error while switching profile audio (non-fatal):', err);
-    }
-  }
-
-  // attach tab listeners now
-  tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
-  tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
-
-  // init states on load
-  window.addEventListener('load', ()=> {
-    initFavUIForCurrent();
-  });
-
-  // door sequence timings adjusted to ~2s cinematic:
+  // door animation
   function openDoor(playSound=true){
     setTimeout(()=> shell.classList.add('content-visible'), 1200);
-    if(playSound && doorAudio && doorAudio.src){
-      doorAudio.currentTime = 0;
-      doorAudio.play().catch(()=>{});
-    }
+    if(playSound && doorAudio && doorAudio.src){ doorAudio.currentTime=0; doorAudio.play().catch(()=>{}); }
     doorWrap.classList.add('door-opening');
-    setTimeout(()=> {
-      doorOverlay.classList.add('hidden-overlay');
-      shell.classList.add('content-visible');
-    }, 1600);
+    setTimeout(()=> { doorOverlay.classList.add('hidden-overlay'); shell.classList.add('content-visible'); }, 1600);
   }
   setTimeout(()=> openDoor(true), 260);
+  replayBtn.addEventListener('click', ()=> { doorOverlay.classList.remove('hidden-overlay'); doorWrap.classList.remove('door-opening'); shell.classList.remove('content-visible'); void doorWrap.offsetWidth; setTimeout(()=> openDoor(true), 80); });
 
-  // replay support
-  replayBtn.addEventListener('click', ()=> {
-    doorOverlay.classList.remove('hidden-overlay');
-    doorWrap.classList.remove('door-opening');
-    shell.classList.remove('content-visible');
-    void doorWrap.offsetWidth;
-    setTimeout(()=> openDoor(true), 80);
-  });
-
-  // responsive tabs helper
+  // responsive helper
   (function(){
     function updateTabsMode() {
       if(!tabsRoot) return;
-      if(window.matchMedia('(max-width: 639px)').matches) {
-        tabsRoot.classList.add('tabs-scroll');
-      } else {
-        tabsRoot.classList.remove('tabs-scroll');
-      }
+      if(window.matchMedia('(max-width: 639px)').matches) tabsRoot.classList.add('tabs-scroll'); else tabsRoot.classList.remove('tabs-scroll');
     }
     updateTabsMode();
     window.addEventListener('resize', updateTabsMode);
