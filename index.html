@@ -331,7 +331,30 @@ button.ghost {
 
 /* accessible focus */
 .news-close { background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--soft); padding:8px 10px; border-radius:8px; cursor:pointer; }
-.news-open-tele { background:#f5f0ff; color:#161622; border-radius:8px; padding:8px 10px; font-weight:700; cursor:pointer; border:none; }
+/* make Open in Telegram small like Close */
+.news-open-tele,
+.news-open-tele.small-link {
+  background: transparent;
+  color: var(--soft);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* hover effect same as tab hover */
+.news-open-tele.small-link:hover,
+.news-open-tele:hover {
+  transform: translateY(-2px);
+  transition: transform 120ms ease;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
 
 /* small-screen tweaks */
 @media (max-width:520px) {
@@ -409,20 +432,21 @@ like a quiet verse written in silver.</p>
   <!-- NEWS modal -->
   <div class="news-modal-backdrop" id="newsBackdrop" aria-hidden="true">
     <div class="news-modal" role="dialog" aria-modal="true" aria-labelledby="newsTitle">
-      <div class="news-header">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(180deg,#ffd6ea,#ffdfff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#130f1a;">🗞️</div>
-          <div>
-            <div id="newsTitle" style="font-weight:800;font-size:16px;">Latest — S15XINYU</div>
-            <div style="font-size:12px;color:var(--soft);">Newest at top · updates automatically</div>
-          </div>
-        </div>
+<div class="news-header">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <!-- removed icon per request -->
+    <div>
+      <div id="newsTitle" style="font-weight:800;font-size:16px;">Recently update of Meredith Melrose.</div>
+      <!-- subtitle removed (kehilangan "Newest at top..."); kalau mau subtitle kecil, bisa ditambahkan kembali -->
+    </div>
+  </div>
 
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button class="news-close" id="newsClose">Close</button>
-          <a class="news-open-tele" id="newsOpenChannel" target="_blank" rel="noopener noreferrer" href="https://t.me/S15XINYU">Open in Telegram</a>
-        </div>
-      </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="news-close" id="newsClose">Close</button>
+    <!-- make Open in Telegram small like Close -->
+    <a class="news-open-tele small-link" id="newsOpenChannel" target="_blank" rel="noopener noreferrer" href="https://t.me/S15XINYU">Open in Telegram</a>
+  </div>
+</div>
 
       <div id="newsContent">
         <div class="news-empty" id="newsLoading">Loading latest posts…</div>
