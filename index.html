@@ -6,11 +6,10 @@
 <title>Mini Profiles — Isaline (Glass Door)</title>
 <style>
   
-/* label text spacing */
-#favBtn .label-text {
-  margin-left: 2px;      /* ← lebih dekat ke gif */
-  display: inline-block;
-  vertical-align: middle;
+/* micro animations for fav & play states */
+#favBtn { transition: transform 200ms ease, box-shadow 200ms ease, color 260ms ease; }
+#playBtn { transition: transform 160ms ease; }
+#playBtn:active { transform: scale(.98);
 }
 
 @font-face {
