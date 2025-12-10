@@ -52,6 +52,7 @@ body{
   transform:translateY(0); transition:opacity .45s ease .35s, transform .45s ease .35s;
   opacity:0; pointer-events:auto;
   backdrop-filter: blur(2px);
+  position: relative; /* important for news badge */
 }
 .content-visible .card{ opacity:1; transform:none; }
 
@@ -71,32 +72,8 @@ body{
   font-weight:700;
   letter-spacing: -0.01em;
 }
-  <!-- NEWS / UPDATE quick link -->
-<div class="news-wrap" id="newsWrap" aria-hidden="false">
-  <div style="position:relative;">
-    <button class="news-btn" id="newsBtn" aria-label="Latest updates" title="Open latest update">
-      <!-- icon: ganti emoji atau svg kalau mau -->
-      <span aria-hidden="true">📰</span>
-      <span class="news-dot" id="newsDot" style="display:block"></span>
-    </button>
-  </div>
-  <div class="news-snippet" id="newsSnippet" title="Open latest update">Rachelle got paparazi…</div>
-</div>
 /* subtitle removed to free space */
 .subtitle { display:none !important; }
-
-/* small icon close button */
-.icon-btn{
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.06);
-  color:var(--soft);
-  padding:6px 8px;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:14px;
-  line-height:1;
-}
-.icon-btn:hover{ transform: translateY(-2px); transition: transform 120ms ease; box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
 
 /* ---------- TABS (responsive) ---------- */
 .tabs{
@@ -195,14 +172,16 @@ button.primary{background:#f5f0ff;color:#161622}
 button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
 
 /* fox default (make fav and play look identical initially) */
+/* adjusted spacing for closer icon+text */
 #favBtn {
-  color: var(--soft);
+  padding-left: 8px;   /* <= requested */
+  padding-right: 16px;
   background: #f5f0ff;
   color: #161622;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  padding-left: 18px;
-  padding-right: 18px;
+  display:flex; align-items:center; gap:6px;
 }
+#favBtn .label-text { margin-left: 2px; } /* <= requested */
 #playBtn {
   background: #f5f0ff;
   color: #161622;
@@ -235,45 +214,7 @@ button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,
 
 .helper{margin-top:10px;font-size:10px;color:#8581a1;text-align:center}
 
-/* ---------- NEWS / UPDATE badge (pojok kanan atas) ---------- */
-.news-wrap { position: absolute; top: 14px; right: 14px; display:flex; align-items:center; gap:8px; pointer-events:auto; z-index:6; }
-/* circular icon */
-.news-btn {
-  width:40px; height:40px; border-radius:999px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-  border:1px solid rgba(255,255,255,0.06);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-  transition: transform 160ms ease, box-shadow 160ms ease;
-}
-.news-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(0,0,0,0.32); }
-
-/* small red unread dot */
-.news-dot {
-  position:absolute; top:6px; right:6px; width:9px; height:9px; border-radius:50%;
-  background:#ff6b8a; box-shadow:0 2px 6px rgba(255,80,120,0.12);
-  border: 2px solid rgba(255,255,255,0.06);
-}
-
-/* snippet text (one-line, ellipsis) */
-.news-snippet {
-  max-width: 56%;
-  font-size:12px;
-  color: var(--soft);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  align-self:center;
-  user-select:none;
-  cursor:pointer;
-}
-
-/* ensure news-wrap sits inside .card */
-.card { position: relative; }
-@media (max-width:420px){
-  .news-snippet { display:none; } /* hide snippet on very small screens */
-}
-  /* GLASS DOOR overlay */
+/* GLASS DOOR overlay */
 .door-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:auto}
 .door-wrap{width:100%;max-width:900px;height:100vh;display:flex;perspective:1400px}
 .leaf{
@@ -368,7 +309,7 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
 .title-row.compact.simple-one {
   padding: 8px 0 14px;
   display: flex;
-  justify-content: center;     /* ⬅️ bikin tulisan di tengah */
+  justify-content: center;     /* center */
   align-items: center;
   width: 100%;
   text-align: center;
@@ -381,29 +322,43 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
   letter-spacing: 0.03em;
   color: var(--text);
 }
-.compact-title.simple-name {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--text);
+
+/* ---------- NEWS / UPDATE badge (pojok kanan atas) ---------- */
+.news-wrap { position: absolute; top: 14px; right: 14px; display:flex; align-items:center; gap:8px; pointer-events:auto; z-index:6; }
+.news-btn {
+  width:40px; height:40px; border-radius:999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border:1px solid rgba(255,255,255,0.06);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.news-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(0,0,0,0.32); }
+.news-dot {
+  position:absolute; top:6px; right:6px; width:9px; height:9px; border-radius:50%;
+  background:#ff6b8a; box-shadow:0 2px 6px rgba(255,80,120,0.12);
+  border: 2px solid rgba(255,255,255,0.06);
+}
+.news-snippet {
+  max-width: 56%;
+  font-size:12px;
+  color: var(--soft);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  align-self:center;
+  user-select:none;
+  cursor:pointer;
+}
+@media (max-width:420px){
+  .news-snippet { display:none; } /* hide snippet on small screens */
 }
 
-/* close button mini style */
-.icon-btn {
-  padding: 6px 8px;
-  font-size: 13px;
-  opacity: 0.95;
-}
-  
 /* ---------- GIF / ICON styles ---------- */
 /* fav icon image inside button */
 #favIcon{
   width:18px;height:18px;object-fit:contain;border-radius:6px;display:inline-block;vertical-align:middle;
 }
-#favBtn .label-text{display:inline-block;vertical-align:middle;margin-left:8px}
-
-/* small fade-in for gif when it appears */
 .fav-gif-in{
   animation: favGifIn 260ms ease both;
 }
@@ -428,11 +383,20 @@ button:focus { outline: 3px solid rgba(247,214,255,0.12); outline-offset:3px; }
     <div class="card" id="card">
 
   <!-- --------- SIMPLE ONE-LINE HEADER: "Auroreine" --------- -->
-<!-- Simple centered header -->
-<div class="title-row compact simple-one" role="banner">
-  <h1 class="compact-title simple-name">Auroreine</h1>
-</div>
+  <div class="title-row compact simple-one" role="banner">
+    <h1 class="compact-title simple-name">Auroreine</h1>
+  </div>
 
+  <!-- NEWS / UPDATE quick link (paste is right after header inside .card) -->
+  <div class="news-wrap" id="newsWrap" aria-hidden="false">
+    <div style="position:relative;">
+      <button class="news-btn" id="newsBtn" aria-label="Latest updates" title="Open latest update">
+        <span aria-hidden="true">📰</span>
+        <span class="news-dot" id="newsDot" style="display:block"></span>
+      </button>
+    </div>
+    <div class="news-snippet" id="newsSnippet" title="Open latest update">Rachelle got paparazi…</div>
+  </div>
 
       <!-- tabs -->
       <div class="tabs" id="tabs">
@@ -449,7 +413,6 @@ like a quiet verse written in silver.</p>
       </div>
 
       <div class="btn-row">
-        <!-- favorite now holds an <img> for the fox which we toggle between static/animated -->
         <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">
           <img id="favIcon" alt="fox icon" src="foxfixfix.gif" aria-hidden="true">
           <span class="label-text">Favorite</span>
@@ -458,7 +421,6 @@ like a quiet verse written in silver.</p>
       </div>
 
       <!-- profile audio (preview) -->
-      <!-- DEFAULT source set to playsongnew.mp3 as requested -->
       <audio id="profileAudio" preload="auto">
         <source src="playsongnew.mp3" type="audio/mpeg">
       </audio>
@@ -475,7 +437,7 @@ like a quiet verse written in silver.</p>
   <button class="replay" id="replayBtn" title="Replay door effect">Replay ✨</button>
 
 <script>
-  // Telegram WebApp
+  // Telegram WebApp (if running inside Telegram)
   const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   if (tg) try { tg.expand(); tg.ready(); } catch(e){}
 
@@ -506,7 +468,16 @@ like a quiet verse written in silver.</p>
   const tR = document.getElementById('tab-rp');
   const tabsRoot = document.getElementById('tabs');
 
-  // SPARKLE
+  function setActive(k){
+    selected = k;
+    const d = profiles[k];
+    document.getElementById('profile-title').textContent = d.title;
+    document.getElementById('profile-tag').textContent = d.tag;
+    document.getElementById('profile-text').textContent = d.text;
+    if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
+  }
+
+  // SPARKLE helpers
   function makeSparkle(x, y, size = null) {
     const profileBox = document.getElementById("profile");
     if (!profileBox) return;
@@ -521,7 +492,6 @@ like a quiet verse written in silver.</p>
     profileBox.appendChild(sp);
     setTimeout(() => { if (sp && sp.parentNode) sp.parentNode.removeChild(sp); }, 1400);
   }
-
   function burstSparkles(count = 5) {
     const box = document.getElementById("profile");
     if (!box) return;
@@ -538,13 +508,27 @@ like a quiet verse written in silver.</p>
     }
   }
 
-  // FAVORITE & PLAY elements
+  // tab listeners
+  tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
+  tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
+
+  // keyboard arrows support
+  document.addEventListener('keydown', function(e){
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const active = tabs.find(t => t.classList.contains('active'));
+    if(!active) return;
+    const idx = tabs.indexOf(active);
+    if(e.key === 'ArrowRight' && idx < tabs.length - 1) { tabs[idx+1].click(); tabs[idx+1].focus(); }
+    if(e.key === 'ArrowLeft' && idx > 0) { tabs[idx-1].click(); tabs[idx-1].focus(); }
+  });
+
+  /* ---------- Favorite & Play (local + audio) ---------- */
   const favBtn = document.getElementById('favBtn');
   const playBtn = document.getElementById('playBtn');
   const profileAudio = document.getElementById('profileAudio') || null;
   const favIcon = document.getElementById('favIcon');
 
-  // map per-profile audio filenames (both point to playsongnew.mp3 by default)
+  // per-profile audio (both map to playsongnew.mp3 by default)
   const PROFILE_AUDIO_MAP = {
     zhou: 'playsongnew.mp3',
     rp: 'playsongnew.mp3'
@@ -553,34 +537,21 @@ like a quiet verse written in silver.</p>
     return PROFILE_AUDIO_MAP[selected] || 'playsongnew.mp3';
   }
 
-  // Preload fox images (gif + optional static fallback)
-// ganti blok preload fox images jadi:
-const FOX_GIF = 'foxfixfix.gif';
-const FOX_PNG = 'foxfixfix.gif'; // fallback tetap sama file atau bisa ganti ke png kalau ada
-const _preloads = [];
-function preload(src){ try{ const i=new Image(); i.src=src; _preloads.push(i); }catch(e){} }
-preload(FOX_GIF); preload(FOX_PNG);
+  // preload gif
+  const FOX_GIF = 'foxfixfix.gif';
+  const _pre = new Image(); _pre.src = FOX_GIF;
 
-  // FAVORITE logic (localStorage)
+  // localStorage favs
   const STORAGE_KEY = 'miniapp_favs_v1';
-  function loadFavs() {
-    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
-    catch(e){ return {}; }
-  }
-  function saveFavs(obj) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e){}
-  }
+  function loadFavs() { try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; } catch(e){ return {}; } }
+  function saveFavs(obj) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e){} }
 
   function setFavState(isFav) {
     favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
-    // update text
     const label = favBtn.querySelector('.label-text');
     if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
-
-    // always use foxfoxie.gif for icon (both normal & favorited)
     try {
       favIcon.src = FOX_GIF;
-
       if (isFav) {
         favIcon.classList.add('fav-gif-in');
         favBtn.classList.add('fav-active');
@@ -590,19 +561,12 @@ preload(FOX_GIF); preload(FOX_PNG);
         favBtn.classList.remove('fav-active');
       }
     } catch(e){
-      // degrade: remove image and fallback to text
       if (favIcon && favIcon.parentNode) favIcon.parentNode.removeChild(favIcon);
       if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
     }
   }
 
-  // handle missing PNG fallback: if image errors, hide it and fall back to emoji label
-  favIcon.addEventListener('error', (ev)=>{
-    // hide image, fall back to text only
-    favIcon.style.display = 'none';
-    const label = favBtn.querySelector('.label-text');
-    if (label) label.style.marginLeft = '0';
-  });
+  favIcon.addEventListener('error', ()=>{ favIcon.style.display = 'none'; const label = favBtn.querySelector('.label-text'); if(label) label.style.marginLeft = '0'; });
   favIcon.addEventListener('load', ()=>{ favIcon.style.display = 'inline-block'; });
 
   favBtn.addEventListener('click', () => {
@@ -612,38 +576,31 @@ preload(FOX_GIF); preload(FOX_PNG);
     else favs[selected] = { ts: Date.now() };
     saveFavs(favs);
     setFavState(!currently);
-
-    // send a tiny note back to Telegram bot (if available)
+    // send note to Telegram bot if available
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
       try { window.Telegram.WebApp.sendData(JSON.stringify({ type: 'fav', profile: selected, fav: !currently })); } catch(e){}
     }
   });
 
-  // update fav UI for current selected - only called on load/init, NOT on tab change
   function initFavUIForCurrent() {
     const favs = loadFavs();
     const isFav = !!favs[selected];
-    // ensure favIcon has a sensible default src before calling setFavState
     favIcon.src = FOX_GIF;
     setFavState(isFav);
   }
 
-  /* PLAY audio logic — toggles play / pause and uses playsongnew.mp3 */
+  /* PLAY audio logic */
   playBtn.addEventListener('click', async () => {
     if (!profileAudio) {
       alert('Audio not available. Tambahkan playsongnew.mp3 di folder yang sama dengan file ini.');
       return;
     }
-
-    // set source sesuai profile (lazily) — PROFILE_AUDIO_MAP maps to playsongnew.mp3
     const desired = currentProfileAudioFile();
     const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
     if (currentSource !== desired) {
       profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
       try { profileAudio.load(); } catch(e){}
     }
-
-    // toggle play/pause (user gesture required for play())
     try {
       if (profileAudio.paused) {
         await profileAudio.play();
@@ -665,20 +622,17 @@ preload(FOX_GIF); preload(FOX_PNG);
     }
   });
 
-  // Keep UI in sync when audio state changes
   if (profileAudio) {
     profileAudio.addEventListener('play', () => {
       playBtn.classList.add('playing');
       playBtn.textContent = '⏸ Pause';
       playBtn.setAttribute('aria-pressed','true');
     });
-
     profileAudio.addEventListener('pause', () => {
       playBtn.classList.remove('playing');
       playBtn.textContent = '▶ Play';
       playBtn.setAttribute('aria-pressed','false');
     });
-
     profileAudio.addEventListener('ended', () => {
       playBtn.classList.remove('playing');
       playBtn.textContent = '▶ Play';
@@ -687,9 +641,10 @@ preload(FOX_GIF); preload(FOX_PNG);
     });
   }
 
-  // ---------- UPDATED setActive (preserve audio play state when switching) ----------
-  function setActive(k){
-    // update selected & DOM
+  // preserve audio position/play when switching profiles if same file
+  const oldSetActive = setActive;
+  setActive = function(k){
+    // updated behaviour: attempt to swap source but preserve play state/time
     selected = k;
     const d = profiles[k];
     document.getElementById('profile-title').textContent = d.title;
@@ -697,66 +652,38 @@ preload(FOX_GIF); preload(FOX_PNG);
     document.getElementById('profile-text').textContent = d.text;
     if(k==='zhou'){ tZ.classList.add('active'); tR.classList.remove('active'); } else { tR.classList.add('active'); tZ.classList.remove('active'); }
 
-    // --- handle audio source switching without interrupting play state ---
     if (!profileAudio) return;
-
     try {
-      const desired = currentProfileAudioFile(); // filename for selected
+      const desired = currentProfileAudioFile();
       const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
-
-      // if source is already the same, do nothing (keeps current play/pause/time)
       if (currentSource === desired) return;
-
-      // remember playing state and time
       const wasPlaying = !profileAudio.paused && !profileAudio.ended;
       const currentTime = Math.max(0, Math.min(profileAudio.currentTime || 0, 999999));
-
-      // create new source element (lazy swap)
       profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
-      try { profileAudio.load(); } catch (e) { /* ignore load errors */ }
-
-      // try to restore time and resume if it was playing
-      // note: some browsers disallow setting currentTime until metadata is loaded,
-      // so we try best-effort and then attempt again on 'loadedmetadata'
+      try { profileAudio.load(); } catch(e){}
       function tryRestore() {
         try {
-          // clamp time to duration (if available)
           if (profileAudio.duration && !isNaN(profileAudio.duration)) {
             const t = Math.min(currentTime, Math.max(0, profileAudio.duration - 0.01));
             profileAudio.currentTime = t;
-          } else {
-            profileAudio.currentTime = currentTime;
-          }
-        } catch (err) { /* ignore */ }
-        if (wasPlaying) {
-          profileAudio.play().catch(()=>{ /* autoplay policy may block until user gesture; ignore */ });
-        }
-        // cleanup listener (one-time)
+          } else profileAudio.currentTime = currentTime;
+        } catch(e){}
+        if (wasPlaying) profileAudio.play().catch(()=>{});
         profileAudio.removeEventListener('loadedmetadata', tryRestore);
       }
-
-      // if metadata already loaded, try immediately, else wait
-      if (profileAudio.readyState >= 1) {
-        tryRestore();
-      } else {
-        profileAudio.addEventListener('loadedmetadata', tryRestore);
-      }
-
+      if (profileAudio.readyState >= 1) tryRestore();
+      else profileAudio.addEventListener('loadedmetadata', tryRestore);
     } catch (err) {
       console.warn('Error while switching profile audio (non-fatal):', err);
     }
-  }
-
-  // attach tab listeners now
-  tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
-  tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
+  };
 
   // init states on load
   window.addEventListener('load', ()=> {
     initFavUIForCurrent();
   });
 
-  // door sequence timings adjusted to ~2s cinematic:
+  // door sequence
   function openDoor(playSound=true){
     setTimeout(()=> shell.classList.add('content-visible'), 1200);
     if(playSound && doorAudio && doorAudio.src){
@@ -770,8 +697,6 @@ preload(FOX_GIF); preload(FOX_PNG);
     }, 1600);
   }
   setTimeout(()=> openDoor(true), 260);
-
-  // replay support
   replayBtn.addEventListener('click', ()=> {
     doorOverlay.classList.remove('hidden-overlay');
     doorWrap.classList.remove('door-opening');
@@ -794,42 +719,36 @@ preload(FOX_GIF); preload(FOX_PNG);
     window.addEventListener('resize', updateTabsMode);
     window.addEventListener('orientationchange', updateTabsMode);
   })();
-/* ---------- NEWS click + snippet control ---------- */
-/* CONFIG: ganti link dan snippet sesuai kebutuhan */
-const LATEST_POST_URL = 'https://t.me/S15XINYU'; // ganti ke post spesifik jika mau: https://t.me/S15XINYU/123
-const LATEST_SNIPPET = 'Rachelle got paparazi…'; // satu baris singkat
-const SHOW_UNREAD_DOT = true; // true => dot merah muncul
 
-const newsBtn = document.getElementById('newsBtn');
-const newsSnippet = document.getElementById('newsSnippet');
-const newsDot = document.getElementById('newsDot');
-const newsWrap = document.getElementById('newsWrap');
+  /* ---------- NEWS click + snippet control ---------- */
+  const LATEST_POST_URL = 'https://t.me/S15XINYU'; // change to specific post: .../123
+  const LATEST_SNIPPET = 'Rachelle got paparazi…'; // short one-line preview
+  const SHOW_UNREAD_DOT = true;
 
-// init UI
-if (newsSnippet) newsSnippet.textContent = LATEST_SNIPPET || '';
-if (newsDot) newsDot.style.display = SHOW_UNREAD_DOT ? 'block' : 'none';
+  const newsBtn = document.getElementById('newsBtn');
+  const newsSnippet = document.getElementById('newsSnippet');
+  const newsDot = document.getElementById('newsDot');
 
-// open link helper (prefers Telegram WebApp openLink if available)
-function openTelegramLink(url){
-  if (!url) return;
-  // If inside Telegram WebApp, prefer openLink
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-    try { window.Telegram.WebApp.openLink(url); return; } catch(e){ /* fallback */ }
+  if (newsSnippet) newsSnippet.textContent = LATEST_SNIPPET || '';
+  if (newsDot) newsDot.style.display = SHOW_UNREAD_DOT ? 'block' : 'none';
+
+  function openTelegramLink(url){
+    if (!url) return;
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+      try { window.Telegram.WebApp.openLink(url); return; } catch(e){ /* fallback */ }
+    }
+    window.open(url, '_blank', 'noopener');
   }
-  // fallback: open new tab
-  window.open(url, '_blank', 'noopener');
-}
 
-// clicks: icon OR snippet open link and clear dot
-if (newsBtn) newsBtn.addEventListener('click', ()=> {
-  if (newsDot) newsDot.style.display = 'none';
-  openTelegramLink(LATEST_POST_URL);
-});
-if (newsSnippet) newsSnippet.addEventListener('click', ()=> {
-  if (newsDot) newsDot.style.display = 'none';
-  openTelegramLink(LATEST_POST_URL);
-});
-  
+  if (newsBtn) newsBtn.addEventListener('click', ()=> {
+    if (newsDot) newsDot.style.display = 'none';
+    openTelegramLink(LATEST_POST_URL);
+  });
+  if (newsSnippet) newsSnippet.addEventListener('click', ()=> {
+    if (newsDot) newsDot.style.display = 'none';
+    openTelegramLink(LATEST_POST_URL);
+  });
+
 </script>
 </body>
 </html>
