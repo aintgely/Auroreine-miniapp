@@ -5,12 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Mini Profiles — Isaline (Glass Door)</title>
 <style>
-  
-/* micro animations for fav & play states */
-#favBtn { transition: transform 200ms ease, box-shadow 200ms ease, color 260ms ease; }
-#playBtn { transition: transform 160ms ease; }
-#playBtn:active { transform: scale(.98);
-}
+  /* micro animations for fav & play states */
+  #favBtn { transition: transform 200ms ease, box-shadow 200ms ease, color 260ms ease; }
+  #playBtn { transition: transform 160ms ease; }
+  #playBtn:active { transform: scale(.98); }
 
 @font-face {
   font-family: 'SwirlyCanalope';
@@ -186,21 +184,22 @@ button.primary{background:#f5f0ff;color:#161622}
 button.ghost{background:transparent;color:var(--soft);border:1px solid rgba(255,255,255,0.06)}
 
 /* fox default (make fav and play look identical initially) */
-/* tighter spacing between fox icon and label */
 #favBtn {
-  padding-left: 8px;     /* ← lebih rapat */
-  padding-right: 16px;
+  color: var(--soft);
   background: #f5f0ff;
   color: #161622;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  padding-left: 18px;
+  padding-right: 18px;
 }
-
-/* label text spacing */
-#favBtn .label-text {
-  margin-left: 2px;      /* ← lebih dekat ke gif */
-  display: inline-block;
-  vertical-align: middle;
+#playBtn {
+  background: #f5f0ff;
+  color: #161622;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  padding-left: 18px;
+  padding-right: 18px;
 }
+#favBtn:hover, #playBtn:hover { transform: translateY(-2px); transition: transform 120ms ease; }
 
 /* fav active: color, background, glow & wiggle */
 #favBtn.fav-active {
@@ -403,7 +402,7 @@ like a quiet verse written in silver.</p>
       <div class="btn-row">
         <!-- favorite now holds an <img> for the fox which we toggle between static/animated -->
         <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">
-          <img id="favIcon" alt="fox icon" src="foxfixfix.gif" aria-hidden="true">
+          <img id="favIcon" alt="fox icon" src="foxfoxie.gif" aria-hidden="true">
           <span class="label-text">Favorite</span>
         </button>
         <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
@@ -506,12 +505,11 @@ like a quiet verse written in silver.</p>
   }
 
   // Preload fox images (gif + optional static fallback)
-  // ganti blok preload fox images jadi:
-const FOX_GIF = 'foxfixfix.gif';
-const FOX_PNG = 'foxfixfix.gif'; // fallback tetap sama file atau bisa ganti ke png kalau ada
-const _preloads = [];
-function preload(src){ try{ const i=new Image(); i.src=src; _preloads.push(i); }catch(e){} }
-preload(FOX_GIF); preload(FOX_PNG);
+  const FOX_GIF = 'foxfoxie.gif';
+  const FOX_PNG = 'foxfoxie.gif'; // fallback to same gif so both states use foxfoxie
+  const _preloads = [];
+  function preload(src){ try{ const i=new Image(); i.src=src; _preloads.push(i); }catch(e){} }
+  preload(FOX_GIF); preload(FOX_PNG);
 
   // FAVORITE logic (localStorage)
   const STORAGE_KEY = 'miniapp_favs_v1';
