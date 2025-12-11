@@ -361,8 +361,16 @@ button.ghost { background:transparent; color:var(--soft); border:1px solid rgba(
   #tab-news { flex:0 0 44px; min-width:44px; max-width:44px; }
 }
 /* Miniapp zoom-out on load */
-body { transform: scale(0.94); transform-origin: top center; transition: transform 0.55s ease-out; }
-body.content-visible { transform: scale(1); }
+body {
+  opacity: 0;
+  transform: scale(0.88);
+  transform-origin: top center;
+  transition: opacity .55s ease-out, transform .55s cubic-bezier(0.22, 1, 0.36, 1);
+}(0.94); transform-origin: top center; transition: transform 0.55s ease-out; }
+body.content-visible {
+  opacity: 1;
+  transform: scale(1);
+} { transform: scale(1); }
 
 </style>
 </head>
