@@ -165,7 +165,15 @@ body {
   margin-bottom:14px;
 }
 
-.profile h2 { margin:0 0 4px; font-size:15px; font-weight:600; }
+/* Make the profile TITLE use SwirlyCanalope as requested */
+.profile h2 {
+  margin:0 0 4px;
+  font-size:15px;
+  font-weight:600;
+  /* changed to SwirlyCanalope */
+  font-family: 'SwirlyCanalope', serif;
+  line-height:1.05;
+}
 
 .profile small {
   display:block;
@@ -174,8 +182,9 @@ body {
   margin-bottom:6px;
 }
 
+/* Make the paragraph use the same font as the title (SwirlyCanalope) */
 .profile p {
-  font-family:'SwirlyCanalope', serif;
+  font-family: 'SwirlyCanalope', serif;
   font-size:18px;
   color:#eedeff;
   line-height:1.55;
@@ -352,7 +361,7 @@ button.ghost {
   0% { transform: translateY(0) scale(.5); opacity:0; }
   15% { transform: translateY(-4px) scale(1); opacity:.95; }
   50% { transform: translateY(-12px) scale(1.15); opacity:.8; }
-  100% { transform: translateY(-22px) scale(.7); opacity:0; }
+  100% { transform: translateY(-22px) scale(0.7); opacity:0; }
 }
 
 /* NEWS modal */
