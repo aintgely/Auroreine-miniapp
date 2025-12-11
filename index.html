@@ -419,6 +419,84 @@ button.ghost {
 .music-player-row { display:flex; gap:8px; align-items:center; margin-top:10px; }
 .music-player-row .play-btn { padding:8px 12px; border-radius:8px; background:#f5f0ff; color:#161622; border:none; cursor:pointer; }
 
+
+/* Music toggle button (inline, right of profile) */
+.card { position: relative; } /* ensure positioned context */
+
+.music-toggle {
+  position: absolute;
+  right: 12px;            /* adjust horizontal position */
+  top: 110px;             /* adjust vertical to align with arrow in screenshot */
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  padding: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: width 360ms cubic-bezier(.2,.9,.26,1), background 260ms ease, opacity 260ms ease, transform 260ms ease;
+  width: 40px;            /* collapsed width (circle) */
+  align-items:center;
+  justify-content:center;
+  opacity: 0.28;          /* dimmed when collapsed */
+  backdrop-filter: blur(6px);
+}
+
+/* show slight lift on hover when collapsed */
+.music-toggle:hover { transform: translateY(-3px); opacity: 0.5; }
+
+/* expanded state */
+.music-toggle.expanded {
+  width: 180px;           /* expanded width to reveal icon + label */
+  background: linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.02));
+  border-color: rgba(247,214,255,0.10);
+  opacity: 1;
+  box-shadow: 0 10px 30px rgba(120,60,140,0.12);
+}
+
+/* inner content */
+.music-toggle .mt-inner {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transform: translateX(0);
+  transition: transform 300ms cubic-bezier(.2,.9,.26,1);
+  width:100%;
+  padding: 0 8px;
+}
+
+/* music icon hidden in collapsed state: we use scale/opacity */
+.music-toggle .mt-icon {
+  width:28px; height:28px; border-radius:8px;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:15px;
+  background:linear-gradient(180deg,#f5f0ff,#f7d6ff);
+  color:#161622;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  transform-origin:center;
+  opacity:0; transform: scale(.8) translateX(6px);
+  transition: opacity 240ms ease, transform 260ms cubic-bezier(.2,.9,.26,1);
+}
+
+/* label visible only when expanded */
+.music-toggle .mt-label {
+  color:var(--text);
+  font-size:13px;
+  font-weight:600;
+  white-space:nowrap;
+  opacity:0;
+  transform: translateX(6px);
+  transition: opacity 260ms ease, transform 260ms cubic-bezier(.2,.9,.26,1);
+}
+
+/* when expanded, show icon + label */
+.music-toggle.expanded .mt-icon { opacity:1; transform: scale(1) translateX(0); }
+.music-toggle.expanded .mt-label { opacity:1; transform: translateX(0); }
+
 </style>
 </head>
 <body>
@@ -474,7 +552,15 @@ like a quiet verse written in silver.</p>
         <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
       </div>
 
-      <!-- AUDIO -->
+      <!-- Animated inline music toggle (right side of profile) -->
+<div class="music-toggle" id="musicToggle" role="button" aria-expanded="false" title="Music">
+  <div class="mt-inner">
+    <div class="mt-icon" id="mtIcon">♪</div>
+    <div class="mt-label" id="mtLabel">Playlist</div>
+  </div>
+</div>
+
+<!-- AUDIO -->
       <audio id="profileAudio" preload="auto">
         <source src="playsongnew.mp3" type="audio/mpeg">
       </audio>
@@ -1020,6 +1106,47 @@ musicBackdrop.addEventListener('click', (ev)=>{ if (ev.target===musicBackdrop) c
 
 // keyboard close
 document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && musicBackdrop.classList.contains('open')) closeMusicModal(); });
+
+<// Animated music toggle behavior
+const musicToggle = document.getElementById('musicToggle');
+const musicBackdropExisting = document.getElementById('musicBackdrop'); // modal we added earlier
+
+if (musicToggle) {
+  musicToggle.addEventListener('click', (e) => {
+    const expanded = musicToggle.classList.toggle('expanded');
+    musicToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+
+    // when expanded, also open the playlist modal
+    if (expanded) {
+      if (musicBackdropExisting) {
+        musicBackdropExisting.classList.add('open');
+        musicBackdropExisting.setAttribute('aria-hidden','false');
+      } else {
+        const tabMusicBtn = document.getElementById('tab-music');
+        if (tabMusicBtn) tabMusicBtn.click();
+      }
+    } else {
+      if (musicBackdropExisting) {
+        musicBackdropExisting.classList.remove('open');
+        musicBackdropExisting.setAttribute('aria-hidden','true');
+      }
+    }
+  });
+
+  // collapse when clicking outside the card
+  document.addEventListener('click', (ev) => {
+    if (!musicToggle.classList.contains('expanded')) return;
+    const withinCard = ev.target.closest('.card');
+    if (!withinCard) {
+      musicToggle.classList.remove('expanded');
+      musicToggle.setAttribute('aria-expanded','false');
+      if (musicBackdropExisting) {
+        musicBackdropExisting.classList.remove('open');
+        musicBackdropExisting.setAttribute('aria-hidden','true');
+      }
+    }
+  });
+}
 
 </script>
 </body>
