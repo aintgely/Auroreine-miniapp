@@ -391,7 +391,7 @@ like a quiet verse written in silver.</p>
       <!-- BUTTONS -->
       <div class="btn-row">
         <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">
-          <img id="favIcon" alt="fox icon" src="./foxfixfix.gif" aria-hidden="true">
+          <img id="favIcon" alt="fox icon" src="./classy_purple_fox_50px_smooth.gif" aria-hidden="true">
           <span class="label-text">Favorite</span>
         </button>
 
@@ -467,7 +467,7 @@ const favIcon = document.getElementById('favIcon');
 // ensure gif path is correct (relative) and provide a tiny inline SVG fallback if loading fails
 try {
   if (favIcon) {
-    if (!favIcon.getAttribute('src') || favIcon.getAttribute('src').indexOf('./') !== 0) favIcon.src = '././foxfixfix.gif';
+    if (!favIcon.getAttribute('src') || favIcon.getAttribute('src').indexOf('./') !== 0) favIcon.src = '././classy_purple_fox_50px_smooth.gif';
     favIcon.addEventListener('error', function() {
       // fallback: tiny decorative SVG so the layout isn't broken
       favIcon.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"><text x="0" y="14" font-size="14" fill="%23f5f0ff">★</text></svg>';
@@ -546,7 +546,7 @@ function setFavState(isFav) {
   const label = favBtn.querySelector('.label-text');
   if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
   try {
-    favIcon.src = './foxfixfix.gif';
+    favIcon.src = './classy_purple_fox_50px_smooth.gif';
     if (isFav) {
       favIcon.classList.add('fav-gif-in');
       favBtn.classList.add('fav-active');
@@ -570,7 +570,7 @@ favBtn.addEventListener('click', () => {
 });
 function initFavUIForCurrent() {
   const favs = loadFavs(); const isFav = !!favs[selected];
-  favIcon.src = './foxfixfix.gif';
+  favIcon.src = './classy_purple_fox_50px_smooth.gif';
   setFavState(isFav);
 }
 
