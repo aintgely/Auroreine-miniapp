@@ -317,6 +317,21 @@ button.ghost {
 
 /* rest of existing styles (door overlay, news modal, etc.) kept as-is */
 
+/* REPLAY button (fixed bottom-right) */
+.replay {
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:10010;
+  background:rgba(255,255,255,0.04);
+  color:var(--soft);
+  border:1px solid rgba(255,255,255,0.03);
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:13px;
+  cursor:pointer;
+}
+
 /* DOOR OVERLAY */
 .door-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:9999; pointer-events:auto; }
 .door-wrap { width:100%; max-width:900px; height:100vh; display:flex; perspective:1600px; transform-style:preserve-3d; }
