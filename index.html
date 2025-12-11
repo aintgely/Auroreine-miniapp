@@ -182,6 +182,17 @@ body {
   color:var(--text);
 }
 
+/* image inside news tab (PNG) — keep size & alignment identical to emoji */
+#tab-news img#newsSymbol {
+  width:20px;        /* ukuran ikon — pas untuk 46px tombol */
+  height:20px;       /* jaga aspek kotak */
+  object-fit:contain;
+  display:block;
+  pointer-events:none; /* supaya klik tetap ke button, bukan gambar */
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 /* reduce visual size of the other tabs a bit so news fits */
 .tab.small {
   font-size:11px;
@@ -355,7 +366,7 @@ button.ghost {
 
 /* sparkle */
 .sparkle-pop { position:absolute;width:6px;height:6px;border-radius:50%; background:radial-gradient(circle,#ffffff 0%,#e7d4ff 60%,transparent 100%); opacity:0; animation:sparkleFade 1.2s ease-out forwards; pointer-events:none; filter:blur(0.4px); }
-@keyframes sparkleFade { 0% { transform: translateY(0) scale(.5); opacity:0; } 15% { transform: translateY(-4px) scale(1); opacity:.95; } 50% { transform: translateY(-12px) scale(1.15); opacity:.8; } 100% { transform: translateY(-22px) scale(.7); opacity:0; } }
+@keyframes sparkleFade { 0% { transform: translateY(0) scale(.5); opacity:0; } 15% { transform: translateY(-4px) scale(1); opacity:.95; } 50% { transform: translateY(-12px) scale(1.15); opacity:.8; } 100% { transform: translateY(-22px) scale(0.7); opacity:0; } }
 
 /* ===========================
    NEWS modal (replaced by "correct" UI from your second file)
@@ -469,8 +480,10 @@ button.ghost {
         <button class="tab small active" id="tab-zhou">✦ Muse</button>
         <button class="tab small" id="tab-rp">✧ Another Universe</button>
 
-        <!-- compact inline news tab -->
-        <button id="tab-news" class="tab" title="Latest news">🗞️</button>
+        <!-- compact inline news tab (replaced with PNG) -->
+        <button id="tab-news" class="tab" title="Latest news" aria-label="Latest news">
+          <img id="newsSymbol" src="./newss.png" alt="news" />
+        </button>
       </div>
 
       <!-- PROFILE -->
