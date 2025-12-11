@@ -271,7 +271,7 @@ button.ghost {
 #playBtn:active, #favBtn:active { transform: scale(0.99); transition: transform 80ms ease; }
 
 /* ===========================
-        DOOR OVERLAY
+        DOOR OVERLAY (improved smooth animation)
 =========================== */
 .door-overlay {
   position:fixed;
@@ -280,9 +280,53 @@ button.ghost {
   align-items:center;
   justify-content:center;
   z-index:9999;
+  pointer-events:auto;
 }
 
-.hidden-overlay { display:none !important; }
+/* wrapper that will animate the 3D door effect */
+.door-wrap {
+  width:100%;
+  max-width:900px;
+  height:100vh;
+  display:flex;
+  perspective:1600px; /* deeper perspective for smoother 3D */
+  transform-style:preserve-3d;
+}
+
+.door-wrap .leaf {
+  flex:1;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.06);
+  background:linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 30px 80px rgba(60,0,120,0.45);
+  transform-origin: center left;
+  transition: transform 900ms cubic-bezier(0.18, 0.89, 0.32, 1), box-shadow 600ms ease, opacity 600ms ease;
+}
+.door-wrap .leaf.right { transform-origin: center right; }
+
+/* initial closed state */
+.door-wrap .leaf { transform: rotateY(0deg) translateZ(0px) scale(1); }
+
+/* when opening, both leaves rotate outward and slightly scale */
+.door-wrap.door-opening .leaf.left {
+  transform: rotateY(-18deg) translateZ(40px) scale(0.995);
+  box-shadow: -40px 40px 120px rgba(0,0,0,0.6);
+}
+.door-wrap.door-opening .leaf.right {
+  transform: rotateY(18deg) translateZ(40px) scale(0.995);
+  box-shadow: 40px 40px 120px rgba(0,0,0,0.6);
+}
+
+/* subtle fade of the overlay wrapper while animating out */
+.door-overlay.fade-out { background: rgba(0,0,0,0.0); transition: background 700ms ease; }
+
+.hidden-overlay { display:none !important; pointer-events:none; }
+
 
 /* ===========================
    tambahan CSS (modal, sparkles, replay)
@@ -384,119 +428,34 @@ button.ghost {
 }
 .news-grid .grid-thumb { width:100%; height:82px; object-fit:cover; border-radius:8px; background:#111; display:block; margin-bottom:8px; }
 
+/* Playlist panel */
+.playlist-panel {
+  position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+  width:min(420px, calc(100% - 40px)); z-index:10030;
+  background:linear-gradient(180deg, rgba(12,10,14,0.98), rgba(16,14,20,0.98));
+  border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,0.04);
+  box-shadow:0 30px 80px rgba(0,0,0,0.6); color:var(--text);
+  display:none; flex-direction:column; gap:8px;
+}
+.playlist-panel.open { display:flex; }
+.playlist-header { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.playlist-list { display:flex; flex-direction:column; gap:8px; max-height:260px; overflow:auto; padding-right:6px; }
+.playlist-item { display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border:1px solid rgba(255,255,255,0.02); }
+.playlist-item .title { font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.playlist-item .meta { font-size:12px; color:var(--soft); }
+.playlist-controls { display:flex; gap:8px; align-items:center; }
+.playlist-add { display:flex; gap:8px; }
+.playlist-add input { flex:1; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text); }
+.playlist-add button { padding:8px 10px; border-radius:10px; border:none; background:#f5f0ff; color:#161622; cursor:pointer; }
+.playlist-item button.small { padding:6px 8px; border-radius:8px; font-size:13px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--soft); cursor:pointer; }
+
 /* small-screen tweaks */
 @media (max-width:520px) {
   .news-thumb { width:58px; height:58px; }
   .tab { min-width:82px; }
   #tab-news { flex:0 0 44px; min-width:44px; max-width:44px; }
+  .playlist-panel { width:calc(100% - 32px); left:16px; transform:none; }
 }
-
-/* ===========================
-   MUSIC POPUP styles
-=========================== */
-.music-modal-backdrop {
-  position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-  background: rgba(5,4,8,0.6); z-index:10030; padding:20px;
-}
-.music-modal-backdrop.open { display:flex; }
-.music-modal {
-  width:min(520px,calc(100% - 40px));
-  max-height:70vh; overflow:auto;
-  background:linear-gradient(180deg, rgba(12,10,14,0.98), rgba(16,14,20,0.99));
-  border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,0.04);
-  box-shadow:0 30px 80px rgba(0,0,0,0.6); color:var(--text);
-}
-.music-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
-.music-title { font-weight:700; font-size:13px; margin:0; }
-.music-controls { display:flex; gap:8px; align-items:center; }
-.music-inputs { display:flex; gap:8px; margin-bottom:10px; }
-.music-inputs input[type="text"] { flex:1; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text); }
-.music-inputs input[type="file"] { display:block; }
-.music-list { display:flex; flex-direction:column; gap:8px; }
-.music-item { display:flex; gap:8px; align-items:center; padding:8px; border-radius:8px; background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.006)); border:1px solid rgba(255,255,255,0.02); }
-.music-item .meta { flex:1; min-width:0; font-size:13px; color:var(--soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.music-item button { padding:6px 8px; border-radius:8px; background:transparent; color:var(--soft); border:1px solid rgba(255,255,255,0.04); cursor:pointer; }
-.music-player-row { display:flex; gap:8px; align-items:center; margin-top:10px; }
-.music-player-row .play-btn { padding:8px 12px; border-radius:8px; background:#f5f0ff; color:#161622; border:none; cursor:pointer; }
-
-
-/* Music toggle button (inline, right of profile) */
-.card { position: relative; } /* ensure positioned context */
-
-.music-toggle {
-  position: absolute;
-  right: 12px;            /* adjust horizontal position */
-  top: 110px;             /* adjust vertical to align with arrow in screenshot */
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.03);
-  padding: 6px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: width 360ms cubic-bezier(.2,.9,.26,1), background 260ms ease, opacity 260ms ease, transform 260ms ease;
-  width: 40px;            /* collapsed width (circle) */
-  align-items:center;
-  justify-content:center;
-  opacity: 0.28;          /* dimmed when collapsed */
-  backdrop-filter: blur(6px);
-}
-
-/* show slight lift on hover when collapsed */
-.music-toggle:hover { transform: translateY(-3px); opacity: 0.5; }
-
-/* expanded state */
-.music-toggle.expanded {
-  width: 180px;           /* expanded width to reveal icon + label */
-  background: linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.02));
-  border-color: rgba(247,214,255,0.10);
-  opacity: 1;
-  box-shadow: 0 10px 30px rgba(120,60,140,0.12);
-}
-
-/* inner content */
-.music-toggle .mt-inner {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  transform: translateX(0);
-  transition: transform 300ms cubic-bezier(.2,.9,.26,1);
-  width:100%;
-  padding: 0 8px;
-}
-
-/* music icon hidden in collapsed state: we use scale/opacity */
-.music-toggle .mt-icon {
-  width:28px; height:28px; border-radius:8px;
-  display:inline-flex; align-items:center; justify-content:center;
-  font-size:15px;
-  background:linear-gradient(180deg,#f5f0ff,#f7d6ff);
-  color:#161622;
-  box-shadow:0 6px 18px rgba(0,0,0,0.06);
-  transform-origin:center;
-  opacity:0; transform: scale(.8) translateX(6px);
-  transition: opacity 240ms ease, transform 260ms cubic-bezier(.2,.9,.26,1);
-}
-
-/* label visible only when expanded */
-.music-toggle .mt-label {
-  color:var(--text);
-  font-size:13px;
-  font-weight:600;
-  white-space:nowrap;
-  opacity:0;
-  transform: translateX(6px);
-  transition: opacity 260ms ease, transform 260ms cubic-bezier(.2,.9,.26,1);
-}
-
-/* when expanded, show icon + label */
-.music-toggle.expanded .mt-icon { opacity:1; transform: scale(1) translateX(0); }
-.music-toggle.expanded .mt-label { opacity:1; transform: translateX(0); }
-
 </style>
 </head>
 <body>
@@ -528,9 +487,6 @@ button.ghost {
 
         <!-- compact inline news tab -->
         <button id="tab-news" class="tab" title="Latest news">🗞️</button>
-
-        <!-- music popup tab -->
-        <button id="tab-music" class="tab" title="Music & playlist">♪</button>
       </div>
 
       <!-- PROFILE -->
@@ -550,17 +506,12 @@ like a quiet verse written in silver.</p>
         </button>
 
         <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
+        <!-- playBtn now opens playlist panel -->
+        <button class="ghost" id="playBtn" aria-pressed="false" title="Open playlist">♪ Playlist</button>
       </div>
 
-      <!-- Animated inline music toggle (right side of profile) -->
-<div class="music-toggle" id="musicToggle" role="button" aria-expanded="false" title="Music">
-  <div class="mt-inner">
-    <div class="mt-icon" id="mtIcon">♪</div>
-    <div class="mt-label" id="mtLabel">Playlist</div>
-  </div>
-</div>
-
-<!-- AUDIO -->
+      <!-- AUDIO -->
+      <!-- AUDIO (single audio element used for the playlist) -->
       <audio id="profileAudio" preload="auto">
         <source src="playsongnew.mp3" type="audio/mpeg">
       </audio>
@@ -601,9 +552,32 @@ like a quiet verse written in silver.</p>
     </div>
   </div>
 
+  <!-- PLAYLIST PANEL -->
+  <div class="playlist-panel" id="playlistPanel" aria-hidden="true">
+    <div class="playlist-header">
+      <div style="display:flex;flex-direction:column;">
+        <div style="font-weight:700;">Playlist</div>
+        <div style="font-size:12px;color:var(--soft);">Tap a song to play — you can add or remove items</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="closePlaylist" class="news-close">Close</button>
+      </div>
+    </div>
+
+    <div class="playlist-list" id="playlistList">
+      <!-- dynamically filled -->
+    </div>
+
+    <div class="playlist-add">
+      <input id="newSongInput" placeholder="file or url (e.g. playsongnew.mp3)" aria-label="Add song url or filename">
+      <button id="addSongBtn">Add</button>
+    </div>
+  </div>
+
 <script>
 /* ===========================
    Core JS: tabs, fav, audio, door, news
+   Core JS: tabs, fav, audio, door, news, playlist
 =========================== */
 
 /* Telegram WebApp compatibility (optional) */
@@ -630,6 +604,12 @@ const newsBackdrop = document.getElementById('newsBackdrop');
 const newsContent = document.getElementById('newsContent');
 const newsClose = document.getElementById('newsClose');
 const newsOpenChannel = document.getElementById('newsOpenChannel');
+
+const playlistPanel = document.getElementById('playlistPanel');
+const playlistList = document.getElementById('playlistList');
+const closePlaylist = document.getElementById('closePlaylist');
+const newSongInput = document.getElementById('newSongInput');
+const addSongBtn = document.getElementById('addSongBtn');
 
 const profiles = {
   zhou: {
@@ -724,15 +704,23 @@ function initFavUIForCurrent() {
 
 /* ===========================
    AUDIO play/pause handling
+   Audio / Playlist handling
+   - playlist is stored in localStorage so you can update it
+   - default playlist includes playsongnew.mp3
 =========================== */
 const PROFILE_AUDIO_MAP = { zhou: 'playsongnew.mp3', rp: 'playsongnew.mp3' };
 function currentProfileAudioFile() { return PROFILE_AUDIO_MAP[selected] || 'playsongnew.mp3'; }
+const PLAYLIST_KEY = 'miniapp_playlist_v1';
+const DEFAULT_PLAYLIST = [
+  { title: 'playsongnew.mp3', src: 'playsongnew.mp3' }
+];
 
 playBtn.addEventListener('click', async () => {
   if (!profileAudio) { alert('Audio not available. Tambahkan playsongnew.mp3 di folder yang sama dengan file ini.'); return; }
   const desired = currentProfileAudioFile();
   const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
   if (currentSource !== desired) { profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`; try { profileAudio.load(); } catch(e){} }
+function loadPlaylist() {
   try {
     if (profileAudio.paused) {
       await profileAudio.play();
@@ -748,12 +736,128 @@ playBtn.addEventListener('click', async () => {
   } catch (err) {
     playBtn.classList.remove('playing'); playBtn.textContent = '▶ Play'; playBtn.setAttribute('aria-pressed','false');
     console.warn('Audio play error', err); alert('Gagal memutar audio — coba tekan lagi atau periksa file audio (playsongnew.mp3).');
+    const raw = localStorage.getItem(PLAYLIST_KEY);
+    if (!raw) return DEFAULT_PLAYLIST.slice();
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULT_PLAYLIST.slice();
+    return parsed;
+  } catch(e) { return DEFAULT_PLAYLIST.slice(); }
+}
+function savePlaylist(list) {
+  try { localStorage.setItem(PLAYLIST_KEY, JSON.stringify(list)); } catch(e){}
+}
+
+let playlist = loadPlaylist();
+let currentIndex = 0; // index in playlist that's currently loaded/playing
+
+function renderPlaylist() {
+  playlistList.innerHTML = '';
+  if (!playlist || playlist.length === 0) {
+    const empty = document.createElement('div'); empty.className = 'news-empty'; empty.textContent = 'Playlist kosong. Tambah lagu baru di bawah.';
+    playlistList.appendChild(empty); return;
   }
 });
+  playlist.forEach((item, i) => {
+    const row = document.createElement('div'); row.className = 'playlist-item';
+    const info = document.createElement('div'); info.style.flex='1';
+    const title = document.createElement('div'); title.className='title'; title.textContent = item.title || item.src || ('Track ' + (i+1));
+    const meta = document.createElement('div'); meta.className='meta'; meta.textContent = item.src || '';
+    info.appendChild(title); info.appendChild(meta);
+
+    const controls = document.createElement('div'); controls.className='playlist-controls';
+    const playBtnLocal = document.createElement('button'); playBtnLocal.className='small'; playBtnLocal.textContent = (i === currentIndex && !profileAudio.paused) ? '⏸' : '▶';
+    playBtnLocal.title = (i === currentIndex && !profileAudio.paused) ? 'Pause' : 'Play';
+    playBtnLocal.addEventListener('click', (ev)=>{
+      ev.preventDefault();
+      playTrack(i);
+    });
+
+    const removeBtn = document.createElement('button'); removeBtn.className='small'; removeBtn.textContent='✕'; removeBtn.title='Remove';
+    removeBtn.addEventListener('click', (ev)=>{ ev.preventDefault(); removeTrack(i); });
+
+    controls.appendChild(playBtnLocal); controls.appendChild(removeBtn);
+    row.appendChild(info); row.appendChild(controls);
+    playlistList.appendChild(row);
+  });
+}
+
+function playTrack(index) {
+  if (!playlist || !playlist[index]) return;
+  const src = playlist[index].src;
+  const title = playlist[index].title || src;
+  const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
+  const wasPlaying = !profileAudio.paused && !profileAudio.ended;
+
+  // if same track and playing -> pause
+  if (currentSource === src && !profileAudio.paused) {
+    profileAudio.pause();
+    updatePlayButtonUI(false);
+    renderPlaylist();
+    return;
+  }
+
+  currentIndex = index;
+  profileAudio.innerHTML = `<source src="${src}" type="audio/mpeg">`;
+  try { profileAudio.load(); } catch(e){}
+  profileAudio.currentTime = 0;
+  profileAudio.play().then(()=>{
+    updatePlayButtonUI(true);
+    renderPlaylist();
+  }).catch(()=>{
+    alert('Gagal memutar '+ title +'. Cek file atau path-nya.');
+    updatePlayButtonUI(false);
+    renderPlaylist();
+  });
+
+  // optionally notify Telegram bot of selection
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
+    try { window.Telegram.WebApp.sendData(JSON.stringify({ type: 'play', profile: selected, track: src })); } catch(e){}
+  }
+}
+
+function removeTrack(index) {
+  // if removing current track, pause first
+  if (index === currentIndex) {
+    try { profileAudio.pause(); } catch(e){}
+  }
+  playlist.splice(index,1);
+  if (currentIndex >= playlist.length) currentIndex = Math.max(0, playlist.length-1);
+  savePlaylist(playlist);
+  renderPlaylist();
+}
+
+function addTrack(src) {
+  if (!src || !src.trim()) return;
+  const trimmed = src.trim();
+  const title = trimmed.split('/').pop();
+  playlist.push({ title, src: trimmed });
+  savePlaylist(playlist);
+  renderPlaylist();
+  newSongInput.value = '';
+}
+
+function updatePlayButtonUI(isPlaying) {
+  if (isPlaying) {
+    playBtn.classList.add('playing'); playBtn.textContent='⏸ Pause'; playBtn.setAttribute('aria-pressed','true');
+  } else {
+    playBtn.classList.remove('playing'); playBtn.textContent='♪ Playlist'; playBtn.setAttribute('aria-pressed','false');
+  }
+}
+
+// attach audio events
 if (profileAudio) {
   profileAudio.addEventListener('play', ()=>{ playBtn.classList.add('playing'); playBtn.textContent='⏸ Pause'; playBtn.setAttribute('aria-pressed','true'); });
   profileAudio.addEventListener('pause', ()=>{ playBtn.classList.remove('playing'); playBtn.textContent='▶ Play'; playBtn.setAttribute('aria-pressed','false'); });
   profileAudio.addEventListener('ended', ()=>{ playBtn.classList.remove('playing'); playBtn.textContent='▶ Play'; playBtn.setAttribute('aria-pressed','false'); try{ profileAudio.currentTime=0;}catch(e){} });
+  profileAudio.addEventListener('play', ()=>{ updatePlayButtonUI(true); renderPlaylist(); });
+  profileAudio.addEventListener('pause', ()=>{ updatePlayButtonUI(false); renderPlaylist(); });
+  profileAudio.addEventListener('ended', ()=>{
+    // auto-next
+    if (playlist.length > 0) {
+      const next = (currentIndex + 1) % playlist.length;
+      playTrack(next);
+    } else { updatePlayButtonUI(false); }
+  });
 }
 
 /* ===========================
@@ -793,52 +897,79 @@ function setActive(k){
     }
     if (profileAudio.readyState >= 1) tryRestore(); else profileAudio.addEventListener('loadedmetadata', tryRestore);
   } catch(err){ console.warn('Error while switching profile audio (non-fatal):', err); }
+  // keep playlist audio independent of profile switching
 }
 
 /* attach tab listeners */
 // use reduced-size class for zhou/rp tabs so the news fits nicely inline
 if (tZ) tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
 if (tR) tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
+if (tZ) tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); initFavUIForCurrent(); });
+if (tR) tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); initFavUIForCurrent(); });
 
 /* ===========================
-   DOOR animation
+   DOOR animation (smoother)
 =========================== */
-function openDoor(playSound=true){
-  setTimeout(()=> shell.classList.add('content-visible'), 1200);
-  if (playSound && doorAudio && doorAudio.src) { doorAudio.currentTime = 0; doorAudio.play().catch(()=>{}); }
-  doorWrap.classList.add('door-opening');
-  setTimeout(()=> { doorOverlay.classList.add('hidden-overlay'); shell.classList.add('content-visible'); }, 1600);
-}
-setTimeout(()=> openDoor(true), 260);
-replayBtn.addEventListener('click', ()=> {
-  doorOverlay.classList.remove('hidden-overlay');
-  doorWrap.classList.remove('door-opening');
+function openDoor(playSound = true) {
+  // ensure the card appears a little after animation starts
   shell.classList.remove('content-visible');
+  // remove hidden-overlay in case it was hidden
+  doorOverlay.classList.remove('hidden-overlay');
+  // small delay to allow layout to settle then start anim
+  requestAnimationFrame(() => {
+    // add class to animate leaves outward
+    doorWrap.classList.add('door-opening');
+    // add subtle fade-out on overlay so the background merges nicely
+    doorOverlay.classList.add('fade-out');
+    // play sound if available
+    if (playSound && doorAudio && doorAudio.src) {
+      try { doorAudio.currentTime = 0; doorAudio.play().catch(()=>{}); } catch(e){}
+    }
+  });
+
+  // When the door-wrap transition finishes, hide the overlay and show content
+  function onTransitionEnd(e) {
+    // we only care about the transform transition on leaf (to avoid multiple triggers)
+    if (e.propertyName && !/transform/i.test(e.propertyName)) return;
+    // show content
+    shell.classList.add('content-visible');
+    // hide overlay after animation completes
+    doorOverlay.classList.add('hidden-overlay');
+    // cleanup
+    doorOverlay.classList.remove('fade-out');
+    doorWrap.classList.remove('door-opening');
+    doorWrap.removeEventListener('transitionend', onTransitionEnd);
+  }
+  // ensure we attach listener once
+  doorWrap.addEventListener('transitionend', onTransitionEnd);
+}
+
+// initial gentle open after load
+setTimeout(() => openDoor(true), 260);
+
+// replay: reset state and trigger openDoor again with a small delay for smoothness
+replayBtn.addEventListener('click', ()=> {
+  // show overlay again
+  doorOverlay.classList.remove('hidden-overlay');
+  doorOverlay.classList.remove('fade-out');
+  shell.classList.remove('content-visible');
+
+  // force reflow then start open animation
   void doorWrap.offsetWidth;
   setTimeout(()=> openDoor(true), 80);
 });
 
-/* responsive tabs helper */
-(function(){
-  function updateTabsMode() {
-    const tabsRoot = document.getElementById('tabs');
-    if (!tabsRoot) return;
-    if (window.matchMedia('(max-width:639px)').matches) tabsRoot.classList.add('tabs-scroll');
-    else tabsRoot.classList.remove('tabs-scroll');
-  }
-  updateTabsMode();
-  window.addEventListener('resize', updateTabsMode);
-  window.addEventListener('orientationchange', updateTabsMode);
-})();
-
-/* initialize favorite UI on load */
-window.addEventListener('load', ()=> { initFavUIForCurrent(); });
-
 /* ===========================
    NEWS modal logic (fetch + fallback thumbnail grid)
+   (kept as-is)
 =========================== */
 const NEWS_CHANNEL = 'S15XINYU';
 const NEWS_S_URL = `https://t.me/s/${NEWS_CHANNEL}`;
+function truncateText(s, n = 140) { if (!s) return ''; s = s.replace(/\s+/g,' ').trim(); if (s.length <= n) return s; return s.slice(0, n-1).trim() + '…'; }
+function renderNewsList(posts) { if (!posts || posts.length === 0) { newsContent.innerHTML = '<div class="news-empty">No recent posts were found.</div>'; return; } const list = document.createElement('div'); list.className = 'news-list'; posts.forEach(post => { const item = document.createElement('div'); item.className = 'news-item'; const thumb = document.createElement('img'); thumb.className = 'news-thumb'; thumb.alt = 'thumb'; thumb.loading='lazy'; if (post.thumb) thumb.src = post.thumb; else { thumb.style.background = '#111'; thumb.src = ''; } const meta = document.createElement('div'); meta.className = 'news-meta'; const title = document.createElement('div'); title.className = 'news-title'; title.textContent = post.timeStr || `S15XINYU`; const excerpt = document.createElement('p'); excerpt.className='news-excerpt'; excerpt.textContent = truncateText(post.excerpt || post.text || '', 140); const actions = document.createElement('div'); actions.className='news-actions'; const btnOpen = document.createElement('a'); btnOpen.className='news-open-tele'; btnOpen.textContent='Open in Telegram'; btnOpen.href = post.link || NEWS_S_URL; btnOpen.target='_blank'; btnOpen.rel='noopener noreferrer'; actions.appendChild(btnOpen); meta.appendChild(title); meta.appendChild(excerpt); meta.appendChild(actions); item.appendChild(thumb); item.appendChild(meta); list.appendChild(item); }); newsContent.innerHTML = ''; newsContent.appendChild(list); }
+function renderFallbackThumbnails(posts) { newsContent.innerHTML = ''; const grid = document.createElement('div'); grid.className = 'news-grid'; if (!posts || posts.length === 0) { const empty = document.createElement('div'); empty.className = 'news-empty'; empty.textContent = 'Unable to fetch previews from the channel. Try "Open in Telegram".'; newsContent.appendChild(empty); const openBtn = document.createElement('a'); openBtn.className='news-open-tele'; openBtn.textContent='Open channel in Telegram'; openBtn.href = NEWS_S_URL; openBtn.target = '_blank'; openBtn.rel = 'noopener noreferrer'; newsContent.appendChild(openBtn); const iframe = document.createElement('iframe'); iframe.className='news-fallback-iframe'; iframe.src = NEWS_S_URL; iframe.loading = 'lazy'; iframe.referrerPolicy = 'no-referrer'; newsContent.appendChild(iframe); return; } posts.forEach(p => { const item = document.createElement('div'); item.className = 'grid-item'; const a = document.createElement('a'); a.href = p.link || NEWS_S_URL; a.target = '_blank'; a.rel = 'noopener noreferrer'; const img = document.createElement('img'); img.className='grid-thumb'; img.alt = p.timeStr || 'post'; if (p.thumb) img.src = p.thumb; else img.src = ''; const t = document.createElement('div'); t.className='news-title'; t.style.fontSize='12px'; t.style.margin='0'; t.style.color='var(--soft)'; t.textContent = truncateText(p.excerpt || p.timeStr || '', 80); a.appendChild(img); item.appendChild(a); item.appendChild(t); grid.appendChild(item); }); newsContent.appendChild(grid); }
+function renderFallbackIframe() { newsContent.innerHTML = ''; const iframe = document.createElement('iframe'); iframe.className = 'news-fallback-iframe'; iframe.src = NEWS_S_URL; iframe.loading = 'lazy'; iframe.referrerPolicy = 'no-referrer'; newsContent.appendChild(iframe); }
+async function loadNewsParsed(maxPosts = 6) { newsContent.innerHTML = '<div class="news-empty">Loading latest posts…</div>'; try { const res = await fetch(NEWS_S_URL, { method:'GET', mode:'cors' }); if (!res.ok) throw new Error('Network response not ok: ' + res.status); const text = await res.text(); const parser = new DOMParser(); const doc = parser.parseFromString(text, 'text/html'); const msgs = Array.from(doc.querySelectorAll('.tgme_widget_message, .tgme_widget_message_wrap, .tme_widget_message')); if (!msgs || msgs.length === 0) { const alt = Array.from(doc.querySelectorAll('.tgme_widget_message_text, .message, .tgme_widget_message_text')); if (!alt || alt.length === 0) throw new Error('No message nodes found'); } const posts = []; for (let i = 0; i < msgs.length && posts.length < maxPosts; i++) { const m = msgs[i]; const textNode = m.querySelector('.tgme_widget_message_text') || m.querySelector('.message_text') || m.querySelector('p') || m; let excerpt = ''; if (textNode) excerpt = (textNode.textContent || textNode.innerText || '').trim(); let thumb = null; const photo = m.querySelector('.tgme_widget_message_photo') || m.querySelector('img'); if (photo) { const img = photo.querySelector ? photo.querySelector('img') : null; if (img && (img.getAttribute('src') || img.getAttribute('data-src'))) thumb = img.getAttribute('src') || img.getAttribute('data-src'); else if (photo.style && photo.style.backgroundImage) { const bg = photo.style.backgroundImage; const match = bg.match(/url\(["']?(.*?)["']?\)/); if (match) thumb = match[1]; } else if (photo.getAttribute && (photo.getAttribute('src') || photo.getAttribute('data-src'))) thumb = photo.getAttribute('src') || photo.getAttribute('data-src'); } let link = null; const a = m.querySelector('a.tgme_widget_message_date') || m.querySelector('a[href*="/" + NEWS_CHANNEL + "/"]') || m.querySelector('a'); if (a && a.href) link = a.href; let timeStr = ''; const timeNode = m.querySelector('.tgme_widget_message_date') || m.querySelector('time'); if (timeNode) timeStr = timeNode.textContent || timeNode.getAttribute('datetime') || ''; posts.push({ excerpt, thumb, link, timeStr }); } if (posts.length === 0) throw new Error('No posts parsed'); renderNewsList(posts); } catch (err) { console.warn('Could not fetch/parse channel page (likely CORS). Trying proxy...', err); try { const proxyUrl = `https://r.jina.ai/http://t.me/s/${NEWS_CHANNEL}`; const r = await fetch(proxyUrl, { method:'GET' }); if (!r.ok) throw new Error('Proxy failed: ' + r.status); const txt = await r.text(); const parser = new DOMParser(); const doc = parser.parseFromString(txt, 'text/html'); const msgs = Array.from(doc.querySelectorAll('.tgme_widget_message, .tgme_widget_message_wrap, .tme_widget_message')); const posts = []; for (let i = 0; i < msgs.length && posts.length < 8; i++) { const m = msgs[i]; const textNode = m.querySelector('.tgme_widget_message_text') || m.querySelector('.message_text') || m.querySelector('p') || m; let excerpt = ''; if (textNode) excerpt = (textNode.textContent || textNode.innerText || '').trim(); let thumb = null; const photo = m.querySelector('.tgme_widget_message_photo') || m.querySelector('img'); if (photo) { const img = photo.querySelector ? photo.querySelector('img') : null; if (img && (img.getAttribute('src') || img.getAttribute('data-src'))) thumb = img.getAttribute('src') || img.getAttribute('data-src'); else if (photo.style && photo.style.backgroundImage) { const bg = photo.style.backgroundImage; const match = bg.match(/url\(["']?(.*?)["']?\)/); if (match) thumb = match[1]; } else if (photo.getAttribute && (photo.getAttribute('src') || photo.getAttribute('data-src'))) thumb = photo.getAttribute('src') || photo.getAttribute('data-src'); } let link = null; const a = m.querySelector('a.tgme_widget_message_date') || m.querySelector('a[href*="/" + NEWS_CHANNEL + "/"]') || m.querySelector('a'); if (a && a.href) link = a.href; let timeStr = ''; const timeNode = m.querySelector('.tgme_widget_message_date') || m.querySelector('time'); if (timeNode) timeStr = timeNode.textContent || timeNode.getAttribute('datetime') || ''; posts.push({ excerpt, thumb, link, timeStr }); } if (posts.length > 0) { renderFallbackThumbnails(posts); return; } else { throw new Error('Proxy returned but no posts parsed'); } } catch (err2) { console.warn('Proxy attempt failed — falling back to iframe', err2); renderFallbackIframe(); } }
 
 /* utility */
 function truncateText(s, n = 140) {
@@ -1004,6 +1135,8 @@ function closeNewsModal() {
   newsBackdrop.classList.remove('open'); newsBackdrop.setAttribute('aria-hidden','true');
   const iframe = newsContent.querySelector('iframe'); if (iframe) iframe.src = 'about:blank';
 }
+function openNewsModal() { newsBackdrop.classList.add('open'); newsBackdrop.setAttribute('aria-hidden','false'); loadNewsParsed(8); }
+function closeNewsModal() { newsBackdrop.classList.remove('open'); newsBackdrop.setAttribute('aria-hidden','true'); const iframe = newsContent.querySelector('iframe'); if (iframe) iframe.src = 'about:blank'; }
 
 /* attach listeners */
 tNews.addEventListener('click', ()=> { openNewsModal(); burstSparkles(6); tNews.classList.add('active'); });
@@ -1014,139 +1147,25 @@ newsOpenChannel.href = NEWS_S_URL;
 /* ESC to close */
 document.addEventListener('keydown', (e)=> { if (e.key === 'Escape' && newsBackdrop.classList.contains('open')) closeNewsModal(); });
 
-
 /* ===========================
-   MUSIC POPUP logic
+   Playlist UI handlers
 =========================== */
-// music modal elements
-const tabMusic = document.getElementById('tab-music');
-
-// create modal HTML and append to body via JS so it doesn't clutter earlier HTML
-const musicModalHtml = `
-<div class="music-modal-backdrop" id="musicBackdrop" aria-hidden="true">
-  <div class="music-modal" role="dialog" aria-modal="true" aria-labelledby="musicTitle">
-    <div class="music-header">
-      <div style="display:flex;align-items:center;gap:12px;"><div id="musicTitle" class="music-title">Playlist — Music</div></div>
-      <div style="display:flex;gap:8px;align-items:center;"><button id="musicClose">Close</button></div>
-    </div>
-    <div class="music-inputs">
-      <input type="text" id="musicUrlInput" placeholder="Paste audio URL (mp3) and press Add" aria-label="Audio URL">
-      <button id="musicAddUrl">Add</button>
-    </div>
-    <div style="font-size:12px;color:var(--soft);margin-bottom:8px;">Or upload local file (will use blob URL)</div>
-    <div style="margin-bottom:8px;"><input type="file" id="musicFileInput" accept="audio/*"></div>
-    <div class="music-list" id="musicList"></div>
-    <div class="music-player-row">
-      <button class="play-btn" id="musicPlayPause">▶ Play</button>
-      <div style="font-size:12px;color:var(--soft);">Now playing: <span id="musicNow">—</span></div>
-    </div>
-  </div>
-</div>`;
-
-document.body.insertAdjacentHTML('beforeend', musicModalHtml);
-
-const musicBackdrop = document.getElementById('musicBackdrop');
-const musicClose = document.getElementById('musicClose');
-const musicAddUrl = document.getElementById('musicAddUrl');
-const musicUrlInput = document.getElementById('musicUrlInput');
-const musicFileInput = document.getElementById('musicFileInput');
-const musicList = document.getElementById('musicList');
-const musicPlayPause = document.getElementById('musicPlayPause');
-const musicNow = document.getElementById('musicNow');
-
-// create hidden audio player
-const musicPlayer = document.createElement('audio'); musicPlayer.id = 'musicPlayer'; musicPlayer.preload = 'metadata'; document.body.appendChild(musicPlayer);
-
-const PLAYLIST_KEY = 'miniapp_playlist_v1';
-function loadPlaylist(){ try{ const raw = localStorage.getItem(PLAYLIST_KEY); return raw ? JSON.parse(raw) : []; }catch(e){return [];} }
-function savePlaylist(pl){ try{ localStorage.setItem(PLAYLIST_KEY, JSON.stringify(pl)); }catch(e){} }
-let playlist = loadPlaylist();
-let currentIndex = -1;
-
-function renderPlaylist(){ musicList.innerHTML = '';
-  playlist.forEach((it, idx)=>{
-    const el = document.createElement('div'); el.className = 'music-item';
-    const meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = it.title || it.src || ('Track ' + (idx+1));
-    const btnPlay = document.createElement('button'); btnPlay.textContent = (idx===currentIndex && !musicPlayer.paused) ? '⏸' : '▶';
-    btnPlay.addEventListener('click', ()=>{ playIndex(idx); });
-    const btnRemove = document.createElement('button'); btnRemove.textContent = '✕'; btnRemove.title = 'Remove';
-    btnRemove.addEventListener('click', ()=>{ playlist.splice(idx,1); savePlaylist(playlist); if (idx===currentIndex){ musicPlayer.pause(); currentIndex=-1; musicNow.textContent='—'; } renderPlaylist(); });
-    el.appendChild(btnPlay); el.appendChild(meta); el.appendChild(btnRemove);
-    musicList.appendChild(el);
-  });
-}
-
-function addUrl(src){ if (!src) return; const item = { src, title: src.split('/').pop().split('?')[0] }; playlist.push(item); savePlaylist(playlist); renderPlaylist(); }
-
-musicAddUrl.addEventListener('click', ()=>{ const v = musicUrlInput.value.trim(); if (!v) return; addUrl(v); musicUrlInput.value=''; });
-musicUrlInput.addEventListener('keydown', (e)=>{ if (e.key==='Enter'){ musicAddUrl.click(); } });
-
-musicFileInput.addEventListener('change', (e)=>{
-  const f = e.target.files && e.target.files[0]; if (!f) return; const url = URL.createObjectURL(f); const item = { src: url, title: f.name }; playlist.push(item); savePlaylist(playlist); renderPlaylist(); musicFileInput.value='';
+playBtn.addEventListener('click', ()=>{
+  const isOpen = playlistPanel.classList.contains('open');
+  if (isOpen) {
+    playlistPanel.classList.remove('open'); playlistPanel.setAttribute('aria-hidden','true');
+  } else {
+    playlistPanel.classList.add('open'); playlistPanel.setAttribute('aria-hidden','false');
+    renderPlaylist();
+  }
 });
+closePlaylist.addEventListener('click', ()=>{ playlistPanel.classList.remove('open'); playlistPanel.setAttribute('aria-hidden','true'); });
+addSongBtn.addEventListener('click', ()=>{ const v = newSongInput.value; if (!v) return; addTrack(v); });
+newSongInput.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') { const v = newSongInput.value; if (!v) return; addTrack(v); } });
 
-function playIndex(i){ if (i<0 || i>=playlist.length) return; const it = playlist[i]; if (!it) return; if (currentIndex===i){ if (!musicPlayer.paused){ musicPlayer.pause(); } else { musicPlayer.play(); } return; }
-  currentIndex = i; musicPlayer.src = it.src; musicPlayer.play().catch(()=>{}); musicNow.textContent = it.title || it.src; renderPlaylist(); }
-
-musicPlayPause.addEventListener('click', ()=>{
-  if (!musicPlayer.src) { if (playlist.length>0) return playIndex(0); else return; }
-  if (musicPlayer.paused) musicPlayer.play(); else musicPlayer.pause();
-});
-
-musicPlayer.addEventListener('play', ()=>{ musicPlayPause.textContent='⏸ Pause'; renderPlaylist(); });
-musicPlayer.addEventListener('pause', ()=>{ musicPlayPause.textContent='▶ Play'; renderPlaylist(); });
-musicPlayer.addEventListener('ended', ()=>{ musicPlayPause.textContent='▶ Play'; });
-
-function openMusicModal(){ musicBackdrop.classList.add('open'); musicBackdrop.setAttribute('aria-hidden','false'); renderPlaylist(); }
-function closeMusicModal(){ musicBackdrop.classList.remove('open'); musicBackdrop.setAttribute('aria-hidden','true'); }
-
-if (tabMusic) tabMusic.addEventListener('click', ()=>{ openMusicModal(); burstSparkles(6); tabMusic.classList.add('active'); });
-musicClose.addEventListener('click', closeMusicModal);
-musicBackdrop.addEventListener('click', (ev)=>{ if (ev.target===musicBackdrop) closeMusicModal(); });
-
-// keyboard close
-document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && musicBackdrop.classList.contains('open')) closeMusicModal(); });
-
-<// Animated music toggle behavior
-const musicToggle = document.getElementById('musicToggle');
-const musicBackdropExisting = document.getElementById('musicBackdrop'); // modal we added earlier
-
-if (musicToggle) {
-  musicToggle.addEventListener('click', (e) => {
-    const expanded = musicToggle.classList.toggle('expanded');
-    musicToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-
-    // when expanded, also open the playlist modal
-    if (expanded) {
-      if (musicBackdropExisting) {
-        musicBackdropExisting.classList.add('open');
-        musicBackdropExisting.setAttribute('aria-hidden','false');
-      } else {
-        const tabMusicBtn = document.getElementById('tab-music');
-        if (tabMusicBtn) tabMusicBtn.click();
-      }
-    } else {
-      if (musicBackdropExisting) {
-        musicBackdropExisting.classList.remove('open');
-        musicBackdropExisting.setAttribute('aria-hidden','true');
-      }
-    }
-  });
-
-  // collapse when clicking outside the card
-  document.addEventListener('click', (ev) => {
-    if (!musicToggle.classList.contains('expanded')) return;
-    const withinCard = ev.target.closest('.card');
-    if (!withinCard) {
-      musicToggle.classList.remove('expanded');
-      musicToggle.setAttribute('aria-expanded','false');
-      if (musicBackdropExisting) {
-        musicBackdropExisting.classList.remove('open');
-        musicBackdropExisting.setAttribute('aria-hidden','true');
-      }
-    }
-  });
-}
+/* init */
+renderPlaylist();
+initFavUIForCurrent();
 
 </script>
 </body>
