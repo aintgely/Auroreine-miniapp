@@ -271,7 +271,7 @@ button.ghost {
 #playBtn:active, #favBtn:active { transform: scale(0.99); transition: transform 80ms ease; }
 
 /* ===========================
-        DOOR OVERLAY
+        DOOR OVERLAY (improved smooth animation)
 =========================== */
 .door-overlay {
   position:fixed;
@@ -280,9 +280,53 @@ button.ghost {
   align-items:center;
   justify-content:center;
   z-index:9999;
+  pointer-events:auto;
 }
 
-.hidden-overlay { display:none !important; }
+/* wrapper that will animate the 3D door effect */
+.door-wrap {
+  width:100%;
+  max-width:900px;
+  height:100vh;
+  display:flex;
+  perspective:1600px; /* deeper perspective for smoother 3D */
+  transform-style:preserve-3d;
+}
+
+.door-wrap .leaf {
+  flex:1;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.06);
+  background:linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 30px 80px rgba(60,0,120,0.45);
+  transform-origin: center left;
+  transition: transform 900ms cubic-bezier(0.18, 0.89, 0.32, 1), box-shadow 600ms ease, opacity 600ms ease;
+}
+.door-wrap .leaf.right { transform-origin: center right; }
+
+/* initial closed state */
+.door-wrap .leaf { transform: rotateY(0deg) translateZ(0px) scale(1); }
+
+/* when opening, both leaves rotate outward and slightly scale */
+.door-wrap.door-opening .leaf.left {
+  transform: rotateY(-18deg) translateZ(40px) scale(0.995);
+  box-shadow: -40px 40px 120px rgba(0,0,0,0.6);
+}
+.door-wrap.door-opening .leaf.right {
+  transform: rotateY(18deg) translateZ(40px) scale(0.995);
+  box-shadow: 40px 40px 120px rgba(0,0,0,0.6);
+}
+
+/* subtle fade of the overlay wrapper while animating out */
+.door-overlay.fade-out { background: rgba(0,0,0,0.0); transition: background 700ms ease; }
+
+.hidden-overlay { display:none !important; pointer-events:none; }
+
 
 /* ===========================
    tambahan CSS (modal, sparkles, replay)
@@ -390,113 +434,6 @@ button.ghost {
   .tab { min-width:82px; }
   #tab-news { flex:0 0 44px; min-width:44px; max-width:44px; }
 }
-
-/* ===========================
-   MUSIC POPUP styles
-=========================== */
-.music-modal-backdrop {
-  position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-  background: rgba(5,4,8,0.6); z-index:10030; padding:20px;
-}
-.music-modal-backdrop.open { display:flex; }
-.music-modal {
-  width:min(520px,calc(100% - 40px));
-  max-height:70vh; overflow:auto;
-  background:linear-gradient(180deg, rgba(12,10,14,0.98), rgba(16,14,20,0.99));
-  border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,0.04);
-  box-shadow:0 30px 80px rgba(0,0,0,0.6); color:var(--text);
-}
-.music-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
-.music-title { font-weight:700; font-size:13px; margin:0; }
-.music-controls { display:flex; gap:8px; align-items:center; }
-.music-inputs { display:flex; gap:8px; margin-bottom:10px; }
-.music-inputs input[type="text"] { flex:1; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text); }
-.music-inputs input[type="file"] { display:block; }
-.music-list { display:flex; flex-direction:column; gap:8px; }
-.music-item { display:flex; gap:8px; align-items:center; padding:8px; border-radius:8px; background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.006)); border:1px solid rgba(255,255,255,0.02); }
-.music-item .meta { flex:1; min-width:0; font-size:13px; color:var(--soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.music-item button { padding:6px 8px; border-radius:8px; background:transparent; color:var(--soft); border:1px solid rgba(255,255,255,0.04); cursor:pointer; }
-.music-player-row { display:flex; gap:8px; align-items:center; margin-top:10px; }
-.music-player-row .play-btn { padding:8px 12px; border-radius:8px; background:#f5f0ff; color:#161622; border:none; cursor:pointer; }
-
-
-/* Music toggle button (inline, right of profile) */
-.card { position: relative; } /* ensure positioned context */
-
-.music-toggle {
-  position: absolute;
-  right: 12px;            /* adjust horizontal position */
-  top: 110px;             /* adjust vertical to align with arrow in screenshot */
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.03);
-  padding: 6px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: width 360ms cubic-bezier(.2,.9,.26,1), background 260ms ease, opacity 260ms ease, transform 260ms ease;
-  width: 40px;            /* collapsed width (circle) */
-  align-items:center;
-  justify-content:center;
-  opacity: 0.28;          /* dimmed when collapsed */
-  backdrop-filter: blur(6px);
-}
-
-/* show slight lift on hover when collapsed */
-.music-toggle:hover { transform: translateY(-3px); opacity: 0.5; }
-
-/* expanded state */
-.music-toggle.expanded {
-  width: 180px;           /* expanded width to reveal icon + label */
-  background: linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.02));
-  border-color: rgba(247,214,255,0.10);
-  opacity: 1;
-  box-shadow: 0 10px 30px rgba(120,60,140,0.12);
-}
-
-/* inner content */
-.music-toggle .mt-inner {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  transform: translateX(0);
-  transition: transform 300ms cubic-bezier(.2,.9,.26,1);
-  width:100%;
-  padding: 0 8px;
-}
-
-/* music icon hidden in collapsed state: we use scale/opacity */
-.music-toggle .mt-icon {
-  width:28px; height:28px; border-radius:8px;
-  display:inline-flex; align-items:center; justify-content:center;
-  font-size:15px;
-  background:linear-gradient(180deg,#f5f0ff,#f7d6ff);
-  color:#161622;
-  box-shadow:0 6px 18px rgba(0,0,0,0.06);
-  transform-origin:center;
-  opacity:0; transform: scale(.8) translateX(6px);
-  transition: opacity 240ms ease, transform 260ms cubic-bezier(.2,.9,.26,1);
-}
-
-/* label visible only when expanded */
-.music-toggle .mt-label {
-  color:var(--text);
-  font-size:13px;
-  font-weight:600;
-  white-space:nowrap;
-  opacity:0;
-  transform: translateX(6px);
-  transition: opacity 260ms ease, transform 260ms cubic-bezier(.2,.9,.26,1);
-}
-
-/* when expanded, show icon + label */
-.music-toggle.expanded .mt-icon { opacity:1; transform: scale(1) translateX(0); }
-.music-toggle.expanded .mt-label { opacity:1; transform: translateX(0); }
-
 </style>
 </head>
 <body>
@@ -528,9 +465,6 @@ button.ghost {
 
         <!-- compact inline news tab -->
         <button id="tab-news" class="tab" title="Latest news">🗞️</button>
-
-        <!-- music popup tab -->
-        <button id="tab-music" class="tab" title="Music & playlist">♪</button>
       </div>
 
       <!-- PROFILE -->
@@ -552,15 +486,7 @@ like a quiet verse written in silver.</p>
         <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
       </div>
 
-      <!-- Animated inline music toggle (right side of profile) -->
-<div class="music-toggle" id="musicToggle" role="button" aria-expanded="false" title="Music">
-  <div class="mt-inner">
-    <div class="mt-icon" id="mtIcon">♪</div>
-    <div class="mt-label" id="mtLabel">Playlist</div>
-  </div>
-</div>
-
-<!-- AUDIO -->
+      <!-- AUDIO -->
       <audio id="profileAudio" preload="auto">
         <source src="playsongnew.mp3" type="audio/mpeg">
       </audio>
@@ -801,38 +727,56 @@ if (tZ) tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6);
 if (tR) tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
 
 /* ===========================
-   DOOR animation
+   DOOR animation (smoother)
 =========================== */
-function openDoor(playSound=true){
-  setTimeout(()=> shell.classList.add('content-visible'), 1200);
-  if (playSound && doorAudio && doorAudio.src) { doorAudio.currentTime = 0; doorAudio.play().catch(()=>{}); }
-  doorWrap.classList.add('door-opening');
-  setTimeout(()=> { doorOverlay.classList.add('hidden-overlay'); shell.classList.add('content-visible'); }, 1600);
-}
-setTimeout(()=> openDoor(true), 260);
-replayBtn.addEventListener('click', ()=> {
-  doorOverlay.classList.remove('hidden-overlay');
-  doorWrap.classList.remove('door-opening');
+function openDoor(playSound = true) {
+  // ensure the card appears a little after animation starts
   shell.classList.remove('content-visible');
+  // remove hidden-overlay in case it was hidden
+  doorOverlay.classList.remove('hidden-overlay');
+  // small delay to allow layout to settle then start anim
+  requestAnimationFrame(() => {
+    // add class to animate leaves outward
+    doorWrap.classList.add('door-opening');
+    // add subtle fade-out on overlay so the background merges nicely
+    doorOverlay.classList.add('fade-out');
+    // play sound if available
+    if (playSound && doorAudio && doorAudio.src) {
+      try { doorAudio.currentTime = 0; doorAudio.play().catch(()=>{}); } catch(e){}
+    }
+  });
+
+  // When the door-wrap transition finishes, hide the overlay and show content
+  function onTransitionEnd(e) {
+    // we only care about the transform transition on leaf (to avoid multiple triggers)
+    if (e.propertyName && !/transform/i.test(e.propertyName)) return;
+    // show content
+    shell.classList.add('content-visible');
+    // hide overlay after animation completes
+    doorOverlay.classList.add('hidden-overlay');
+    // cleanup
+    doorOverlay.classList.remove('fade-out');
+    doorWrap.classList.remove('door-opening');
+    doorWrap.removeEventListener('transitionend', onTransitionEnd);
+  }
+  // ensure we attach listener once
+  doorWrap.addEventListener('transitionend', onTransitionEnd);
+}
+
+// initial gentle open after load
+setTimeout(() => openDoor(true), 260);
+
+// replay: reset state and trigger openDoor again with a small delay for smoothness
+replayBtn.addEventListener('click', ()=> {
+  // show overlay again
+  doorOverlay.classList.remove('hidden-overlay');
+  doorOverlay.classList.remove('fade-out');
+  shell.classList.remove('content-visible');
+
+  // force reflow then start open animation
   void doorWrap.offsetWidth;
   setTimeout(()=> openDoor(true), 80);
 });
-
-/* responsive tabs helper */
-(function(){
-  function updateTabsMode() {
-    const tabsRoot = document.getElementById('tabs');
-    if (!tabsRoot) return;
-    if (window.matchMedia('(max-width:639px)').matches) tabsRoot.classList.add('tabs-scroll');
-    else tabsRoot.classList.remove('tabs-scroll');
-  }
-  updateTabsMode();
-  window.addEventListener('resize', updateTabsMode);
-  window.addEventListener('orientationchange', updateTabsMode);
-})();
-
-/* initialize favorite UI on load */
-window.addEventListener('load', ()=> { initFavUIForCurrent(); });
 
 /* ===========================
    NEWS modal logic (fetch + fallback thumbnail grid)
@@ -1013,140 +957,6 @@ newsOpenChannel.href = NEWS_S_URL;
 
 /* ESC to close */
 document.addEventListener('keydown', (e)=> { if (e.key === 'Escape' && newsBackdrop.classList.contains('open')) closeNewsModal(); });
-
-
-/* ===========================
-   MUSIC POPUP logic
-=========================== */
-// music modal elements
-const tabMusic = document.getElementById('tab-music');
-
-// create modal HTML and append to body via JS so it doesn't clutter earlier HTML
-const musicModalHtml = `
-<div class="music-modal-backdrop" id="musicBackdrop" aria-hidden="true">
-  <div class="music-modal" role="dialog" aria-modal="true" aria-labelledby="musicTitle">
-    <div class="music-header">
-      <div style="display:flex;align-items:center;gap:12px;"><div id="musicTitle" class="music-title">Playlist — Music</div></div>
-      <div style="display:flex;gap:8px;align-items:center;"><button id="musicClose">Close</button></div>
-    </div>
-    <div class="music-inputs">
-      <input type="text" id="musicUrlInput" placeholder="Paste audio URL (mp3) and press Add" aria-label="Audio URL">
-      <button id="musicAddUrl">Add</button>
-    </div>
-    <div style="font-size:12px;color:var(--soft);margin-bottom:8px;">Or upload local file (will use blob URL)</div>
-    <div style="margin-bottom:8px;"><input type="file" id="musicFileInput" accept="audio/*"></div>
-    <div class="music-list" id="musicList"></div>
-    <div class="music-player-row">
-      <button class="play-btn" id="musicPlayPause">▶ Play</button>
-      <div style="font-size:12px;color:var(--soft);">Now playing: <span id="musicNow">—</span></div>
-    </div>
-  </div>
-</div>`;
-
-document.body.insertAdjacentHTML('beforeend', musicModalHtml);
-
-const musicBackdrop = document.getElementById('musicBackdrop');
-const musicClose = document.getElementById('musicClose');
-const musicAddUrl = document.getElementById('musicAddUrl');
-const musicUrlInput = document.getElementById('musicUrlInput');
-const musicFileInput = document.getElementById('musicFileInput');
-const musicList = document.getElementById('musicList');
-const musicPlayPause = document.getElementById('musicPlayPause');
-const musicNow = document.getElementById('musicNow');
-
-// create hidden audio player
-const musicPlayer = document.createElement('audio'); musicPlayer.id = 'musicPlayer'; musicPlayer.preload = 'metadata'; document.body.appendChild(musicPlayer);
-
-const PLAYLIST_KEY = 'miniapp_playlist_v1';
-function loadPlaylist(){ try{ const raw = localStorage.getItem(PLAYLIST_KEY); return raw ? JSON.parse(raw) : []; }catch(e){return [];} }
-function savePlaylist(pl){ try{ localStorage.setItem(PLAYLIST_KEY, JSON.stringify(pl)); }catch(e){} }
-let playlist = loadPlaylist();
-let currentIndex = -1;
-
-function renderPlaylist(){ musicList.innerHTML = '';
-  playlist.forEach((it, idx)=>{
-    const el = document.createElement('div'); el.className = 'music-item';
-    const meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = it.title || it.src || ('Track ' + (idx+1));
-    const btnPlay = document.createElement('button'); btnPlay.textContent = (idx===currentIndex && !musicPlayer.paused) ? '⏸' : '▶';
-    btnPlay.addEventListener('click', ()=>{ playIndex(idx); });
-    const btnRemove = document.createElement('button'); btnRemove.textContent = '✕'; btnRemove.title = 'Remove';
-    btnRemove.addEventListener('click', ()=>{ playlist.splice(idx,1); savePlaylist(playlist); if (idx===currentIndex){ musicPlayer.pause(); currentIndex=-1; musicNow.textContent='—'; } renderPlaylist(); });
-    el.appendChild(btnPlay); el.appendChild(meta); el.appendChild(btnRemove);
-    musicList.appendChild(el);
-  });
-}
-
-function addUrl(src){ if (!src) return; const item = { src, title: src.split('/').pop().split('?')[0] }; playlist.push(item); savePlaylist(playlist); renderPlaylist(); }
-
-musicAddUrl.addEventListener('click', ()=>{ const v = musicUrlInput.value.trim(); if (!v) return; addUrl(v); musicUrlInput.value=''; });
-musicUrlInput.addEventListener('keydown', (e)=>{ if (e.key==='Enter'){ musicAddUrl.click(); } });
-
-musicFileInput.addEventListener('change', (e)=>{
-  const f = e.target.files && e.target.files[0]; if (!f) return; const url = URL.createObjectURL(f); const item = { src: url, title: f.name }; playlist.push(item); savePlaylist(playlist); renderPlaylist(); musicFileInput.value='';
-});
-
-function playIndex(i){ if (i<0 || i>=playlist.length) return; const it = playlist[i]; if (!it) return; if (currentIndex===i){ if (!musicPlayer.paused){ musicPlayer.pause(); } else { musicPlayer.play(); } return; }
-  currentIndex = i; musicPlayer.src = it.src; musicPlayer.play().catch(()=>{}); musicNow.textContent = it.title || it.src; renderPlaylist(); }
-
-musicPlayPause.addEventListener('click', ()=>{
-  if (!musicPlayer.src) { if (playlist.length>0) return playIndex(0); else return; }
-  if (musicPlayer.paused) musicPlayer.play(); else musicPlayer.pause();
-});
-
-musicPlayer.addEventListener('play', ()=>{ musicPlayPause.textContent='⏸ Pause'; renderPlaylist(); });
-musicPlayer.addEventListener('pause', ()=>{ musicPlayPause.textContent='▶ Play'; renderPlaylist(); });
-musicPlayer.addEventListener('ended', ()=>{ musicPlayPause.textContent='▶ Play'; });
-
-function openMusicModal(){ musicBackdrop.classList.add('open'); musicBackdrop.setAttribute('aria-hidden','false'); renderPlaylist(); }
-function closeMusicModal(){ musicBackdrop.classList.remove('open'); musicBackdrop.setAttribute('aria-hidden','true'); }
-
-if (tabMusic) tabMusic.addEventListener('click', ()=>{ openMusicModal(); burstSparkles(6); tabMusic.classList.add('active'); });
-musicClose.addEventListener('click', closeMusicModal);
-musicBackdrop.addEventListener('click', (ev)=>{ if (ev.target===musicBackdrop) closeMusicModal(); });
-
-// keyboard close
-document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && musicBackdrop.classList.contains('open')) closeMusicModal(); });
-
-<// Animated music toggle behavior
-const musicToggle = document.getElementById('musicToggle');
-const musicBackdropExisting = document.getElementById('musicBackdrop'); // modal we added earlier
-
-if (musicToggle) {
-  musicToggle.addEventListener('click', (e) => {
-    const expanded = musicToggle.classList.toggle('expanded');
-    musicToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-
-    // when expanded, also open the playlist modal
-    if (expanded) {
-      if (musicBackdropExisting) {
-        musicBackdropExisting.classList.add('open');
-        musicBackdropExisting.setAttribute('aria-hidden','false');
-      } else {
-        const tabMusicBtn = document.getElementById('tab-music');
-        if (tabMusicBtn) tabMusicBtn.click();
-      }
-    } else {
-      if (musicBackdropExisting) {
-        musicBackdropExisting.classList.remove('open');
-        musicBackdropExisting.setAttribute('aria-hidden','true');
-      }
-    }
-  });
-
-  // collapse when clicking outside the card
-  document.addEventListener('click', (ev) => {
-    if (!musicToggle.classList.contains('expanded')) return;
-    const withinCard = ev.target.closest('.card');
-    if (!withinCard) {
-      musicToggle.classList.remove('expanded');
-      musicToggle.setAttribute('aria-expanded','false');
-      if (musicBackdropExisting) {
-        musicBackdropExisting.classList.remove('open');
-        musicBackdropExisting.setAttribute('aria-hidden','true');
-      }
-    }
-  });
-}
 
 </script>
 </body>
