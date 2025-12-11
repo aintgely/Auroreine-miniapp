@@ -357,9 +357,8 @@ like a quiet verse written in silver.</p>
       </div>
 
       <!-- right: aside / controls -->
-      <div class="below-controls" style="grid-column:1/ -1; display:flex; flex-direction:column; gap:12px; margin-top:8px;">
-        <div class="controls-card">
-          <!-- BUTTONS (moved below profile text) -->
+      <div class="below-controls" style="grid-column:1/2; display:flex; flex-direction:column; gap:12px; margin-top:8px; max-width:100%;">
+        <div class="controls-card" style="width:100%; box-sizing:border-box;">
           <div class="btn-row">
             <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">
               <img id="favIcon" alt="fox icon" src="./classy_purple_fox_50px_smooth.gif" aria-hidden="true">
@@ -368,6 +367,23 @@ like a quiet verse written in silver.</p>
 
             <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
           </div>
+
+          <audio id="profileAudio" preload="auto">
+            <source src="playsongnew.mp3" type="audio/mpeg">
+          </audio>
+
+          <div class="helper">Your choice will be sent back to the bot as a tiny note.</div>
+
+          <button class="replay" id="replayBtn" title="Replay door effect">Replay ✨</button>
+        </div>
+
+        <div class="news-preview" aria-hidden="false" style="width:100%; box-sizing:border-box;">
+          <h3>Recent — Meredith Melrose</h3>
+          <div class="item"><img src="./thumb1.jpg" alt="t"><p>Latest excerpt preview — tap the news icon to open full list.</p></div>
+          <div class="item"><img src="./thumb2.jpg" alt="t"><p>Smaller blurb that hints the channel content lives in Telegram.</p></div>
+          <a class="news-open-tele small-link" id="newsOpenChannel" target="_blank" rel="noopener noreferrer" href="https://t.me/S15XINYU">Open in Telegram</a>
+        </div>
+      </div>
 
           <audio id="profileAudio" preload="auto">
             <source src="playsongnew.mp3" type="audio/mpeg">
