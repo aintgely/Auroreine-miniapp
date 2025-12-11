@@ -360,6 +360,10 @@ button.ghost { background:transparent; color:var(--soft); border:1px solid rgba(
   .tab { min-width:82px; }
   #tab-news { flex:0 0 44px; min-width:44px; max-width:44px; }
 }
+/* Miniapp zoom-out on load */
+body { transform: scale(0.94); transform-origin: top center; transition: transform 0.55s ease-out; }
+body.content-visible { transform: scale(1); }
+
 </style>
 </head>
 <body>
