@@ -271,7 +271,7 @@ button.ghost {
 #playBtn:active, #favBtn:active { transform: scale(0.99); transition: transform 80ms ease; }
 
 /* ===========================
-        DOOR OVERLAY
+        DOOR OVERLAY (improved smooth animation)
 =========================== */
 .door-overlay {
   position:fixed;
@@ -280,9 +280,53 @@ button.ghost {
   align-items:center;
   justify-content:center;
   z-index:9999;
+  pointer-events:auto;
 }
 
-.hidden-overlay { display:none !important; }
+/* wrapper that will animate the 3D door effect */
+.door-wrap {
+  width:100%;
+  max-width:900px;
+  height:100vh;
+  display:flex;
+  perspective:1600px; /* deeper perspective for smoother 3D */
+  transform-style:preserve-3d;
+}
+
+.door-wrap .leaf {
+  flex:1;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.06);
+  background:linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 30px 80px rgba(60,0,120,0.45);
+  transform-origin: center left;
+  transition: transform 900ms cubic-bezier(0.18, 0.89, 0.32, 1), box-shadow 600ms ease, opacity 600ms ease;
+}
+.door-wrap .leaf.right { transform-origin: center right; }
+
+/* initial closed state */
+.door-wrap .leaf { transform: rotateY(0deg) translateZ(0px) scale(1); }
+
+/* when opening, both leaves rotate outward and slightly scale */
+.door-wrap.door-opening .leaf.left {
+  transform: rotateY(-18deg) translateZ(40px) scale(0.995);
+  box-shadow: -40px 40px 120px rgba(0,0,0,0.6);
+}
+.door-wrap.door-opening .leaf.right {
+  transform: rotateY(18deg) translateZ(40px) scale(0.995);
+  box-shadow: 40px 40px 120px rgba(0,0,0,0.6);
+}
+
+/* subtle fade of the overlay wrapper while animating out */
+.door-overlay.fade-out { background: rgba(0,0,0,0.0); transition: background 700ms ease; }
+
+.hidden-overlay { display:none !important; pointer-events:none; }
+
 
 /* ===========================
    tambahan CSS (modal, sparkles, replay)
@@ -683,38 +727,56 @@ if (tZ) tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6);
 if (tR) tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
 
 /* ===========================
-   DOOR animation
+   DOOR animation (smoother)
 =========================== */
-function openDoor(playSound=true){
-  setTimeout(()=> shell.classList.add('content-visible'), 1200);
-  if (playSound && doorAudio && doorAudio.src) { doorAudio.currentTime = 0; doorAudio.play().catch(()=>{}); }
-  doorWrap.classList.add('door-opening');
-  setTimeout(()=> { doorOverlay.classList.add('hidden-overlay'); shell.classList.add('content-visible'); }, 1600);
-}
-setTimeout(()=> openDoor(true), 260);
-replayBtn.addEventListener('click', ()=> {
-  doorOverlay.classList.remove('hidden-overlay');
-  doorWrap.classList.remove('door-opening');
+function openDoor(playSound = true) {
+  // ensure the card appears a little after animation starts
   shell.classList.remove('content-visible');
+  // remove hidden-overlay in case it was hidden
+  doorOverlay.classList.remove('hidden-overlay');
+  // small delay to allow layout to settle then start anim
+  requestAnimationFrame(() => {
+    // add class to animate leaves outward
+    doorWrap.classList.add('door-opening');
+    // add subtle fade-out on overlay so the background merges nicely
+    doorOverlay.classList.add('fade-out');
+    // play sound if available
+    if (playSound && doorAudio && doorAudio.src) {
+      try { doorAudio.currentTime = 0; doorAudio.play().catch(()=>{}); } catch(e){}
+    }
+  });
+
+  // When the door-wrap transition finishes, hide the overlay and show content
+  function onTransitionEnd(e) {
+    // we only care about the transform transition on leaf (to avoid multiple triggers)
+    if (e.propertyName && !/transform/i.test(e.propertyName)) return;
+    // show content
+    shell.classList.add('content-visible');
+    // hide overlay after animation completes
+    doorOverlay.classList.add('hidden-overlay');
+    // cleanup
+    doorOverlay.classList.remove('fade-out');
+    doorWrap.classList.remove('door-opening');
+    doorWrap.removeEventListener('transitionend', onTransitionEnd);
+  }
+  // ensure we attach listener once
+  doorWrap.addEventListener('transitionend', onTransitionEnd);
+}
+
+// initial gentle open after load
+setTimeout(() => openDoor(true), 260);
+
+// replay: reset state and trigger openDoor again with a small delay for smoothness
+replayBtn.addEventListener('click', ()=> {
+  // show overlay again
+  doorOverlay.classList.remove('hidden-overlay');
+  doorOverlay.classList.remove('fade-out');
+  shell.classList.remove('content-visible');
+
+  // force reflow then start open animation
   void doorWrap.offsetWidth;
   setTimeout(()=> openDoor(true), 80);
 });
-
-/* responsive tabs helper */
-(function(){
-  function updateTabsMode() {
-    const tabsRoot = document.getElementById('tabs');
-    if (!tabsRoot) return;
-    if (window.matchMedia('(max-width:639px)').matches) tabsRoot.classList.add('tabs-scroll');
-    else tabsRoot.classList.remove('tabs-scroll');
-  }
-  updateTabsMode();
-  window.addEventListener('resize', updateTabsMode);
-  window.addEventListener('orientationchange', updateTabsMode);
-})();
-
-/* initialize favorite UI on load */
-window.addEventListener('load', ()=> { initFavUIForCurrent(); });
 
 /* ===========================
    NEWS modal logic (fetch + fallback thumbnail grid)
