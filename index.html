@@ -65,114 +65,6 @@
   --gutter:20px;
 }
 
-/* =======================
-   Overrides: Tabs framing, cards inset shadows
-   (paste after :root as requested)
-   ======================= */
-
-/* ---------------------------
-   Tabs: bungkus tipis + padding
-   --------------------------- */
-.tabs {
-  display:flex;
-  gap:10px;
-  margin-bottom:8px;
-  align-items:center;
-  grid-column: 1 / -1;
-
-  /* frame / bingkai halus */
-  padding:8px; /* beri ruang di dalam bingkai */
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.06); /* tipis & konsisten */
-  background: linear-gradient(180deg, rgba(255,255,255,0.006), rgba(0,0,0,0.03));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02); /* subtle inner highlight */
-}
-
-/* buat tombol terlihat di dalam garis: sedikit lebih "plinth" */
-.tab {
-  min-width:var(--tab-min-width);
-  padding:8px 12px; /* dikurangi sedikit supaya muat di dalam bingkai */
-  border-radius:999px;
-  font-size:13px;
-  text-align:center;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-
-  background:transparent;
-  color:var(--soft);
-  border:1px solid transparent; /* tetap no-outline kecuali aktif */
-
-  cursor:pointer;
-  transition: transform 140ms ease, background .18s ease, color .18s ease, border-color .18s ease;
-}
-
-/* active tab lebih kontras, tapi tetap 'dalam' bingkai */
-.tab.active {
-  background: linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.03));
-  border-color: rgba(247,214,255,0.12);
-  color: var(--text);
-  transform: translateY(-2px); /* sedikit pengangkatan saat aktif */
-}
-
-/* hover effect lembut */
-.tab:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
-}
-
-/* ---------------------------------------
-   Controls card & News preview: konsisten
-   --------------------------------------- */
-.controls-card,
-.news-preview {
-  padding:14px;
-  border-radius:12px;
-
-  /* border konsisten */
-  border: 1px solid rgba(255,255,255,0.06);
-
-  /* subtle inset + drop shadow untuk efek terangkat halus */
-  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(6,6,10,0.95));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.02),   /* inner highlight */
-    0 18px 40px rgba(5,3,10,0.45);           /* drop shadow */
-}
-
-/* jaga helper text alignment (tidy) */
-.controls-card .helper { margin-top:10px; }
-
-/* slight visual tweak for the replay button so it sits well with the framed card */
-.replay {
-  align-self:flex-end;
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-}
-
-/* -----------------------------
-   Profile card: inset shadow halus
-   ----------------------------- */
-.profile {
-  padding:18px;
-  border-radius:12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.94));
-  border:1px solid rgba(255,255,255,0.02);
-  margin-bottom:14px;
-  display:flex; gap:14px; align-items:flex-start;
-
-  /* inset shadow agar terasa menyatu dengan halaman majalah */
-  box-shadow:
-    inset 0 6px 18px rgba(0,0,0,0.45),
-    0 12px 30px rgba(5,3,10,0.55);
-}
-
-/* optional: sedikit pengaturan pada hero agar kontras terhadap inset shadow */
-.profile-hero { box-shadow: 0 6px 20px rgba(0,0,0,0.45); }
-
-/* ===========================
-      Remaining original styles
-   ========================== */
-
 * { box-sizing:border-box; }
 
 html, body {
@@ -243,11 +135,43 @@ body {
 /* ===========================
          TABS (kept but restyled)
 =========================== */
+.tabs {
+  display:flex;
+  gap:10px;
+  margin-bottom:8px;
+  align-items:center;
+  grid-column: 1 / -1;
+}
 
-.tab.small { font-size:12px; padding:8px 10px; }
+.tab {
+  min-width:var(--tab-min-width);
+  padding:10px 12px;
+  border-radius:999px;
+  font-size:13px;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+  background:transparent;
+  color:var(--soft);
+  border:1px solid transparent;
+
+  cursor:pointer;
+}
+
+.tab.active {
+  background:linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.03));
+  border-color:rgba(247,214,255,0.12);
+  color:var(--text);
+}
+
+.tab:hover { transform:translateY(-3px); transition:transform 140ms ease; }
 
 #tab-news { min-width:48px; max-width:48px; padding:8px 0; flex:0 0 48px; }
 #tab-news img#newsSymbol { width:22px; height:22px; }
+
+.tab.small { font-size:12px; padding:8px 10px; }
 
 /* ===========================
          MAIN ARTICLE AREA
@@ -255,6 +179,16 @@ body {
 /* left column = main content (profile/article) */
 .profile-wrapper { grid-column:1/2; }
 
+.profile {
+  padding:18px;
+  border-radius:12px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.94));
+  border:1px solid rgba(255,255,255,0.02);
+  margin-bottom:14px;
+  display:flex; gap:14px; align-items:flex-start;
+}
+
+/* profile hero image placeholder (keeps layout but unobtrusive) */
 .profile-hero {
   width:112px; height:112px; border-radius:10px; background:linear-gradient(180deg,#0b0710,#1a1226); flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center;
 }
@@ -278,6 +212,8 @@ body {
      SIDE COLUMN (controls, audio, news preview)
 =========================== */
 .aside { grid-column:2/3; display:flex; flex-direction:column; gap:12px; min-width:260px; }
+
+.controls-card { padding:14px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(6,6,10,0.95)); border:1px solid rgba(255,255,255,0.02); }
 
 .btn-row { display:flex; gap:10px; }
 
@@ -316,6 +252,7 @@ button.ghost { background:transparent; color:var(--soft); border:1px solid rgba(
 .controls-card .helper { font-size:12px; color:var(--soft); text-align:center; margin-top:8px; }
 
 /* NEWS preview in the side column */
+.news-preview { padding:12px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(8,8,12,0.95)); border:1px solid rgba(255,255,255,0.02); }
 .news-preview h3 { margin:0 0 8px 0; font-size:13px; color:var(--text); }
 .news-preview .item { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
 .news-preview .item img { width:54px; height:54px; border-radius:8px; object-fit:cover; }
