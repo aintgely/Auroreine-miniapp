@@ -57,13 +57,12 @@
   --soft:#b8b5d0;
   --accent:#f7d6ff;
 
+  /* increased max width for magazine layout (fits larger miniapp view on open) */
   --max-width:720px;
-  --tab-min-width:110px;
+  --tab-min-width:110px; /* give tabs more breathing room */
   --card-bg:rgba(255,255,255,0.02);
 
-  /* NEW: responsive padding scale */
-  --base-padding: 28px;
-  --scale: 1;
+  --gutter:20px;
 }
 
 /* =======================
@@ -177,12 +176,32 @@
 * { box-sizing:border-box; }
 
 html, body {
-  opacity: 0;
-  transform: scale(var(--scale));
-  transform-origin: top center;
-  padding: calc(var(--base-padding) * var(--scale));
-  transition: opacity .55s ease-out, transform .55s cubic-bezier(0.22,1,0.36,1), padding .55s cubic-bezier(0.22,1,0.36,1);
+  margin:0; height:100%;
+  font-family: 'Quenda', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
 
+body {
+  display:flex; justify-content:center; align-items:flex-start; /* align to top like magazine */
+  background:radial-gradient(1200px 800px at 10% 10%, #1c1530 0%, #07060a 45%, #03020a 100%);
+  color:var(--text);
+  padding:28px; /* give room for the larger card */
+  overflow:auto; /* allow scroll if miniapp smaller */
+}
+
+/* ===========================
+      CARD WRAPPER (magazine style)
+=========================== */
+.shell { width:100%; max-width:var(--max-width); position:relative; z-index:10; }
+
+.card {
+  border-radius:18px;
+  padding:22px;
+  background:linear-gradient(180deg, var(--card-bg), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.04);
+  box-shadow:0 28px 80px rgba(5,3,10,0.7);
+  opacity:0;
+  transform:translateY(10px);
+  transition: opacity .45s ease .28s, transform .45s ease .28s;
   backdrop-filter: blur(4px);
   display:grid;
   grid-template-columns: 1fr 320px; /* magazine: main column + side column */
