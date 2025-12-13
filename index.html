@@ -3,14 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>iPod Mini Player</title>
+<title>Retro Cassette Player</title>
+
+<!-- Telegram Mini App -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 :root{
-  --pink:#ffb6e6;
-  --purple:#b79cff;
-  --dark:#120918;
+  --brown:#6b4f3f;
+  --dark:#3e2c23;
+  --cream:#f6f1eb;
+  --soft:#e6dccf;
+  --line:#cbb8a7;
 }
+
 *{box-sizing:border-box}
 
 body{
@@ -19,283 +25,262 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background:radial-gradient(circle at top,#31174a,var(--dark));
+  background:radial-gradient(circle at top,#f2ebe3,#d7c7b6);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:white;
+  color:var(--dark);
 }
 
-/* iPod */
-.ipod{
-  width:280px;
-  padding:20px;
-  border-radius:30px;
-  background:linear-gradient(160deg,rgba(255,182,230,.28),rgba(183,156,255,.18));
-  backdrop-filter:blur(20px);
-  box-shadow:0 0 40px rgba(255,182,230,.25),0 30px 80px rgba(0,0,0,.65);
-  animation:float 4s ease-in-out infinite;
-}
-@keyframes float{50%{transform:translateY(-10px)}}
-
-.title{
-  text-align:center;
-  font-size:14px;
-  letter-spacing:.18em;
-  opacity:.85;
+/* ===== PLAYER ===== */
+.player{
+  width:320px;
+  background:var(--cream);
+  border-radius:26px;
+  padding:16px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.6);
 }
 
-/* AirPods */
-.airpods{
-  width:160px;
-  height:100px;
-  margin:10px auto 12px;
+/* ===== CASSETTE ===== */
+.cassette{
+  background:linear-gradient(180deg,#efe6dc,#dfd0c0);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:inset 0 0 0 1px var(--line);
+}
+
+.window{
+  background:#fdfbf8;
+  border-radius:12px;
+  padding:14px;
+  box-shadow:inset 0 0 0 1px var(--line);
+}
+
+.reels{
+  display:flex;
+  justify-content:space-between;
+}
+
+.reel{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  border:5px solid var(--brown);
   position:relative;
 }
-.case{
+
+.reel::after{
+  content:"";
   position:absolute;
-  bottom:0;left:50%;
-  transform:translateX(-50%);
-  width:160px;height:70px;
-  background:linear-gradient(180deg,#ffd6f0,#cbb8ff);
-  border-radius:30px;
-  box-shadow:0 12px 30px rgba(255,182,230,.45);
-}
-.lid{
-  position:absolute;
-  bottom:42px;left:50%;
-  transform:translateX(-50%) rotateX(0deg);
-  transform-origin:bottom center;
-  width:150px;height:42px;
-  background:linear-gradient(180deg,#fff,#e9dcff);
-  border-radius:28px 28px 18px 18px;
-  transition:.6s cubic-bezier(.4,0,.2,1);
-}
-.airpods.open .lid{
-  transform:translateX(-50%) rotateX(-75deg);
-}
-.bud{
-  position:absolute;
-  bottom:8px;
-  width:26px;height:48px;
-  background:white;
-  border-radius:14px;
-  opacity:0;
-  transform:translateY(8px);
-  transition:.5s ease;
-}
-.bud.left{left:52px}
-.bud.right{right:52px}
-.airpods.open .bud{
-  opacity:1;
-  transform:translateY(0);
+  inset:10px;
+  border-radius:50%;
+  border:3px solid var(--dark);
 }
 
-/* Screen */
-.screen{
-  padding:14px;
-  border-radius:18px;
-  background:rgba(0,0,0,.35);
-}
-.song{
-  font-size:12px;
-  text-align:center;
-  margin-bottom:8px;
-  word-break:break-all;
+.spin{
+  animation:spin 1.1s linear infinite;
 }
 
-/* Progress */
-.progress{
-  height:6px;
-  background:rgba(255,255,255,.15);
-  border-radius:6px;
-  overflow:hidden;
-  margin-bottom:10px;
-}
-.progress span{
-  display:block;
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,var(--pink),var(--purple));
+@keyframes spin{
+  to{transform:rotate(360deg)}
 }
 
-/* Controls */
+/* ===== INPUT ===== */
+.input{
+  display:flex;
+  gap:6px;
+  margin:10px 0;
+}
+
+input{
+  flex:1;
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#fff;
+}
+
+/* ===== CONTROLS ===== */
 .controls{
   display:flex;
-  justify-content:center;
-  gap:12px;
-}
-.btn{
-  width:44px;height:44px;
-  border-radius:50%;
-  border:none;
-  background:radial-gradient(circle,var(--pink),var(--purple));
-  font-size:18px;
-  cursor:pointer;
+  justify-content:space-between;
+  margin-bottom:10px;
 }
 
-/* Playlist */
-.playlist{
-  margin-top:14px;
-  max-height:110px;
-  overflow:auto;
-  font-size:12px;
-}
-.playlist div{
-  padding:6px 8px;
-  border-radius:8px;
-  cursor:pointer;
-}
-.playlist .active{
-  background:linear-gradient(90deg,rgba(255,182,230,.35),rgba(183,156,255,.25));
-}
-
-/* Input */
-input{
-  width:100%;
-  margin-top:12px;
-  padding:10px 12px;
-  border-radius:12px;
+button{
   border:none;
-  background:rgba(255,255,255,.18);
+  background:var(--brown);
   color:white;
-  font-size:12px;
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
 }
-input::placeholder{color:#f3dfff}
 
-/* YouTube */
-#ytWrap{
-  display:none;
-  margin-top:10px;
-  border-radius:14px;
+button.secondary{
+  background:var(--dark);
+}
+
+button.ghost{
+  background:transparent;
+  color:var(--dark);
+  box-shadow:none;
+}
+
+/* ===== PLAYLIST ===== */
+.playlist{
+  max-height:150px;
+  overflow:auto;
+}
+
+.song{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#fff;
+  padding:6px 8px;
+  border-radius:10px;
+  margin-bottom:6px;
+  box-shadow:0 1px 0 rgba(0,0,0,.05);
+  font-size:13px;
+}
+
+.song span{
+  flex:1;
   overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  cursor:pointer;
+}
+
+.song button{
+  background:transparent;
+  color:#9a6a4a;
+  box-shadow:none;
+  padding:0 4px;
+}
+
+/* ===== FOOT ===== */
+.footer{
+  text-align:center;
+  font-size:11px;
+  opacity:.6;
+  margin-top:6px;
 }
 </style>
 </head>
-
 <body>
 
-<div class="ipod">
-  <div class="title">iPod mini</div>
-
-  <div class="airpods" id="airpods">
-    <div class="lid"></div>
-    <div class="case"></div>
-    <div class="bud left"></div>
-    <div class="bud right"></div>
-  </div>
-
-  <div class="screen">
-    <div class="song" id="songText">No song</div>
-
-    <div class="progress">
-      <span id="progressBar"></span>
-    </div>
-
-    <div class="controls">
-      <button class="btn" id="prev">⏮</button>
-      <button class="btn" id="play">▶</button>
-      <button class="btn" id="next">⏭</button>
+<div class="player">
+  <div class="cassette">
+    <div class="window">
+      <div class="reels">
+        <div class="reel" id="reelL"></div>
+        <div class="reel" id="reelR"></div>
+      </div>
     </div>
   </div>
 
-  <div id="ytWrap">
-    <iframe id="ytFrame" width="100%" height="180"
-      frameborder="0"
-      allow="autoplay; encrypted-media"
-      allowfullscreen></iframe>
+  <div class="input">
+    <input id="ytInput" placeholder="Paste YouTube link…">
+    <button onclick="addSong()">+</button>
+  </div>
+
+  <div class="controls">
+    <button onclick="play()">▶</button>
+    <button onclick="pause()">⏸</button>
+    <button onclick="shuffle()">🔀</button>
+    <button class="secondary" onclick="mute()">🔇</button>
   </div>
 
   <div class="playlist" id="playlist"></div>
-  <input id="songInput" placeholder="Paste MP3 or YouTube link & press Enter">
+
+  <div class="footer">retro cassette • audio only</div>
 </div>
 
-<audio id="audio"></audio>
+<iframe id="player" style="display:none"></iframe>
 
 <script>
-const audio=document.getElementById('audio')
-const input=document.getElementById('songInput')
-const playlistEl=document.getElementById('playlist')
-const songText=document.getElementById('songText')
-const bar=document.getElementById('progressBar')
-const airpods=document.getElementById('airpods')
-const ytFrame=document.getElementById('ytFrame')
-const ytWrap=document.getElementById('ytWrap')
+/* ===== Telegram Init ===== */
+const tg = window.Telegram.WebApp
+tg.ready()
+tg.expand()
 
-let playlist=JSON.parse(localStorage.getItem('playlist')||'[]')
-let index=Number(localStorage.getItem('index')||0)
-let mode='mp3'
+/* ===== State ===== */
+let songs = JSON.parse(localStorage.getItem("cassetteSongs") || "[]")
+let current = null
+let muted = false
 
-function extractYT(url){
-  if(url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0]
-  if(url.includes('watch?v=')) return url.split('watch?v=')[1].split('&')[0]
-  return null
+const reelL = document.getElementById("reelL")
+const reelR = document.getElementById("reelR")
+const iframe = document.getElementById("player")
+
+function save(){
+  localStorage.setItem("cassetteSongs", JSON.stringify(songs))
 }
 
 function render(){
-  playlistEl.innerHTML=''
-  playlist.forEach((s,i)=>{
-    const d=document.createElement('div')
-    d.textContent=s
-    if(i===index) d.classList.add('active')
-    d.onclick=()=>playSong(i)
-    playlistEl.appendChild(d)
+  const list = document.getElementById("playlist")
+  list.innerHTML=""
+  songs.forEach((s,i)=>{
+    list.innerHTML += `
+      <div class="song">
+        <span onclick="play(${i})">${s}</span>
+        <button onclick="removeSong(${i})">✕</button>
+      </div>`
   })
 }
 
-function playSong(i){
-  mode='mp3'
-  ytWrap.style.display='none'
-  ytFrame.src=''
-  index=i
-  audio.src=playlist[i]
-  songText.textContent=playlist[i]
-  audio.play()
-  localStorage.setItem('index',index)
+function addSong(){
+  const v = document.getElementById("ytInput").value.trim()
+  if(!v) return
+  songs.push(v)
+  save()
+  render()
+  document.getElementById("ytInput").value=""
+}
+
+function extractId(url){
+  if(url.includes("youtu.be/")) return url.split("youtu.be/")[1].split("?")[0]
+  return url.split("v=")[1]?.split("&")[0]
+}
+
+function play(i){
+  if(i!==undefined) current=i
+  if(current===null) current=0
+  if(!songs[current]) return
+
+  const id = extractId(songs[current])
+  iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&mute=${muted?1:0}`
+  reelL.classList.add("spin")
+  reelR.classList.add("spin")
+}
+
+function pause(){
+  iframe.src=""
+  reelL.classList.remove("spin")
+  reelR.classList.remove("spin")
+}
+
+function mute(){
+  muted=!muted
+  play(current)
+}
+
+function shuffle(){
+  if(!songs.length) return
+  current = Math.floor(Math.random()*songs.length)
+  play(current)
+}
+
+function removeSong(i){
+  songs.splice(i,1)
+  save()
   render()
 }
 
-document.getElementById('play').onclick=()=>{
-  if(mode==='mp3') audio.paused?audio.play():audio.pause()
-}
-document.getElementById('prev').onclick=()=>{
-  if(mode==='mp3') playSong((index-1+playlist.length)%playlist.length)
-}
-document.getElementById('next').onclick=()=>{
-  if(mode==='mp3') playSong((index+1)%playlist.length)
-}
-
-audio.ontimeupdate=()=>{
-  bar.style.width=(audio.currentTime/audio.duration*100||0)+'%'
-}
-audio.onplay=()=>airpods.classList.add('open')
-audio.onpause=()=>airpods.classList.remove('open')
-
-input.addEventListener('keydown',e=>{
-  if(e.key!=='Enter')return
-  const link=input.value.trim()
-  if(!link)return
-
-  const ytID=extractYT(link)
-  if(ytID){
-    mode='youtube'
-    audio.pause()
-    bar.style.width='0%'
-    songText.textContent='YouTube audio'
-    ytFrame.src=`https://www.youtube.com/embed/${ytID}?autoplay=1`
-    ytWrap.style.display='block'
-    airpods.classList.add('open')
-    input.value=''
-    return
-  }
-
-  playlist.push(link)
-  localStorage.setItem('playlist',JSON.stringify(playlist))
-  input.value=''
-  playSong(playlist.length-1)
-})
-
-if(playlist.length) playSong(index)
 render()
 </script>
-
 </body>
 </html>
