@@ -3,103 +3,298 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>YouTube Music Mini App</title>
+<title>iPod Mini Player</title>
 
 <style>
+:root{
+  --pink:#ffb6e6;
+  --purple:#b79cff;
+  --dark:#120918;
+}
+*{box-sizing:border-box}
+
 body{
   margin:0;
   height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  background:radial-gradient(circle at top,#31174a,#120918);
+  background:radial-gradient(circle at top,#31174a,var(--dark));
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   color:white;
 }
 
-.card{
-  width:320px;
-  padding:18px;
-  border-radius:24px;
-  background:linear-gradient(160deg, rgba(255,182,230,.25), rgba(183,156,255,.18));
-  backdrop-filter:blur(18px);
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
+/* iPod */
+.ipod{
+  width:280px;
+  padding:20px;
+  border-radius:30px;
+  background:linear-gradient(160deg,rgba(255,182,230,.28),rgba(183,156,255,.18));
+  backdrop-filter:blur(20px);
+  box-shadow:0 0 40px rgba(255,182,230,.25),0 30px 80px rgba(0,0,0,.65);
+  animation:float 4s ease-in-out infinite;
 }
+@keyframes float{50%{transform:translateY(-10px)}}
 
-h2{
-  margin:0 0 12px;
+.title{
   text-align:center;
   font-size:14px;
-  letter-spacing:.15em;
+  letter-spacing:.18em;
   opacity:.85;
 }
 
+/* AirPods */
+.airpods{
+  width:160px;
+  height:100px;
+  margin:10px auto 12px;
+  position:relative;
+}
+.case{
+  position:absolute;
+  bottom:0;left:50%;
+  transform:translateX(-50%);
+  width:160px;height:70px;
+  background:linear-gradient(180deg,#ffd6f0,#cbb8ff);
+  border-radius:30px;
+  box-shadow:0 12px 30px rgba(255,182,230,.45);
+}
+.lid{
+  position:absolute;
+  bottom:42px;left:50%;
+  transform:translateX(-50%) rotateX(0deg);
+  transform-origin:bottom center;
+  width:150px;height:42px;
+  background:linear-gradient(180deg,#fff,#e9dcff);
+  border-radius:28px 28px 18px 18px;
+  transition:.6s cubic-bezier(.4,0,.2,1);
+}
+.airpods.open .lid{
+  transform:translateX(-50%) rotateX(-75deg);
+}
+.bud{
+  position:absolute;
+  bottom:8px;
+  width:26px;height:48px;
+  background:white;
+  border-radius:14px;
+  opacity:0;
+  transform:translateY(8px);
+  transition:.5s ease;
+}
+.bud.left{left:52px}
+.bud.right{right:52px}
+.airpods.open .bud{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Screen */
+.screen{
+  padding:14px;
+  border-radius:18px;
+  background:rgba(0,0,0,.35);
+}
+.song{
+  font-size:12px;
+  text-align:center;
+  margin-bottom:8px;
+  word-break:break-all;
+}
+
+/* Progress */
+.progress{
+  height:6px;
+  background:rgba(255,255,255,.15);
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:10px;
+}
+.progress span{
+  display:block;
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--pink),var(--purple));
+}
+
+/* Controls */
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+}
+.btn{
+  width:44px;height:44px;
+  border-radius:50%;
+  border:none;
+  background:radial-gradient(circle,var(--pink),var(--purple));
+  font-size:18px;
+  cursor:pointer;
+}
+
+/* Playlist */
+.playlist{
+  margin-top:14px;
+  max-height:110px;
+  overflow:auto;
+  font-size:12px;
+}
+.playlist div{
+  padding:6px 8px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.playlist .active{
+  background:linear-gradient(90deg,rgba(255,182,230,.35),rgba(183,156,255,.25));
+}
+
+/* Input */
 input{
   width:100%;
-  padding:12px;
-  border-radius:14px;
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:12px;
   border:none;
-  outline:none;
-  font-size:13px;
   background:rgba(255,255,255,.18);
   color:white;
+  font-size:12px;
 }
 input::placeholder{color:#f3dfff}
 
-.player{
-  margin-top:14px;
-  border-radius:16px;
+/* YouTube */
+#ytWrap{
+  display:none;
+  margin-top:10px;
+  border-radius:14px;
   overflow:hidden;
-  aspect-ratio:16/9;
-  background:black;
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-  <h2>YouTube Player</h2>
+<div class="ipod">
+  <div class="title">iPod mini</div>
 
-  <input id="ytInput" placeholder="Paste YouTube link & press Enter">
+  <div class="airpods" id="airpods">
+    <div class="lid"></div>
+    <div class="case"></div>
+    <div class="bud left"></div>
+    <div class="bud right"></div>
+  </div>
 
-  <div class="player">
-    <iframe
-      id="ytFrame"
-      width="100%"
-      height="100%"
+  <div class="screen">
+    <div class="song" id="songText">No song</div>
+
+    <div class="progress">
+      <span id="progressBar"></span>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prev">⏮</button>
+      <button class="btn" id="play">▶</button>
+      <button class="btn" id="next">⏭</button>
+    </div>
+  </div>
+
+  <div id="ytWrap">
+    <iframe id="ytFrame" width="100%" height="180"
       frameborder="0"
       allow="autoplay; encrypted-media"
-      allowfullscreen>
-    </iframe>
+      allowfullscreen></iframe>
   </div>
+
+  <div class="playlist" id="playlist"></div>
+  <input id="songInput" placeholder="Paste MP3 or YouTube link & press Enter">
 </div>
 
-<script>
-const input = document.getElementById('ytInput')
-const frame = document.getElementById('ytFrame')
+<audio id="audio"></audio>
 
-function extractID(url){
-  try{
-    if(url.includes('youtu.be/')){
-      return url.split('youtu.be/')[1].split('?')[0]
-    }
-    if(url.includes('watch?v=')){
-      return url.split('watch?v=')[1].split('&')[0]
-    }
-  }catch(e){}
+<script>
+const audio=document.getElementById('audio')
+const input=document.getElementById('songInput')
+const playlistEl=document.getElementById('playlist')
+const songText=document.getElementById('songText')
+const bar=document.getElementById('progressBar')
+const airpods=document.getElementById('airpods')
+const ytFrame=document.getElementById('ytFrame')
+const ytWrap=document.getElementById('ytWrap')
+
+let playlist=JSON.parse(localStorage.getItem('playlist')||'[]')
+let index=Number(localStorage.getItem('index')||0)
+let mode='mp3'
+
+function extractYT(url){
+  if(url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0]
+  if(url.includes('watch?v=')) return url.split('watch?v=')[1].split('&')[0]
   return null
 }
 
+function render(){
+  playlistEl.innerHTML=''
+  playlist.forEach((s,i)=>{
+    const d=document.createElement('div')
+    d.textContent=s
+    if(i===index) d.classList.add('active')
+    d.onclick=()=>playSong(i)
+    playlistEl.appendChild(d)
+  })
+}
+
+function playSong(i){
+  mode='mp3'
+  ytWrap.style.display='none'
+  ytFrame.src=''
+  index=i
+  audio.src=playlist[i]
+  songText.textContent=playlist[i]
+  audio.play()
+  localStorage.setItem('index',index)
+  render()
+}
+
+document.getElementById('play').onclick=()=>{
+  if(mode==='mp3') audio.paused?audio.play():audio.pause()
+}
+document.getElementById('prev').onclick=()=>{
+  if(mode==='mp3') playSong((index-1+playlist.length)%playlist.length)
+}
+document.getElementById('next').onclick=()=>{
+  if(mode==='mp3') playSong((index+1)%playlist.length)
+}
+
+audio.ontimeupdate=()=>{
+  bar.style.width=(audio.currentTime/audio.duration*100||0)+'%'
+}
+audio.onplay=()=>airpods.classList.add('open')
+audio.onpause=()=>airpods.classList.remove('open')
+
 input.addEventListener('keydown',e=>{
-  if(e.key!=='Enter') return
-  const id = extractID(input.value.trim())
-  if(!id){
-    alert('Invalid YouTube link')
+  if(e.key!=='Enter')return
+  const link=input.value.trim()
+  if(!link)return
+
+  const ytID=extractYT(link)
+  if(ytID){
+    mode='youtube'
+    audio.pause()
+    bar.style.width='0%'
+    songText.textContent='YouTube audio'
+    ytFrame.src=`https://www.youtube.com/embed/${ytID}?autoplay=1`
+    ytWrap.style.display='block'
+    airpods.classList.add('open')
+    input.value=''
     return
   }
-  frame.src = `https://www.youtube.com/embed/${id}?autoplay=1`
+
+  playlist.push(link)
+  localStorage.setItem('playlist',JSON.stringify(playlist))
+  input.value=''
+  playSong(playlist.length-1)
 })
+
+if(playlist.length) playSong(index)
+render()
 </script>
 
 </body>
