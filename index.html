@@ -35,7 +35,7 @@ body{
   box-shadow:0 40px 120px rgba(0,0,0,.35);
 }
 
-/* ===== CASSETTE ===== */
+/* ===== CASSETTE (EFFECTS KEPT) ===== */
 .cassette{
   position:relative;
   background:linear-gradient(180deg,#fafafa,#e6e6e6);
@@ -48,7 +48,7 @@ body{
   overflow:hidden;
 }
 
-/* wobble */
+/* wobble – analog imperfection */
 .cassette.playing{
   animation:wobble 3.8s ease-in-out infinite;
 }
@@ -57,7 +57,7 @@ body{
   50%{transform:rotate(-.15deg)}
 }
 
-/* dust */
+/* moving dust / grain */
 .cassette::after{
   content:"";
   position:absolute;
@@ -94,7 +94,7 @@ body{
   transition:box-shadow .5s ease;
 }
 
-/* glow */
+/* glow when playing */
 .cassette.playing .window{
   box-shadow:
     inset 0 0 0 1px #d0d0d0,
@@ -133,11 +133,11 @@ input{
   border:1px solid #cfcfcf;
 }
 
-/* ===== CONTROLS (FINAL FIX) ===== */
+/* ===== CONTROLS (KECIL & BERJARAK) ===== */
 .controls{
   display:flex;
   justify-content:center;
-  gap:14px;            /* jarak antar tombol */
+  gap:14px;               /* jarak antar tombol */
   margin-bottom:12px;
 }
 
@@ -145,10 +145,10 @@ input{
   border:none;
   background:var(--ink);
   color:#fff;
-  padding:8px 10px;    /* kecil */
+  padding:8px 10px;       /* kecil */
   min-width:40px;
   height:36px;
-  border-radius:999px; /* pill */
+  border-radius:999px;
   cursor:pointer;
   font-size:13px;
   display:flex;
@@ -167,7 +167,7 @@ input{
     inset 0 2px 6px rgba(0,0,0,.3);
 }
 
-/* play sedikit lebih niat tapi tetap kecil */
+/* play tetap fokus tapi tidak besar */
 .controls .play-main{
   min-width:46px;
   height:40px;
@@ -235,7 +235,6 @@ input{
     <button onclick="addSong()">＋</button>
   </div>
 
-  <!-- CONTROLS -->
   <div class="controls">
     <button onclick="shuffle()">🔀</button>
     <button id="playBtn" class="play-main" onclick="togglePlay()">▶</button>
@@ -243,4 +242,85 @@ input{
   </div>
 
   <div class="playlist" id="playlist"></div>
-  <div class="footer">analog cassette • su
+  <div class="footer">analog cassette • subtle motion</div>
+</div>
+
+<iframe id="player" allow="autoplay" style="display:none"></iframe>
+
+<script>
+const tg = window.Telegram.WebApp
+tg.ready(); tg.expand()
+
+let songs = JSON.parse(localStorage.getItem("cassetteSongs")||"[]")
+let current=null, muted=false, isPlaying=false
+
+const reelL=document.getElementById("reelL")
+const reelR=document.getElementById("reelR")
+const cassette=document.getElementById("cassette")
+const iframe=document.getElementById("player")
+const playBtn=document.getElementById("playBtn")
+
+function save(){localStorage.setItem("cassetteSongs",JSON.stringify(songs))}
+
+function extractId(url){
+  if(url.includes("youtu.be/")) return url.split("youtu.be/")[1].split("?")[0]
+  return url.split("v=")[1]?.split("&")[0]
+}
+
+async function fetchTitle(url){
+  try{
+    const r=await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
+    return (await r.json()).title
+  }catch{return"Unknown Track"}
+}
+
+async function addSong(){
+  const url=document.getElementById("ytInput").value.trim()
+  if(!url) return
+  songs.push({url,title:await fetchTitle(url)})
+  save(); render()
+  document.getElementById("ytInput").value=""
+}
+
+function render(){
+  playlist.innerHTML=""
+  songs.forEach((s,i)=>{
+    playlist.innerHTML+=`
+      <div class="song">
+        <span onclick="playFromList(${i})">${s.title}</span>
+        <button onclick="removeSong(${i})">✕</button>
+      </div>`
+  })
+}
+
+function playFromList(i){current=i; startPlay()}
+
+function startPlay(){
+  if(current===null) current=0
+  if(!songs[current]) return
+  iframe.src=`https://www.youtube.com/embed/${extractId(songs[current].url)}?autoplay=1&playsinline=1&mute=${muted?1:0}`
+  reelL.classList.add("spin")
+  reelR.classList.add("spin")
+  cassette.classList.add("playing")
+  playBtn.textContent="⏸"
+  isPlaying=true
+}
+
+function pausePlay(){
+  iframe.src=""
+  reelL.classList.remove("spin")
+  reelR.classList.remove("spin")
+  cassette.classList.remove("playing")
+  playBtn.textContent="▶"
+  isPlaying=false
+}
+
+function togglePlay(){isPlaying?pausePlay():startPlay()}
+function mute(){muted=!muted; if(isPlaying) startPlay()}
+function shuffle(){if(!songs.length)return; current=Math.floor(Math.random()*songs.length); startPlay()}
+function removeSong(i){songs.splice(i,1); save(); render()}
+
+render()
+</script>
+</body>
+</html>
