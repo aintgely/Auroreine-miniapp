@@ -33,7 +33,7 @@ body{
   box-shadow:0 40px 120px rgba(0,0,0,.35);
 }
 
-/* ===== CASSETTE ===== */
+/* ===== CASSETTE (UNCHANGED) ===== */
 .cassette{
   position:relative;
   background:linear-gradient(180deg,#fafafa,#e6e6e6);
@@ -109,14 +109,34 @@ input{
 .songs{margin-top:6px;display:none}
 .folder.open .songs{display:block}
 
+/* ===== SONG ROW (UPDATED) ===== */
 .song{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
   font-size:12px;
-  padding:6px;
-  cursor:pointer;
+  padding:6px 6px;
   border-radius:8px;
 }
-.song.dragging{opacity:.4}
 .song:hover{background:#eee}
+.song-title{
+  flex:1;
+  cursor:pointer;
+}
+
+/* X button */
+.song-delete{
+  border:none;
+  background:none;
+  font-size:12px;
+  opacity:.5;
+  cursor:pointer;
+  padding:2px 4px;
+}
+.song-delete:hover{
+  opacity:1;
+}
 
 .add-playlist{
   text-align:center;
@@ -210,6 +230,11 @@ function deletePlaylist(i){
   save();render()
 }
 
+function deleteSong(p,s){
+  data[p].songs.splice(s,1)
+  save();render()
+}
+
 function play(p,s){
   current={p,s}
   const song=data[p].songs[s]
@@ -248,9 +273,10 @@ function render(){
           ${p.songs.map((s,si)=>`
             <div class="song"
               draggable="true"
-              ondragstart="dragStart(${pi},${si})"
-              onclick="play(${pi},${si})">
-              ${s.title}
+              ondragstart="dragStart(${pi},${si})">
+              <div class="song-title" onclick="play(${pi},${si})">${s.title}</div>
+              <button class="song-delete"
+                onclick="deleteSong(${pi},${si});event.stopPropagation()">✕</button>
             </div>
           `).join("")}
         </div>
