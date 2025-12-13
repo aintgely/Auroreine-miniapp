@@ -9,9 +9,7 @@
 
 <style>
 :root{
-  --black:#0e0e0e;
   --ink:#1a1a1a;
-  --gray:#bdbdbd;
   --paper:#f7f7f7;
 }
 
@@ -34,9 +32,7 @@ body{
   background:var(--paper);
   border-radius:28px;
   padding:18px;
-  box-shadow:
-    0 40px 120px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.9);
+  box-shadow:0 40px 120px rgba(0,0,0,.35);
 }
 
 /* ===== CASSETTE ===== */
@@ -46,24 +42,40 @@ body{
   border-radius:22px;
   padding:18px;
   margin-bottom:14px;
-  box-shadow:
-    inset 0 0 0 1px #cfcfcf,
-    inset 0 -6px 12px rgba(0,0,0,.08);
+  box-shadow:inset 0 0 0 1px #cfcfcf,inset 0 -6px 12px rgba(0,0,0,.08);
   overflow:hidden;
+  transition:transform .6s ease;
 }
 
+/* 🎞️ wobble when playing */
+.cassette.playing{
+  animation:wobble 3.6s ease-in-out infinite;
+}
+
+@keyframes wobble{
+  0%,100%{transform:rotate(.2deg)}
+  50%{transform:rotate(-.2deg)}
+}
+
+/* 🌫️ moving dust */
 .cassette::after{
   content:"";
   position:absolute;
-  inset:0;
+  inset:-40%;
   background-image:
-    repeating-radial-gradient(circle at 30% 30%,
-      rgba(0,0,0,.04) 0,
-      rgba(0,0,0,.04) 1px,
+    repeating-radial-gradient(circle,
+      rgba(0,0,0,.06) 0,
+      rgba(0,0,0,.06) 1px,
       transparent 1px,
       transparent 3px);
-  opacity:.35;
+  opacity:.25;
+  animation:dustMove 18s linear infinite;
   pointer-events:none;
+}
+
+@keyframes dustMove{
+  from{transform:translateY(0)}
+  to{transform:translateY(120px)}
 }
 
 .label{
@@ -74,6 +86,7 @@ body{
   margin-bottom:8px;
 }
 
+/* ===== WINDOW ===== */
 .window{
   background:#fff;
   border-radius:16px;
@@ -81,6 +94,14 @@ body{
   box-shadow:
     inset 0 0 0 1px #d0d0d0,
     inset 0 8px 14px rgba(255,255,255,.9);
+  transition:box-shadow .6s ease;
+}
+
+/* ✨ glow when playing */
+.cassette.playing .window{
+  box-shadow:
+    inset 0 0 0 1px #d0d0d0,
+    0 0 20px rgba(0,0,0,.15);
 }
 
 .reels{
@@ -93,6 +114,7 @@ body{
   height:58px;
   border-radius:50%;
   border:5px solid var(--ink);
+  transition:box-shadow .4s ease;
 }
 
 .spin{
@@ -100,9 +122,7 @@ body{
   box-shadow:0 0 12px rgba(0,0,0,.35);
 }
 
-@keyframes spin{
-  to{transform:rotate(360deg)}
-}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ===== INPUT ===== */
 .input{
@@ -116,13 +136,13 @@ input{
   padding:10px 12px;
   border-radius:14px;
   border:1px solid #cfcfcf;
-  background:#fff;
 }
 
 /* ===== CONTROLS ===== */
 .controls{
-  display:flex;
-  justify-content:space-between;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
   margin-bottom:12px;
 }
 
@@ -133,21 +153,20 @@ button{
   padding:12px 16px;
   border-radius:16px;
   cursor:pointer;
-  box-shadow:
-    0 10px 20px rgba(0,0,0,.25),
-    inset 0 -2px 0 rgba(255,255,255,.1);
+  box-shadow:0 10px 20px rgba(0,0,0,.25), inset 0 -2px 0 rgba(255,255,255,.1);
   transition:transform .12s ease, box-shadow .12s ease;
 }
 
 button:active{
   transform:scale(.94);
-  box-shadow:
-    0 4px 10px rgba(0,0,0,.3),
-    inset 0 2px 6px rgba(0,0,0,.3);
+  box-shadow:0 4px 10px rgba(0,0,0,.3), inset 0 2px 6px rgba(0,0,0,.3);
 }
 
-button.secondary{
-  background:#2a2a2a;
+button.secondary{background:#2a2a2a}
+
+.play-main{
+  padding:16px 20px;
+  font-size:18px;
 }
 
 /* ===== PLAYLIST ===== */
@@ -164,9 +183,7 @@ button.secondary{
   padding:10px 12px;
   border-radius:16px;
   margin-bottom:8px;
-  box-shadow:
-    0 4px 12px rgba(0,0,0,.1),
-    inset 0 1px 0 rgba(255,255,255,.9);
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
   font-size:13px;
 }
 
@@ -196,10 +213,9 @@ button.secondary{
 </head>
 
 <body>
-
 <div class="player">
 
-  <div class="cassette">
+  <div class="cassette" id="cassette">
     <div class="label">ANALOG • MONO • SIDE A</div>
     <div class="window">
       <div class="reels">
@@ -215,69 +231,56 @@ button.secondary{
   </div>
 
   <div class="controls">
-    <button id="playBtn" onclick="togglePlay()">▶</button>
     <button onclick="shuffle()">🔀</button>
+    <button id="playBtn" class="play-main" onclick="togglePlay()">▶</button>
     <button class="secondary" onclick="mute()">🔇</button>
   </div>
 
   <div class="playlist" id="playlist"></div>
-  <div class="footer">analog cassette • black & white</div>
+  <div class="footer">analog cassette • tactile motion</div>
 </div>
 
 <iframe id="player" allow="autoplay" style="display:none"></iframe>
 
 <script>
 const tg = window.Telegram.WebApp
-tg.ready()
-tg.expand()
+tg.ready(); tg.expand()
 
-let songs = JSON.parse(localStorage.getItem("cassetteSongs") || "[]")
-let current = null
-let muted = false
-let isPlaying = false
+let songs = JSON.parse(localStorage.getItem("cassetteSongs")||"[]")
+let current=null, muted=false, isPlaying=false
 
-const reelL = document.getElementById("reelL")
-const reelR = document.getElementById("reelR")
-const iframe = document.getElementById("player")
-const playBtn = document.getElementById("playBtn")
+const reelL=document.getElementById("reelL")
+const reelR=document.getElementById("reelR")
+const cassette=document.getElementById("cassette")
+const iframe=document.getElementById("player")
+const playBtn=document.getElementById("playBtn")
 
-function save(){
-  localStorage.setItem("cassetteSongs", JSON.stringify(songs))
-}
+function save(){localStorage.setItem("cassetteSongs",JSON.stringify(songs))}
 
 function extractId(url){
-  if(url.includes("youtu.be/"))
-    return url.split("youtu.be/")[1].split("?")[0]
+  if(url.includes("youtu.be/")) return url.split("youtu.be/")[1].split("?")[0]
   return url.split("v=")[1]?.split("&")[0]
 }
 
 async function fetchTitle(url){
   try{
-    const r = await fetch(
-      `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`
-    )
-    const d = await r.json()
-    return d.title
-  }catch{
-    return "Unknown Track"
-  }
+    const r=await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
+    return (await r.json()).title
+  }catch{return"Unknown Track"}
 }
 
 async function addSong(){
-  const url = document.getElementById("ytInput").value.trim()
+  const url=document.getElementById("ytInput").value.trim()
   if(!url) return
-  const title = await fetchTitle(url)
-  songs.push({ url, title })
-  save()
-  render()
+  songs.push({url,title:await fetchTitle(url)})
+  save(); render()
   document.getElementById("ytInput").value=""
 }
 
 function render(){
-  const list = document.getElementById("playlist")
-  list.innerHTML=""
+  playlist.innerHTML=""
   songs.forEach((s,i)=>{
-    list.innerHTML+=`
+    playlist.innerHTML+=`
       <div class="song">
         <span onclick="playFromList(${i})">${s.title}</span>
         <button onclick="removeSong(${i})">✕</button>
@@ -285,19 +288,15 @@ function render(){
   })
 }
 
-function playFromList(i){
-  current=i
-  startPlay()
-}
+function playFromList(i){current=i; startPlay()}
 
 function startPlay(){
   if(current===null) current=0
   if(!songs[current]) return
-  const id = extractId(songs[current].url)
-  iframe.src =
-    `https://www.youtube.com/embed/${id}?autoplay=1&playsinline=1&mute=${muted?1:0}`
+  iframe.src=`https://www.youtube.com/embed/${extractId(songs[current].url)}?autoplay=1&playsinline=1&mute=${muted?1:0}`
   reelL.classList.add("spin")
   reelR.classList.add("spin")
+  cassette.classList.add("playing")
   playBtn.textContent="⏸"
   isPlaying=true
 }
@@ -306,31 +305,15 @@ function pausePlay(){
   iframe.src=""
   reelL.classList.remove("spin")
   reelR.classList.remove("spin")
+  cassette.classList.remove("playing")
   playBtn.textContent="▶"
   isPlaying=false
 }
 
-function togglePlay(){
-  if(isPlaying) pausePlay()
-  else startPlay()
-}
-
-function mute(){
-  muted=!muted
-  if(isPlaying) startPlay()
-}
-
-function shuffle(){
-  if(!songs.length) return
-  current=Math.floor(Math.random()*songs.length)
-  startPlay()
-}
-
-function removeSong(i){
-  songs.splice(i,1)
-  save()
-  render()
-}
+function togglePlay(){isPlaying?pausePlay():startPlay()}
+function mute(){muted=!muted; if(isPlaying) startPlay()}
+function shuffle(){if(!songs.length)return; current=Math.floor(Math.random()*songs.length); startPlay()}
+function removeSong(i){songs.splice(i,1); save(); render()}
 
 render()
 </script>
