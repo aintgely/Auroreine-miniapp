@@ -1,823 +1,295 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Mini Profiles — Auroreine (Magazine)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>iPod Mini Player</title>
 
 <style>
-/* ===========================
-      FONT-FACE (use your /fonts/ folder)
-   ========================== */
-@font-face{
-  font-family: "Bodoni XT";
-  src: url('/fonts/BodoniXT.woff2') format('woff2'),
-       url('/fonts/BodoniXT.woff') format('woff');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face{
-  font-family: "Cinzel Decorative";
-  src: url('/fonts/CinzelDecorative-Regular.woff2') format('woff2'),
-       url('/fonts/CinzelDecorative-Regular.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face{
-  font-family: "Cinzel";
-  src: url('/fonts/Cinzel-Regular.woff2') format('woff2'),
-       url('/fonts/Cinzel-Regular.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face{
-  font-family: "Quenda";
-  src: url('/fonts/Quenda-Medium.woff2') format('woff2'),
-       url('/fonts/Quenda-Medium.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+:root{
+  --pink:#ffb6e6;
+  --purple:#b79cff;
+  --dark:#120918;
 }
 
-/* ===========================
-      BASE & VARIABLES
-=========================== */
-@font-face {
-  font-family: 'SwirlyCanalope';
-  src: url('SwirlyCanalopePERSONALUSE-Regular.woff2') format('woff2'),
-       url('SwirlyCanalopePERSONALUSE-Regular.woff') format('woff');
-  font-display: swap;
-}
+*{box-sizing:border-box}
 
-:root {
-  --text:#f5f3ff;
-  --soft:#b8b5d0;
-  --accent:#f7d6ff;
-
-  /* increased max width for magazine layout (fits larger miniapp view on open) */
-  --max-width:720px;
-  --tab-min-width:110px; /* give tabs more breathing room */
-  --card-bg:rgba(255,255,255,0.02);
-
-  --gutter:20px;
-}
-
-* { box-sizing:border-box; }
-
-html, body {
-  margin:0; height:100%;
-  font-family: 'Quenda', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-}
-
-body {
-  display:flex; justify-content:center; align-items:flex-start; /* align to top like magazine */
-  background:radial-gradient(1200px 800px at 10% 10%, #1c1530 0%, #07060a 45%, #03020a 100%);
-  color:var(--text);
-  padding:28px; /* give room for the larger card */
-  overflow:auto; /* allow scroll if miniapp smaller */
-}
-
-/* ===========================
-      CARD WRAPPER (magazine style)
-=========================== */
-.shell { width:100%; max-width:var(--max-width); position:relative; z-index:10; }
-
-.card {
-  border-radius:18px;
-  padding:22px;
-  background:linear-gradient(180deg, var(--card-bg), rgba(255,255,255,0.01));
-  border:1px solid rgba(255,255,255,0.04);
-  box-shadow:0 28px 80px rgba(5,3,10,0.7);
-  opacity:0;
-  transform:translateY(10px);
-  transition: opacity .45s ease .28s, transform .45s ease .28s;
-  backdrop-filter: blur(4px);
-  display:grid;
-  grid-template-columns: 1fr 320px; /* magazine: main column + side column */
-  gap:var(--gutter);
-  align-items:start;
-}
-
-/* make it single-column on narrow mini-apps */
-@media (max-width:760px) {
-  .card { grid-template-columns: 1fr; padding:16px; }
-}
-
-.content-visible .card { opacity:1; transform:none; }
-
-/* ===========================
-      HEADER TITLE (masthead)
-=========================== */
-.title-row.simple-one {
-  grid-column: 1 / -1; /* full width */
-  display:flex; justify-content:space-between; align-items:flex-end;
-  padding:6px 0 8px;
-  gap:12px;
-}
-
-.simple-name {
-  font-size:26px; /* bigger masthead */
-  font-weight:700;
-  letter-spacing:.02em;
+body{
   margin:0;
-  font-family: "Bodoni XT", 'Quenda', serif; /* magazine masthead */
-  color: var(--accent);
-  text-transform: none;
-}
-
-.simple-sub {
-  font-size:12px; color:var(--soft); font-weight:500; margin-bottom:4px;
-}
-
-/* ===========================
-         TABS (kept but restyled)
-=========================== */
-.tabs {
+  height:100vh;
   display:flex;
-  gap:10px;
-  margin-bottom:8px;
+  justify-content:center;
   align-items:center;
-  grid-column: 1 / -1;
+  background:radial-gradient(circle at top, #31174a, var(--dark));
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:white;
 }
 
-.tab {
-  min-width:var(--tab-min-width);
-  padding:10px 12px;
-  border-radius:999px;
+/* ===== iPod ===== */
+.ipod{
+  width:280px;
+  padding:20px;
+  border-radius:30px;
+  background:linear-gradient(160deg, rgba(255,182,230,.28), rgba(183,156,255,.18));
+  backdrop-filter:blur(20px);
+  box-shadow:
+    0 0 40px rgba(255,182,230,.25),
+    0 30px 80px rgba(0,0,0,.65);
+  animation:float 4s ease-in-out infinite;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+
+.title{
+  text-align:center;
+  font-size:14px;
+  letter-spacing:.18em;
+  opacity:.8;
+}
+
+/* ===== AirPods ===== */
+.airpods{
+  width:160px;
+  height:100px;
+  margin:10px auto 12px;
+  position:relative;
+}
+
+.case{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:160px;
+  height:70px;
+  background:linear-gradient(180deg,#ffd6f0,#cbb8ff);
+  border-radius:30px;
+  box-shadow:0 12px 30px rgba(255,182,230,.45);
+}
+
+.lid{
+  position:absolute;
+  bottom:42px;
+  left:50%;
+  transform:translateX(-50%) rotateX(0deg);
+  transform-origin:bottom center;
+  width:150px;
+  height:42px;
+  background:linear-gradient(180deg,#fff,#e9dcff);
+  border-radius:28px 28px 18px 18px;
+  transition:transform .6s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+}
+
+.airpods.open .lid{
+  transform:translateX(-50%) rotateX(-75deg);
+}
+
+.bud{
+  position:absolute;
+  bottom:8px;
+  width:26px;
+  height:48px;
+  background:white;
+  border-radius:14px;
+  opacity:0;
+  transform:translateY(8px);
+  transition:.5s ease;
+}
+
+.bud.left{left:52px}
+.bud.right{right:52px}
+
+.airpods.open .bud{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ===== Screen ===== */
+.screen{
+  padding:14px;
+  border-radius:18px;
+  background:rgba(0,0,0,.35);
+}
+
+.song{
   font-size:13px;
   text-align:center;
-  white-space:nowrap;
+  opacity:.9;
+  margin-bottom:8px;
+  word-break:break-all;
+}
+
+/* progress bar */
+.progress{
+  height:6px;
+  background:rgba(255,255,255,.15);
+  border-radius:6px;
   overflow:hidden;
-  text-overflow:ellipsis;
-
-  background:transparent;
-  color:var(--soft);
-  border:1px solid transparent;
-
-  cursor:pointer;
+  margin-bottom:10px;
+}
+.progress span{
+  display:block;
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--pink),var(--purple));
 }
 
-.tab.active {
-  background:linear-gradient(180deg, rgba(247,214,255,0.06), rgba(247,214,255,0.03));
-  border-color:rgba(247,214,255,0.12);
-  color:var(--text);
-}
-
-.tab:hover { transform:translateY(-3px); transition:transform 140ms ease; }
-
-#tab-news { min-width:48px; max-width:48px; padding:8px 0; flex:0 0 48px; }
-#tab-news img#newsSymbol { width:22px; height:22px; }
-
-.tab.small { font-size:12px; padding:8px 10px; }
-
-/* ===========================
-         MAIN ARTICLE AREA
-=========================== */
-/* left column = main content (profile/article) */
-.profile-wrapper { grid-column:1/2; }
-
-.profile {
-  padding:18px;
-  border-radius:12px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(9,9,18,0.94));
-  border:1px solid rgba(255,255,255,0.02);
-  margin-bottom:14px;
-  display:flex; gap:14px; align-items:flex-start;
-}
-
-/* profile hero image placeholder (keeps layout but unobtrusive) */
-.profile-hero {
-  width:112px; height:112px; border-radius:10px; background:linear-gradient(180deg,#0b0710,#1a1226); flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center;
-}
-.profile-hero img { width:100%; height:100%; object-fit:cover; display:block; }
-
-.profile-body { flex:1; min-width:0; }
-
-.profile h2 {
-  margin:0 0 6px; font-size:18px; font-weight:700;
-  font-family: "Cinzel", "Bodoni XT", serif; /* display name */
-  color: var(--accent);
-}
-
-.profile small { display:block; font-size:12px; color:var(--soft); margin-bottom:8px; }
-
-.profile p { font-family:'Quenda', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; font-size:15px; color:#eedeff; line-height:1.6; margin:0; }
-
-.profile .signature { font-family: "Cinzel Decorative", serif; color: var(--accent); font-size:13px; margin-bottom:8px; opacity:0.95; }
-
-/* ===========================
-     SIDE COLUMN (controls, audio, news preview)
-=========================== */
-.aside { grid-column:2/3; display:flex; flex-direction:column; gap:12px; min-width:260px; }
-
-.controls-card { padding:14px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(6,6,10,0.95)); border:1px solid rgba(255,255,255,0.02); }
-
-.btn-row { display:flex; gap:10px; }
-
-button.primary,
-button.ghost {
-  flex:1;
-  padding:10px 14px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
+/* controls */
+.controls{
   display:flex;
-  align-items:center;
   justify-content:center;
-  gap:8px;
+  gap:12px;
+}
+.btn{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:none;
+  background:radial-gradient(circle,var(--pink),var(--purple));
+  color:#2b153c;
+  font-size:18px;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.4);
+  transition:.2s;
+}
+.btn:active{transform:scale(.92)}
+
+/* playlist */
+.playlist{
+  margin-top:14px;
+  max-height:110px;
+  overflow:auto;
+  font-size:12px;
+}
+.playlist div{
+  padding:6px 8px;
+  border-radius:8px;
+  cursor:pointer;
+  opacity:.85;
+}
+.playlist div:hover{
+  background:rgba(255,255,255,.12);
+}
+.playlist .active{
+  background:linear-gradient(90deg,rgba(255,182,230,.35),rgba(183,156,255,.25));
 }
 
-button.primary { background:#f5f0ff; color:#161622; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
-button.ghost { background:transparent; color:var(--soft); border:1px solid rgba(255,255,255,0.06); }
-
-#favIcon { width:20px; height:20px; object-fit:contain; border-radius:6px; }
-
-.fav-gif-in { animation:favGifIn .26s ease both; }
-@keyframes favGifIn { from { opacity:0; transform:scale(.92); } to { opacity:1; transform:scale(1); } }
-
-@keyframes foxWiggle { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(-6deg) scale(1.06); } 50% { transform: rotate(4deg) scale(1.05); } 75% { transform: rotate(-3deg) scale(1.04); } 100% { transform: rotate(0deg) scale(1.06); } }
-
-#favBtn.fav-active { color:#161622; background: linear-gradient(180deg, #fceeff, #f7d6ff); text-shadow: 0 0 6px rgba(255,180,255,0.45); box-shadow: 0 12px 32px rgba(180,120,255,0.12); animation: foxWiggle .45s ease-out; }
-
-#playBtn { background:#f5f0ff; color:#161622; box-shadow:0 8px 22px rgba(0,0,0,0.06); padding-left:18px; padding-right:18px; border-radius:999px; border:none; }
-#playBtn.playing { background: linear-gradient(180deg, #fceeff, #f7d6ff); animation: foxWiggle .45s ease-out; }
-
-#playBtn:active, #favBtn:active { transform: scale(0.99); transition: transform 80ms ease; }
-
-/* small helper text */
-.controls-card .helper { font-size:12px; color:var(--soft); text-align:center; margin-top:8px; }
-
-/* NEWS preview in the side column */
-.news-preview { padding:12px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(8,8,12,0.95)); border:1px solid rgba(255,255,255,0.02); }
-.news-preview h3 { margin:0 0 8px 0; font-size:13px; color:var(--text); }
-.news-preview .item { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
-.news-preview .item img { width:54px; height:54px; border-radius:8px; object-fit:cover; }
-.news-preview .item p { margin:0; font-size:13px; color:var(--soft); }
-
-/* replay button moved inside aside on small screens */
-.replay { position:relative; z-index:10010; background:rgba(255,255,255,0.04); color:var(--soft); border:1px solid rgba(255,255,255,0.03); padding:8px 10px; border-radius:999px; font-size:13px; cursor:pointer; align-self:flex-end; }
-
-/* DOOR OVERLAY (kept as-is but with smoother feel) */
-.door-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:9999; pointer-events:auto; }
-.door-wrap { width:100%; max-width:900px; height:100vh; display:flex; perspective:1600px; transform-style:preserve-3d; }
-.door-wrap .leaf { flex:1; height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.06); background:linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12)); box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 30px 80px rgba(60,0,120,0.45); transform-origin: center left; transition: transform 900ms cubic-bezier(0.18, 0.89, 0.32, 1), box-shadow 600ms ease, opacity 600ms ease; }
-.door-wrap .leaf.right { transform-origin: center right; }
-.door-wrap.door-opening .leaf.left { transform: rotateY(-18deg) translateZ(40px) scale(0.995); box-shadow: -40px 40px 120px rgba(0,0,0,0.6); }
-.door-wrap.door-opening .leaf.right { transform: rotateY(18deg) translateZ(40px) scale(0.995); box-shadow: 40px 40px 120px rgba(0,0,0,0.6); }
-.door-overlay.fade-out { background: rgba(0,0,0,0.0); transition: background 700ms ease; }
-.hidden-overlay { display:none !important; pointer-events:none; }
-
-/* sparkle, news modal and other styles kept from original (no functional changes) */
-.sparkle-pop { position:absolute;width:6px;height:6px;border-radius:50%; background:radial-gradient(circle,#ffffff 0%,#e7d4ff 60%,transparent 100%); opacity:0; animation:sparkleFade 1.2s ease-out forwards; pointer-events:none; filter:blur(0.4px); }
-@keyframes sparkleFade { 0% { transform: translateY(0) scale(.5); opacity:0; } 15% { transform: translateY(-4px) scale(1); opacity:.95; } 50% { transform: translateY(-12px) scale(1.15); opacity:.8; } 100% { transform: translateY(-22px) scale(0.7); opacity:0; } }
-
-/* NEWS modal styles unchanged for functionality */
-.news-modal-backdrop { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(5,4,8,0.6); z-index:10020; padding:20px; }
-.news-modal-backdrop.open { display:flex; }
-.news-modal { width:min(720px,calc(100% - 40px)); max-height:80vh; overflow:auto; background:linear-gradient(180deg, rgba(12,10,14,0.96), rgba(16,14,20,0.98)); border-radius:12px; padding:14px; border:1px solid rgba(255,255,255,0.04); box-shadow:0 30px 80px rgba(0,0,0,0.6); color:var(--text); }
-.news-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
-.news-header .news-title-main { font-weight:700; font-size:13px; color:var(--text); margin:0; }
-.news-sub { font-size:12px; color:var(--soft); }
-.news-list { display:flex; flex-direction:column; gap:10px; }
-.news-item { display:flex; gap:10px; align-items:flex-start; padding:10px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.006)); border:1px solid rgba(255,255,255,0.02); }
-.news-thumb { width:74px; height:74px; border-radius:10px; background:#111; object-fit:cover; flex-shrink:0; }
-.news-meta { flex:1; min-width:0; }
-.news-title { font-weight:700; font-size:13px; margin:0 0 4px 0; color:var(--text); }
-.news-excerpt { font-size:13px; color:var(--soft); line-height:1.4; margin:0; max-height:3.2em; overflow:hidden; }
-.news-actions { display:flex; gap:8px; margin-top:8px; }
-.news-fallback-iframe { width:100%; height:60vh; border-radius:10px; border:1px solid rgba(255,255,255,0.04); }
-.news-empty { text-align:center; color:var(--soft); padding:26px 10px; }
-
-@media (max-width:520px) {
-  .news-thumb { width:58px; height:58px; }
-  .tab { min-width:82px; }
-  #tab-news { flex:0 0 44px; min-width:44px; max-width:44px; }
+/* input */
+input{
+  width:100%;
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:none;
+  outline:none;
+  background:rgba(255,255,255,.18);
+  color:white;
+  font-size:12px;
 }
+input::placeholder{color:#f3dfff}
 </style>
 </head>
+
 <body>
-  <!-- DOOR OVERLAY -->
-  <div class="door-overlay" id="doorOverlay" aria-hidden="true">
-    <div class="door-wrap" id="doorWrap" style="width:100%;max-width:900px;height:100vh;display:flex;perspective:1400px;">
-      <div class="leaf left" style="flex:1;height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12));box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 30px 80px rgba(60,0,120,0.45);">
-        <div class="label" style="color:var(--soft);font-size:14px">— S15 —</div>
-      </div>
-      <div class="leaf right" style="flex:1;height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(180deg, rgba(180,140,255,0.10), rgba(120,90,180,0.12));box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 30px 80px rgba(60,0,120,0.45);">
-        <div class="label" style="color:var(--soft);font-size:14px">— atelier —</div>
-      </div>
+
+<div class="ipod">
+  <div class="title">iPod mini</div>
+
+  <!-- AirPods -->
+  <div class="airpods" id="airpods">
+    <div class="lid"></div>
+    <div class="case"></div>
+    <div class="bud left"></div>
+    <div class="bud right"></div>
+  </div>
+
+  <!-- Screen -->
+  <div class="screen">
+    <div class="song" id="songText">No song</div>
+
+    <div class="progress">
+      <span id="progressBar"></span>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prev">⏮</button>
+      <button class="btn" id="play">▶</button>
+      <button class="btn" id="next">⏭</button>
     </div>
   </div>
 
-  <!-- MAIN SHELL -->
-  <div class="shell" id="shell">
-    <div class="card" id="card">
+  <div class="playlist" id="playlist"></div>
+  <input id="songInput" placeholder="Paste MP3 link & press Enter">
+</div>
 
-      <!-- HEADER -->
-      <div class="title-row simple-one" role="banner">
-        <div>
-          <h1 class="simple-name">Auroreine</h1>
-          <div class="simple-sub">Magazine-style mini profile — curated & editorial</div>
-        </div>
-        <div style="font-size:12px;color:var(--soft);">Issue · S15 · 2025</div>
-      </div>
-
-      <!-- left: main article/profile -->
-      <div class="profile-wrapper">
-        <!-- TABS (kept intact) -->
-        <div class="tabs" id="tabs">
-          <button class="tab small active" id="tab-zhou">✦ Muse</button>
-          <button class="tab small" id="tab-rp">✧ Another Universe</button>
-
-          <!-- compact inline news tab (replaced with PNG) -->
-          <button id="tab-news" class="tab" title="Latest news" aria-label="Latest news">
-            <img id="newsSymbol" src="./newss.png" alt="news" />
-          </button>
-        </div>
-
-        <!-- PROFILE -->
-        <div class="profile" id="profile">
-          <div class="profile-hero" aria-hidden="true">
-            <!-- optional hero image; keep transparent if not provided -->
-            <img src="./hero_placeholder.jpg" alt="hero" onerror="this.style.opacity=0.06;" />
-          </div>
-
-          <div class="profile-body">
-            <h2 id="profile-title">Zhou Xinyu</h2>
-            <small id="profile-tag">Muse · TripleS</small>
-            <div class="signature" style="display:none">— A short signature</div>
-            <p id="profile-text">Soft-spoken, stage-light kind of pretty.
-Carries winter glow and slow-day calm,
-like a quiet verse written in silver.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- right: aside / controls -->
-      <div class="below-controls" style="grid-column:1/ -1; display:flex; flex-direction:column; gap:12px; margin-top:8px;">
-        <div class="controls-card">
-          <!-- BUTTONS (moved below profile text) -->
-          <div class="btn-row">
-            <button class="primary" id="favBtn" aria-pressed="false" title="Favorite">
-              <img id="favIcon" alt="fox icon" src="./classy_purple_fox_50px_smooth.gif" aria-hidden="true">
-              <span class="label-text">Favorite</span>
-            </button>
-
-            <button class="ghost" id="playBtn" aria-pressed="false" title="Play preview">▶ Play</button>
-          </div>
-
-          <audio id="profileAudio" preload="auto">
-            <source src="playsongnew.mp3" type="audio/mpeg">
-          </audio>
-
-          <div class="helper">Your choice will be sent back to the bot as a tiny note.</div>
-
-          <button class="replay" id="replayBtn" title="Replay door effect">Replay ✨</button>
-        </div>
-
-        <div class="news-preview" aria-hidden="false">
-          <h3>Recent — Meredith Melrose</h3>
-          <div class="item"><img src="./thumb1.jpg" alt="t"><p>Latest excerpt preview — tap the news icon to open full list.</p></div>
-          <div class="item"><img src="./thumb2.jpg" alt="t"><p>Smaller blurb that hints the channel content lives in Telegram.</p></div>
-          <a class="news-open-tele small-link" id="newsOpenChannel" target="_blank" rel="noopener noreferrer" href="https://t.me/S15XINYU">Open in Telegram</a>
-        </div>
-      </div>
-
-      <!-- NEWS modal (REPLACED UI) -->
-      <div class="news-modal-backdrop" id="newsBackdrop" aria-hidden="true">
-        <div class="news-modal" role="dialog" aria-modal="true" aria-labelledby="newsTitle">
-          <div class="news-header">
-            <div style="display:flex;align-items:center;gap:12px;">
-              <div>
-                <div id="newsTitle" class="news-title-main">Recently update of Meredith Melrose.</div>
-                <div class="news-sub" style="display:none;">Newest at top — click to open a post</div>
-              </div>
-            </div>
-
-            <div style="display:flex;gap:8px;align-items:center;">
-              <button class="news-close" id="newsClose">Close</button>
-              <a class="news-open-tele small-link" id="newsOpenChannel2" target="_blank" rel="noopener noreferrer" href="https://t.me/S15XINYU">Open in Telegram</a>
-            </div>
-          </div>
-
-          <div id="newsContent">
-            <div class="news-empty" id="newsLoading">Loading latest posts…</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- optional door sound -->
-      <audio id="doorAudio" preload="auto">
-        <source src="door_open.mp3" type="audio/mpeg">
-      </audio>
-
-    </div>
-  </div>
+<audio id="audio"></audio>
 
 <script>
-/* ===========================
-   Core JS: tabs, fav, audio, door, news
-   (kept unchanged functionally — layout-only update above)
-   ============================ */
+const audio = document.getElementById('audio')
+const input = document.getElementById('songInput')
+const playlistEl = document.getElementById('playlist')
+const songText = document.getElementById('songText')
+const bar = document.getElementById('progressBar')
+const airpods = document.getElementById('airpods')
 
-/* Telegram WebApp compatibility (optional) */
-const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-if (tg) try { tg.expand(); tg.ready(); } catch(e){}
+let playlist = JSON.parse(localStorage.getItem('playlist')||'[]')
+let index = Number(localStorage.getItem('index')||0)
 
-/* Elements */
-const shell = document.getElementById('shell');
-const doorOverlay = document.getElementById('doorOverlay');
-const doorWrap = document.getElementById('doorWrap');
-const doorAudio = document.getElementById('doorAudio');
-const replayBtn = document.getElementById('replayBtn');
-
-const tZ = document.getElementById('tab-zhou');
-const tR = document.getElementById('tab-rp');
-const tNews = document.getElementById('tab-news');
-
-const profileAudio = document.getElementById('profileAudio');
-const favBtn = document.getElementById('favBtn');
-const playBtn = document.getElementById('playBtn');
-const favIcon = document.getElementById('favIcon');
-// ensure gif path is correct (relative) and provide a tiny inline SVG fallback if loading fails
-try {
-  if (favIcon) {
-    if (!favIcon.getAttribute('src') || favIcon.getAttribute('src').indexOf('./') !== 0) favIcon.src = '././classy_purple_fox_50px_smooth.gif';
-    favIcon.addEventListener('error', function() {
-      // fallback: tiny decorative SVG so the layout isn't broken
-      favIcon.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"><text x="0" y="14" font-size="14" fill="%23f5f0ff">★</text></svg>';
-      favIcon.style.opacity = '0.95';
-    });
-  }
-} catch(e) { console.warn('favIcon setup failed', e); }
-
-const newsBackdrop = document.getElementById('newsBackdrop');
-const newsContent = document.getElementById('newsContent');
-const newsClose = document.getElementById('newsClose');
-const newsOpenChannel = document.getElementById('newsOpenChannel');
-
-const profiles = {
-  zhou: {
-    title: "Zhou Xinyu",
-    tag: "Muse · TripleS",
-    text: "Soft-spoken, stage-light kind of pretty.\nCarries winter glow and slow-day calm,\nlike a quiet verse written in silver."
-  },
-  rp: {
-    title: "Meredith Melrose",
-    tag: "S15 · night-coded",
-    text: "Writes in lowercase and starlight.\nHalf diary, half song, always a little\nlate to leave the dream."
-  }
-};
-
-let selected = 'zhou';
-
-/* ===========================
-   Sparkle helpers
-=========================== */
-function makeSparkle(x, y, size = null) {
-  const profileBox = document.getElementById("profile");
-  if (!profileBox) return;
-  const sp = document.createElement('div');
-  sp.className = "sparkle-pop";
-  const s = size || (6 + Math.floor(Math.random()*8));
-  sp.style.width = s + "px";
-  sp.style.height = s + "px";
-  sp.style.left = Math.round(x) + "px";
-  sp.style.top = Math.round(y) + "px";
-  sp.style.transform = `translateY(0) scale(${0.6 + Math.random()*0.9})`;
-  profileBox.appendChild(sp);
-  setTimeout(() => { if (sp && sp.parentNode) sp.parentNode.removeChild(sp); }, 1400);
-}
-function burstSparkles(count = 5) {
-  const box = document.getElementById("profile");
-  if (!box) return;
-  const rect = box.getBoundingClientRect();
-  for (let i = 0; i < count; i++) {
-    const delay = Math.random() * 180;
-    setTimeout(() => {
-      const paddingX = Math.max(8, rect.width * 0.06);
-      const paddingY = Math.max(8, rect.height * 0.06);
-      const x = Math.random() * (rect.width - paddingX*2) + paddingX;
-      const y = Math.random() * (rect.height - paddingY*2) + paddingY;
-      makeSparkle(x, y);
-    }, delay);
-  }
+function render(){
+  playlistEl.innerHTML=''
+  playlist.forEach((s,i)=>{
+    const d=document.createElement('div')
+    d.textContent=s
+    if(i===index) d.classList.add('active')
+    d.onclick=()=>playSong(i)
+    playlistEl.appendChild(d)
+  })
 }
 
-/* ===========================
-   FAVORITE (localStorage)
-=========================== */
-const STORAGE_KEY = 'miniapp_favs_v1';
-function loadFavs() {
-  try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; } catch(e){ return {}; }
-}
-function saveFavs(obj) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e){}
-}
-function setFavState(isFav) {
-  favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
-  const label = favBtn.querySelector('.label-text');
-  if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
-  try {
-    favIcon.src = './classy_purple_fox_50px_smooth.gif';
-    if (isFav) {
-      favIcon.classList.add('fav-gif-in');
-      favBtn.classList.add('fav-active');
-      burstSparkles(5);
-    } else {
-      favIcon.classList.remove('fav-gif-in');
-      favBtn.classList.remove('fav-active');
-    }
-  } catch(e){
-    if (favIcon && favIcon.parentNode) favIcon.parentNode.removeChild(favIcon);
-    if (label) label.textContent = isFav ? 'Favorited' : 'Favorite';
-  }
-}
-favBtn.addEventListener('click', () => {
-  const favs = loadFavs(); const currently = !!favs[selected];
-  if (currently) delete favs[selected]; else favs[selected] = { ts: Date.now() };
-  saveFavs(favs); setFavState(!currently);
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
-    try { window.Telegram.WebApp.sendData(JSON.stringify({ type: 'fav', profile: selected, fav: !currently })); } catch(e){}
-  }
-});
-function initFavUIForCurrent() {
-  const favs = loadFavs(); const isFav = !!favs[selected];
-  favIcon.src = './classy_purple_fox_50px_smooth.gif';
-  setFavState(isFav);
+function playSong(i=index){
+  if(!playlist[i]) return
+  index=i
+  audio.src=playlist[i]
+  songText.textContent=playlist[i]
+  audio.play()
+  localStorage.setItem('index',index)
+  render()
 }
 
-/* ===========================
-   AUDIO play/pause handling
-=========================== */
-const PROFILE_AUDIO_MAP = { zhou: 'playsongnew.mp3', rp: 'playsongnew.mp3' };
-function currentProfileAudioFile() { return PROFILE_AUDIO_MAP[selected] || 'playsongnew.mp3'; }
-
-playBtn.addEventListener('click', async () => {
-  if (!profileAudio) { alert('Audio not available. Tambahkan playsongnew.mp3 di folder yang sama dengan file ini.'); return; }
-  const desired = currentProfileAudioFile();
-  const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
-  if (currentSource !== desired) { profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`; try { profileAudio.load(); } catch(e){} }
-  try {
-    if (profileAudio.paused) {
-      await profileAudio.play();
-      playBtn.classList.add('playing');
-      playBtn.textContent = '⏸ Pause';
-      playBtn.setAttribute('aria-pressed','true');
-    } else {
-      profileAudio.pause();
-      playBtn.classList.remove('playing');
-      playBtn.textContent = '▶ Play';
-      playBtn.setAttribute('aria-pressed','false');
-    }
-  } catch (err) {
-    playBtn.classList.remove('playing'); playBtn.textContent = '▶ Play'; playBtn.setAttribute('aria-pressed','false');
-    console.warn('Audio play error', err); alert('Gagal memutar audio — coba tekan lagi atau periksa file audio (playsongnew.mp3).');
-  }
-});
-if (profileAudio) {
-  profileAudio.addEventListener('play', ()=>{ playBtn.classList.add('playing'); playBtn.textContent='⏸ Pause'; playBtn.setAttribute('aria-pressed','true'); });
-  profileAudio.addEventListener('pause', ()=>{ playBtn.classList.remove('playing'); playBtn.textContent='▶ Play'; playBtn.setAttribute('aria-pressed','false'); });
-  profileAudio.addEventListener('ended', ()=>{ playBtn.classList.remove('playing'); playBtn.textContent='▶ Play'; playBtn.setAttribute('aria-pressed','false'); try{ profileAudio.currentTime=0;}catch(e){} });
+document.getElementById('play').onclick=()=>{
+  audio.paused?audio.play():audio.pause()
+}
+document.getElementById('prev').onclick=()=>{
+  playSong((index-1+playlist.length)%playlist.length)
+}
+document.getElementById('next').onclick=()=>{
+  playSong((index+1)%playlist.length)
 }
 
-/* ===========================
-   TAB switching (preserve audio state)
-=========================== */
-function setActive(k){
-  selected = k;
-  const d = profiles[k];
-  document.getElementById('profile-title').textContent = d.title;
-  document.getElementById('profile-tag').textContent = d.tag;
-  document.getElementById('profile-text').textContent = d.text;
-
-  // update tab active classes
-  [tZ,tR,tNews].forEach(el=> el.classList.remove('active'));
-  if (k==='zhou') tZ.classList.add('active');
-  else if (k==='rp') tR.classList.add('active');
-
-  // handle audio source switching without interrupting play state
-  if (!profileAudio) return;
-  try {
-    const desired = currentProfileAudioFile();
-    const currentSource = profileAudio.querySelector('source')?.getAttribute('src') || '';
-    if (currentSource === desired) return;
-    const wasPlaying = !profileAudio.paused && !profileAudio.ended;
-    const currentTime = Math.max(0, Math.min(profileAudio.currentTime || 0, 999999));
-    profileAudio.innerHTML = `<source src="${desired}" type="audio/mpeg">`;
-    try { profileAudio.load(); } catch(e){}
-    function tryRestore() {
-      try {
-        if (profileAudio.duration && !isNaN(profileAudio.duration)) {
-          const t = Math.min(currentTime, Math.max(0, profileAudio.duration - 0.01));
-          profileAudio.currentTime = t;
-        } else profileAudio.currentTime = currentTime;
-      } catch(err){}
-      if (wasPlaying) profileAudio.play().catch(()=>{});
-      profileAudio.removeEventListener('loadedmetadata', tryRestore);
-    }
-    if (profileAudio.readyState >= 1) tryRestore(); else profileAudio.addEventListener('loadedmetadata', tryRestore);
-  } catch(err){ console.warn('Error while switching profile audio (non-fatal):', err); }
+audio.ontimeupdate=()=>{
+  bar.style.width=(audio.currentTime/audio.duration*100||0)+'%'
 }
 
-/* attach tab listeners */
-if (tZ) tZ.addEventListener('click', ()=> { setActive('zhou'); burstSparkles(6); });
-if (tR) tR.addEventListener('click', ()=> { setActive('rp'); burstSparkles(6); });
+audio.onplay=()=>airpods.classList.add('open')
+audio.onpause=()=>airpods.classList.remove('open')
 
-/* ===========================
-   DOOR animation (smoother)
-=========================== */
-function openDoor(playSound = true) {
-  shell.classList.remove('content-visible');
-  doorOverlay.classList.remove('hidden-overlay');
-  requestAnimationFrame(() => {
-    doorWrap.classList.add('door-opening');
-    doorOverlay.classList.add('fade-out');
-    if (playSound && doorAudio && doorAudio.src) {
-      try { doorAudio.currentTime = 0; doorAudio.play().catch(()=>{}); } catch(e){}
-    }
-  });
-  function onTransitionEnd(e) {
-    if (e.propertyName && !/transform/i.test(e.propertyName)) return;
-    shell.classList.add('content-visible');
-    doorOverlay.classList.add('hidden-overlay');
-    doorOverlay.classList.remove('fade-out');
-    doorWrap.classList.remove('door-opening');
-    doorWrap.removeEventListener('transitionend', onTransitionEnd);
-  }
-  doorWrap.addEventListener('transitionend', onTransitionEnd);
-}
-setTimeout(() => openDoor(true), 260);
-replayBtn.addEventListener('click', ()=> {
-  doorOverlay.classList.remove('hidden-overlay');
-  doorOverlay.classList.remove('fade-out');
-  shell.classList.remove('content-visible');
-  void doorWrap.offsetWidth;
-  setTimeout(()=> openDoor(true), 80);
-});
+input.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return
+  const link=input.value.trim()
+  if(!link) return
+  playlist.push(link)
+  localStorage.setItem('playlist',JSON.stringify(playlist))
+  input.value=''
+  playSong(playlist.length-1)
+})
 
-/* ===========================
-   NEWS modal logic (kept intact)
-=========================== */
-const NEWS_CHANNEL = 'S15XINYU';
-const NEWS_S_URL = `https://t.me/s/${NEWS_CHANNEL}`;
-
-function truncateText(s, n = 140) {
-  if (!s) return '';
-  s = s.replace(/\s+/g,' ').trim();
-  if (s.length <= n) return s;
-  return s.slice(0, n-1).trim() + '…';
-}
-
-function renderNewsList(posts) {
-  if (!posts || posts.length === 0) { newsContent.innerHTML = '<div class="news-empty">No recent posts were found.</div>'; return; }
-  const list = document.createElement('div'); list.className = 'news-list';
-  posts.forEach(post => {
-    const item = document.createElement('div'); item.className = 'news-item';
-    const thumb = document.createElement('img'); thumb.className = 'news-thumb'; thumb.alt = 'thumb'; thumb.loading='lazy';
-    if (post.thumb) thumb.src = post.thumb; else { thumb.style.background = '#111'; thumb.src = ''; }
-    const meta = document.createElement('div'); meta.className = 'news-meta';
-    const title = document.createElement('div'); title.className = 'news-title'; title.textContent = post.timeStr || `S15XINYU`;
-    const excerpt = document.createElement('p'); excerpt.className='news-excerpt'; excerpt.textContent = truncateText(post.excerpt || post.text || '', 140);
-    const actions = document.createElement('div'); actions.className='news-actions';
-    const btnOpen = document.createElement('a'); btnOpen.className='news-open-tele'; btnOpen.textContent='Open in Telegram';
-    btnOpen.href = post.link || NEWS_S_URL; btnOpen.target='_blank'; btnOpen.rel='noopener noreferrer';
-    actions.appendChild(btnOpen);
-    meta.appendChild(title); meta.appendChild(excerpt); meta.appendChild(actions);
-    item.appendChild(thumb); item.appendChild(meta); list.appendChild(item);
-  });
-  newsContent.innerHTML = ''; newsContent.appendChild(list);
-}
-
-function renderFallbackThumbnails(posts) {
-  newsContent.innerHTML = '';
-  const grid = document.createElement('div'); grid.className = 'news-grid';
-  if (!posts || posts.length === 0) {
-    const empty = document.createElement('div'); empty.className = 'news-empty';
-    empty.textContent = 'Unable to fetch previews from the channel. Try "Open in Telegram".';
-    newsContent.appendChild(empty);
-    const openBtn = document.createElement('a'); openBtn.className='news-open-tele'; openBtn.textContent='Open channel in Telegram';
-    openBtn.href = NEWS_S_URL; openBtn.target = '_blank'; openBtn.rel = 'noopener noreferrer';
-    newsContent.appendChild(openBtn);
-    const iframe = document.createElement('iframe'); iframe.className = 'news-fallback-iframe';
-    iframe.src = NEWS_S_URL; iframe.loading = 'lazy'; iframe.referrerPolicy = 'no-referrer';
-    newsContent.appendChild(iframe);
-    return;
-  }
-  posts.forEach(p => {
-    const item = document.createElement('div'); item.className = 'grid-item';
-    const a = document.createElement('a'); a.href = p.link || NEWS_S_URL; a.target = '_blank'; a.rel = 'noopener noreferrer';
-    const img = document.createElement('img'); img.className='grid-thumb'; img.alt = p.timeStr || 'post';
-    if (p.thumb) img.src = p.thumb; else img.src = '';
-    const t = document.createElement('div'); t.className='news-title'; t.style.fontSize='12px'; t.style.margin='0'; t.style.color='var(--soft)';
-    t.textContent = truncateText(p.excerpt || p.timeStr || '', 80);
-    a.appendChild(img);
-    item.appendChild(a);
-    item.appendChild(t);
-    grid.appendChild(item);
-  });
-  newsContent.appendChild(grid);
-}
-
-function renderFallbackIframe() {
-  newsContent.innerHTML = '';
-  const iframe = document.createElement('iframe'); iframe.className = 'news-fallback-iframe';
-  iframe.src = NEWS_S_URL; iframe.loading = 'lazy'; iframe.referrerPolicy = 'no-referrer';
-  newsContent.appendChild(iframe);
-}
-
-async function loadNewsParsed(maxPosts = 6) {
-  newsContent.innerHTML = '<div class="news-empty">Loading latest posts…</div>';
-  try {
-    const res = await fetch(NEWS_S_URL, { method:'GET', mode:'cors' });
-    if (!res.ok) throw new Error('Network response not ok: ' + res.status);
-    const text = await res.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/html');
-    const msgs = Array.from(doc.querySelectorAll('.tgme_widget_message, .tgme_widget_message_wrap, .tme_widget_message'));
-    if (!msgs || msgs.length === 0) {
-      const alt = Array.from(doc.querySelectorAll('.tgme_widget_message_text, .message, .tgme_widget_message_text'));
-      if (!alt || alt.length === 0) throw new Error('No message nodes found');
-    }
-    const posts = [];
-    for (let i = 0; i < msgs.length && posts.length < maxPosts; i++) {
-      const m = msgs[i];
-      const textNode = m.querySelector('.tgme_widget_message_text') || m.querySelector('.message_text') || m.querySelector('p') || m;
-      let excerpt = ''; if (textNode) excerpt = (textNode.textContent || textNode.innerText || '').trim();
-      let thumb = null;
-      const photo = m.querySelector('.tgme_widget_message_photo') || m.querySelector('img');
-      if (photo) {
-        const img = photo.querySelector ? photo.querySelector('img') : null;
-        if (img && (img.getAttribute('src') || img.getAttribute('data-src'))) thumb = img.getAttribute('src') || img.getAttribute('data-src');
-        else if (photo.style && photo.style.backgroundImage) {
-          const bg = photo.style.backgroundImage; const match = bg.match(/url\(["']?(.*?)["']?\)/);
-          if (match) thumb = match[1];
-        } else if (photo.getAttribute && (photo.getAttribute('src') || photo.getAttribute('data-src'))) thumb = photo.getAttribute('src') || photo.getAttribute('data-src');
-      }
-      let link = null; const a = m.querySelector('a.tgme_widget_message_date') || m.querySelector('a[href*="/" + NEWS_CHANNEL + "/"]') || m.querySelector('a');
-      if (a && a.href) link = a.href;
-      let timeStr = ''; const timeNode = m.querySelector('.tgme_widget_message_date') || m.querySelector('time');
-      if (timeNode) timeStr = timeNode.textContent || timeNode.getAttribute('datetime') || '';
-      posts.push({ excerpt, thumb, link, timeStr });
-    }
-    if (posts.length === 0) throw new Error('No posts parsed');
-    renderNewsList(posts);
-  } catch (err) {
-    console.warn('Could not fetch/parse channel page (likely CORS). Trying proxy...', err);
-    try {
-      const proxyUrl = `https://r.jina.ai/http://t.me/s/${NEWS_CHANNEL}`;
-      const r = await fetch(proxyUrl, { method:'GET' });
-      if (!r.ok) throw new Error('Proxy failed: ' + r.status);
-      const txt = await r.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(txt, 'text/html');
-      const msgs = Array.from(doc.querySelectorAll('.tgme_widget_message, .tgme_widget_message_wrap, .tme_widget_message'));
-      const posts = [];
-      for (let i = 0; i < msgs.length && posts.length < 8; i++) {
-        const m = msgs[i];
-        const textNode = m.querySelector('.tgme_widget_message_text') || m.querySelector('.message_text') || m.querySelector('p') || m;
-        let excerpt = ''; if (textNode) excerpt = (textNode.textContent || textNode.innerText || '').trim();
-        let thumb = null;
-        const photo = m.querySelector('.tgme_widget_message_photo') || m.querySelector('img');
-        if (photo) {
-          const img = photo.querySelector ? photo.querySelector('img') : null;
-          if (img && (img.getAttribute('src') || img.getAttribute('data-src'))) thumb = img.getAttribute('src') || img.getAttribute('data-src');
-          else if (photo.style && photo.style.backgroundImage) {
-            const bg = photo.style.backgroundImage; const match = bg.match(/url\(["']?(.*?)["']?\)/);
-            if (match) thumb = match[1];
-          } else if (photo.getAttribute && (photo.getAttribute('src') || photo.getAttribute('data-src'))) thumb = photo.getAttribute('src') || photo.getAttribute('data-src');
-        }
-        let link = null; const a = m.querySelector('a.tgme_widget_message_date') || m.querySelector('a[href*="/" + NEWS_CHANNEL + "/"]') || m.querySelector('a');
-        if (a && a.href) link = a.href;
-        let timeStr = ''; const timeNode = m.querySelector('.tgme_widget_message_date') || m.querySelector('time');
-        if (timeNode) timeStr = timeNode.textContent || timeNode.getAttribute('datetime') || '';
-        posts.push({ excerpt, thumb, link, timeStr });
-      }
-      if (posts.length > 0) { renderFallbackThumbnails(posts); return; } else { throw new Error('Proxy returned but no posts parsed'); }
-    } catch (err2) {
-      console.warn('Proxy attempt failed — falling back to iframe', err2);
-      renderFallbackIframe();
-    }
-  }
-}
-
-function openNewsModal() { newsBackdrop.classList.add('open'); newsBackdrop.setAttribute('aria-hidden','false'); loadNewsParsed(8); }
-function closeNewsModal() { newsBackdrop.classList.remove('open'); newsBackdrop.setAttribute('aria-hidden','true'); const iframe = newsContent.querySelector('iframe'); if (iframe) iframe.src = 'about:blank'; }
-
-/* attach listeners */
-tNews.addEventListener('click', ()=> { openNewsModal(); burstSparkles(6); tNews.classList.add('active'); });
-newsClose.addEventListener('click', closeNewsModal);
-newsBackdrop.addEventListener('click', (ev)=> { if (ev.target === newsBackdrop) closeNewsModal(); });
-newsOpenChannel.href = NEWS_S_URL;
-
-document.addEventListener('keydown', (e)=> { if (e.key === 'Escape' && newsBackdrop.classList.contains('open')) closeNewsModal(); });
-
-/* initialize fav UI for current profile */
-initFavUIForCurrent();
-
+if(playlist.length) playSong(index)
+render()
 </script>
+
 </body>
 </html>
